@@ -24,7 +24,7 @@ import uppercotransbasinexports as ucrb
 
 ########################################################################################################################################
 
-# update statemod operations file to only maintain the most recent operating rules
+#update statemod operations file to only maintain the most recent operating rules
 
 os.chdir('C:/Users/zacha/Documents/UNC/SP2016_StateMod/SP_update_test')
 
@@ -33,14 +33,14 @@ import crss_operations_reader as crsso
 print('updating statemod operations file')
 
 operational_rights_data = crsso.read_text_file('SP2016.opr')
-crsso.change_operational_rights(operational_rights_data, 'SP2016_A', 1949)
+crsso.change_operational_rights(operational_rights_data, 'SP2016_ZERO', 0)
 
 print('statemod operations file updated')
 
-shutil.copy('C:/Users/zacha/Documents/UNC/SP2016_StateMod/SP_update_test/SP2016_A.opr', 'C:/Users/zacha/Documents/UNC/SP2016_StateMod/SP2016_A.opr')
+shutil.copy('C:/Users/zacha/Documents/UNC/SP2016_StateMod/SP_update_test/SP2016_ZERO.opr', 'C:/Users/zacha/Documents/UNC/SP2016_StateMod/SP2016_ZERO.opr')
 ########################################################################################################################################
 
-# update statemod demands file to include synthetic demands based on 1993-2012 average indoor/outdoor water use
+#update statemod demands file to include synthetic demands based on 1993-2012 average indoor/outdoor water use
 
 os.chdir('C:/Users/zacha/Documents/UNC/SP2016_StateMod/SP_update_test')
 
@@ -51,33 +51,33 @@ crssddmt.writenewDDM(crssddmt.demand_data, crssddmt.demands_of_interest, ddm.syn
 
 print('successful synthetic demand creation')
 
-########################################################################################################################################
+#######################################################################################################################################
 
-# update statemod rsp file to include newly generated _A .ddm and .opr files
+# #update statemod rsp file to include newly generated _A .ddm and .opr files
 
-os.chdir('C:/Users/zacha/Documents/UNC/SP2016_StateMod/SP_update_test')
+# os.chdir('C:/Users/zacha/Documents/UNC/SP2016_StateMod/SP_update_test')
 
-print('updating statemod rsp file')
+# print('updating statemod rsp file')
 
-def update_rsp_file():
-  with open('SP2016_H.RSP','r') as f:
-    split = [x for x in f.readlines()]       
-  f.close()
-  f = open('SP2016_H.RSP','w')
-  for i in range(0, len(split)):
-    if i == 28:
-      f.write('Diversion_Demand_Monthly                = SP2016_A.ddm\n')
-    elif i == 77:
-      f.write('Operational_Right                       = SP2016_A.opr\n')
-    else:
-      f.write(split[i])
-  f.close()
+# def update_rsp_file():
+#   with open('SP2016_H.RSP','r') as f:
+#     split = [x for x in f.readlines()]       
+#   f.close()
+#   f = open('SP2016_H.RSP','w')
+#   for i in range(0, len(split)):
+#     if i == 28:
+#       f.write('Diversion_Demand_Monthly                = SP2016_Q.ddm\n')
+#     elif i == 77:
+#       f.write('Operational_Right                       = SP2016.opr\n')
+#     else:
+#       f.write(split[i])
+#   f.close()
 
-  return split
+#   return split
 
-update_rsp_file()
+# update_rsp_file()
 
-print('updated statemod rsp file')
+# print('updated statemod rsp file')
 
 ########################################################################################################################################
 
@@ -133,6 +133,8 @@ DenverIndoor = pd.read_parquet('08_Denver_I.parquet', engine='pyarrow')
 DenverOutdoor = pd.read_parquet('08_Denver_O.parquet', engine='pyarrow')
 EnglewoodIndoor = pd.read_parquet('08_Englwd_I.parquet', engine='pyarrow')
 EnglewoodOutdoor = pd.read_parquet('08_Englwd_O.parquet', engine='pyarrow')
+AuroraIndoor = pd.read_parquet('08_Aurora_I.parquet', engine='pyarrow')
+AuroraOutdoor = pd.read_parquet('08_Aurora_O.parquet', engine='pyarrow')
 
 ########################################################################################################################################
 
@@ -162,6 +164,8 @@ Denver_Indoor_Shortage = DenverIndoor['shortage']
 Denver_Outdoor_Shortage = DenverOutdoor['shortage']
 Englewood_Indoor_Shortage = EnglewoodIndoor['shortage']
 Englewood_Outdoor_Shortage = EnglewoodOutdoor['shortage']
+Aurora_Indoor_Shortage = AuroraIndoor['shortage']
+Aurora_Outdoor_Shortage = AuroraOutdoor['shortage']
 
 ########################################################################################################################################
 
@@ -179,6 +183,7 @@ ConMut_Total_Shortage = ConMut_Indoor_Shortage + ConMut_Outdoor_Shortage
 Golden_Total_Shortage = Golden_Indoor_Shortage + Golden_Outdoor_Shortage
 Denver_Total_Shortage = Denver_Indoor_Shortage + Denver_Outdoor_Shortage
 Englewood_Total_Shortage = Englewood_Indoor_Shortage + Englewood_Outdoor_Shortage
+Aurora_Total_Shortage = Aurora_Indoor_Shortage + Aurora_Outdoor_Shortage
 
 Thornton_Total_Shortage_Sum = pd.DataFrame().assign(Year=ThorntonIndoor['year'],Shortage=Thornton_Total_Shortage)
 Thornton_Total_Shortage_Sum = Thornton_Total_Shortage_Sum.groupby('Year').sum()
@@ -215,29 +220,93 @@ Denver_Total_Shortage_Sum = Denver_Total_Shortage_Sum.groupby('Year').sum()
 
 Englewood_Total_Shortage_Sum = pd.DataFrame().assign(Year=EnglewoodIndoor['year'],Shortage=Englewood_Total_Shortage)
 Englewood_Total_Shortage_Sum = Englewood_Total_Shortage_Sum.groupby('Year').sum()
+
+Aurora_Total_Shortage_Sum = pd.DataFrame().assign(Year=AuroraIndoor['year'],Shortage=Aurora_Total_Shortage)
+Aurora_Total_Shortage_Sum = Aurora_Total_Shortage_Sum.groupby('Year').sum()
  
 plt.figure()
 plt.plot(Boulder_Total_Shortage_Sum['Shortage'],color='blue', label='Boulder')
-plt.plot(Loveland_Total_Shortage_Sum['Shortage'],color='green', label='Loveland')
-plt.plot(Longmont_Total_Shortage_Sum['Shortage'],color='red', label='Longmont')
-plt.plot(Thornton_Total_Shortage_Sum['Shortage'],color='yellow', label='Thornton')
-plt.plot(Westminster_Total_Shortage_Sum['Shortage'],color='black', label='Westminster')
-plt.plot(Laffayette_Total_Shortage_Sum['Shortage'],color='brown', label='Laffayette')
-plt.plot(Louisville_Total_Shortage_Sum['Shortage'],color='orange', label='Louisville')
-plt.plot(Arvada_Total_Shortage_Sum['Shortage'],color='purple', label='Arvada')
-plt.plot(ConMut_Total_Shortage_Sum['Shortage'],color='pink', label='ConMut')
-plt.plot(Golden_Total_Shortage_Sum['Shortage'],color='gray', label='Golden')
-#plt.plot(Denver_Total_Shortage_Sum['Shortage'],color='gold', label='Denver')
-plt.plot(Englewood_Total_Shortage_Sum['Shortage'],color='aqua', label='Englewood')
-
+plt.xlabel('Hydrologic Year')
 plt.ylabel('Shortage (AF)')
-plt.legend()   
+plt.legend() 
+plt.figure()
+plt.plot(Loveland_Total_Shortage_Sum['Shortage'],color='green', label='Loveland')
+plt.xlabel('Hydrologic Year')
+plt.ylabel('Shortage (AF)')
+plt.legend() 
+plt.figure()
+plt.plot(Longmont_Total_Shortage_Sum['Shortage'],color='red', label='Longmont')
+plt.xlabel('Hydrologic Year')
+plt.ylabel('Shortage (AF)')
+plt.legend() 
+plt.figure()
+plt.plot(Thornton_Total_Shortage_Sum['Shortage'],color='yellow', label='Thornton')
+plt.xlabel('Hydrologic Year')
+plt.ylabel('Shortage (AF)')
+plt.legend() 
+plt.figure()
+plt.plot(Westminster_Total_Shortage_Sum['Shortage'],color='black', label='Westminster')
+plt.xlabel('Hydrologic Year')
+plt.ylabel('Shortage (AF)')
+plt.legend() 
+plt.figure()
+plt.plot(Laffayette_Total_Shortage_Sum['Shortage'],color='brown', label='Laffayette')
+plt.xlabel('Hydrologic Year')
+plt.ylabel('Shortage (AF)')
+plt.legend() 
+plt.figure()
+plt.plot(Louisville_Total_Shortage_Sum['Shortage'],color='orange', label='Louisville')
+plt.xlabel('Hydrologic Year')
+plt.ylabel('Shortage (AF)')
+plt.legend() 
+#plt.plot(Arvada_Total_Shortage_Sum['Shortage'],color='purple', label='Arvada')
+plt.figure()
+plt.plot(ConMut_Total_Shortage_Sum['Shortage'],color='pink', label='ConMut')
+plt.xlabel('Hydrologic Year')
+plt.ylabel('Shortage (AF)')
+plt.legend() 
+plt.figure()
+plt.plot(Golden_Total_Shortage_Sum['Shortage'],color='gray', label='Golden')
+plt.xlabel('Hydrologic Year')
+plt.ylabel('Shortage (AF)')
+plt.ylim(-35, 700)
+plt.legend() 
+#plt.plot(Denver_Total_Shortage_Sum['Shortage'],color='gold', label='Denver')
+plt.figure()
+plt.plot(Englewood_Total_Shortage_Sum['Shortage'],color='aqua', label='Englewood')
+plt.xlabel('Hydrologic Year')
+plt.ylabel('Shortage (AF)')
+plt.legend() 
+
+plt.figure()
+plt.plot(Aurora_Total_Shortage_Sum['Shortage'], color= 'gold', label = 'Aurora')
+plt.xlabel('Hydrologic Year')
+plt.ylabel('Shortage (AF)')
+plt.legend() 
+
+# plt.ylabel('Shortage (AF)')
+# plt.legend(bbox_to_anchor=(1.35, 1), loc='upper right', borderaxespad=0)
 
 plt.figure()
 plt.plot(Denver_Total_Shortage_Sum['Shortage'],color='gold', label='Denver')
+plt.xlabel('Hydrologic Year')
+# plt.plot(Aurora_Total_Shortage_Sum['Shortage'], color= 'gold', label = 'Aurora')
+# plt.plot(Thornton_Total_Shortage_Sum['Shortage'],color='yellow', label='Thornton')
+# plt.plot(Westminster_Total_Shortage_Sum['Shortage'],color='black', label='Westminster')
+#plt.plot(Arvada_Total_Shortage_Sum['Shortage'],color='purple', label='Arvada')
+plt.ylabel('Shortage (AF)')
+plt.legend() 
+
+plt.figure()
+#plt.plot(Denver_Total_Shortage_Sum['Shortage'],color='gold', label='Denver')
+# plt.plot(Aurora_Total_Shortage_Sum['Shortage'], color= 'gold', label = 'Aurora')
+# plt.plot(Thornton_Total_Shortage_Sum['Shortage'],color='yellow', label='Thornton')
+# plt.plot(Westminster_Total_Shortage_Sum['Shortage'],color='black', label='Westminster')
+plt.xlabel('Hydrologic Year')
+plt.plot(Arvada_Total_Shortage_Sum['Shortage'],color='purple', label='Arvada')
 plt.ylabel('Shortage (AF)')
 plt.legend() 
 
 ########################################################################################################################################
 
-# 
+# GIT TEST
