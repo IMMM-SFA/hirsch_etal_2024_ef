@@ -34,21 +34,146 @@ import seaborn as sns
 import geopandas as gpd
 #import shapefile as shp
 import descartes
+import statsmodels.formula.api as sm
+import matplotlib.patches as mpatches
+import matplotlib.lines as mlines
+import contextily as cx
+#import pyproj as 
+from mpl_toolkits.basemap import Basemap
 
-# irrigaton_nodes = []
+import os
+import re
+import numpy as np
+import pandas as pd
+from SALib.sample import latin
+from joblib import Parallel, delayed
+import re
+import matplotlib.pyplot as plt
+import statsmodels.formula.api as sm
+import seaborn as sns
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
+from matplotlib.colors import ListedColormap
+import scipy.stats as stats
+import seaborn as sns
+from datetime import datetime
+from matplotlib.lines import Line2D
+import os
 
-# # Creating a dictionary
-# d = {}
 
-# # Using for loop for creating dataframes
-# for i in l:
-#     d[i] = pd.DataFrame()
+# set random seed for reproducibility
+seed_value = 123
+
+# directory where the data is stored
+data_dir = 'C:/Users/zacha/Documents/UNC/SP2016_StateMod'
+
+# template file as a source for modification
+template_file = os.path.join(data_dir, "SP2016_H_original.ddm")
+
+# directory to write modified files to
+output_dir = "C:/Users/zacha/Documents/UNC/SP2016_StateMod"
+
+# scenario name
+scenario = "test"
+
+# character indicating row is a comment
+comment = "#"
+
+# dictionary to hold values for each field
+d = {"yr": [], 
+     "id": [], 
+     "jan": [], 
+     "feb": [], 
+     "mar": [], 
+     "apr": [], 
+     "may": [], 
+     "jun": [], 
+     "jul": [], 
+     "aug": [],
+     "sep": [],
+     "oct": [],
+     "nov": [],
+     "dec": [],
+     "total": []}
+
+# define the column widths for the output file
+column_widths = {"yr": 4, 
+                 "id": 9, 
+                 "jan": 10, 
+                 "feb": 7, 
+                 "mar": 7, 
+                 "apr": 7, 
+                 "may": 7, 
+                 "jun": 7, 
+                 "jul": 7, 
+                 "aug": 7,
+                 "sep": 7,
+                 "oct": 7,
+                 "nov": 7,
+                 "dec": 7,
+                 "total": 9}
+
+# list of columns to process
+column_list = ["yr", "id", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "total"]
+
+# list of value columns that may be modified
+value_columns = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "total"]
+
+#%%time
+
+# empty string to hold header data
+header = ""
+
+capture = False
+with open(template_file) as template:
+    
+    for idx, line in enumerate(template):
+        
+        if capture:
+            value_list = line.strip().split()
+            
+
+            # comprehension only used to build dict
+            x = [d[column_list[idx]].append(i) for idx, i in enumerate(value_list)]
+
+        else:
+            
+            # store any header and preliminary lines to use in restoration
+            header += line
+            
+            # passes uncommented date range line before data start and all commented lines in header
+            if line[0] != comment:
+                capture = True
+                
+# convert dictionary to a pandas data frame  
+df = pd.DataFrame(d)
 
 
-fp = 'Div1_Irrig_2020.shp'
+# convert value column types to float
+df[value_columns] = df[value_columns].astype(np.float64)
+
+df
+
+######extract unique structure id's for future use#########
+
+colNames = df.columns.tolist()
+uniqueValsList = []                    
+
+for each in colNames:
+    uniqueVals = list(df[each].unique())
+    uniqueValsList.append(pd.Series(data=uniqueVals,name=each))
+
+structure_ids = uniqueValsList[1]
+#structure_ids.to_csv('ids_file.txt', sep=' ', index=False)
+
+###################################################################################################
+
+fp = 'Div1_Irrig_2015.shp'
 map_df = gpd.read_file(fp) 
-map_df_copy = gpd.read_file(fp)
 print(map_df)
+
 
 test = map_df.loc[:,['CROP_TYPE', 'geometry']]
 test['CROP_TYPE'] = int(10)
@@ -284,31 +409,66 @@ def assign_irrigation(row):
     return result
 
 
- 
-print(map_df)
-
 map_df['StateMod_Structure'] = map_df['SW_WDID1'].apply(assign_irrigation)
 print(map_df['StateMod_Structure'])
 
-map_df['StateMod_Structure'].unique()
+map_df.drop(map_df[map_df.StateMod_Structure == 1].index, inplace=True)
 
-# map_df['StateMod_Structure'] = 0
-# if map_df['SW_WDID1'] == ['0100503', '0100504', '0100710'] :
-#     map_df['StateMod_Structure'] = '0100503_I'
+years = pd.Series(range(1950,2013))
+years = years.astype(str)
+# for i in years:
+#     map_df[i] = 0
+
+irrigation_structure_ids = pd.Series(map_df['StateMod_Structure'].unique())
+
+Historical_Irrigation = {}
+
+for i in irrigation_structure_ids:
+    Historical_Irrigation[i]= pd.read_parquet(i + '.parquet', engine = 'pyarrow')
+
+Historical_Irrigation_Shortage_Sums = {}
+
+for i in irrigation_structure_ids:
+    Historical_Irrigation_Shortage_Sums[i] = Historical_Irrigation[i].groupby('year').sum()['shortage']
+
+Historical_Irrigation_Shortages = pd.DataFrame()
+for i in irrigation_structure_ids:
+    Historical_Irrigation_Shortages[i] = Historical_Irrigation_Shortage_Sums[i]
+    
+for i in irrigation_structure_ids:
+    plt.plot(Historical_Irrigation_Shortages[i])
+
+Historical_Irrigation_Shortages_forattach = Historical_Irrigation_Shortages.transpose()
+
+Historical_Irrigation_Shortages_forattach['StateMod_Structure'] = Historical_Irrigation_Shortages_forattach.index
+map_df_update = pd.merge(map_df, Historical_Irrigation_Shortages_forattach, on="StateMod_Structure")
+map_df_update.index = map_df_update['StateMod_Structure']
+
+
+print(map_df_update.keys())
+map_df_update.columns = map_df_update.columns.str.replace('       ', '')
+Hydrologic_Year_Irrigation_Shortfalls = {}
+for i in years:
+    Hydrologic_Year_Irrigation_Shortfalls[years] = map_df_update.drop(map_df_update.index[map_df_update[years] == 0], inplace=True)
+    
 
     
- 
+print(Historical_Irrigation_Shortage_Sums.items())
 
+map_df['Value'] = 0
 
-
-fig, ax = plt.subplots(1, figsize =(16, 8))
-map_df.plot(ax = ax, color ='black')
-#map_df.plot(ax = ax, column =['CROP_TYPE','geometry'], cmap ='Reds')
-
-
-#map_df['CROP_NUM'] = 0
-#if map_df['CROP_TYPE'] == "GRASS_PASTURE", map_df['CROP_NUM' == 1]
-
+map_df.loc[map_df['CROP_TYPE'] == 'GRASS_PASTURE', 'Value'] = 401 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'ALFALFA', 'Value'] = 306 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'BARLEY', 'Value'] = 401 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'CORN', 'Value'] = 50 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'SMALL_GRAINS', 'Value'] = 401 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'SORGHUM_GRAIN', 'Value'] = 401 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'SUGAR_BEETS', 'Value'] = 506 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'DRY_BEANS', 'Value'] = 64 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'POTATOES', 'Value'] = 506 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'SUNFLOWER', 'Value'] = 401 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'VEGETABLES', 'Value'] = 506 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'WHEAT_SPRING', 'Value'] = 252 * map_df['ACRES']
 
 
 
@@ -332,34 +492,36 @@ ax.set_xlim([460000, 750000])
 map_df.plot(ax = ax, cmap='rainbow')
 plt.legend()
 
-
 #legend_labels = ['Corn', 'Alfalfa', 'Barley', 'Dry Beans', 'Pasture', 'Potatoes', 'Small Grain', 'Sorghum Grain', 'Sugar Beets', 'Sunflowers', 'Vegetables', 'Wheat Spring']
-# ax.set_axis_off()
+
 fig, ax = plt.subplots(1, figsize =(24, 8))
 ax.set_ylim([4400000, 4550000])
 ax.set_xlim([460000, 750000])
+
+import pandas as pd
+import geopandas as gpd
+import json
+import matplotlib as mpl
+import pylab as plt
+
+fig, ax = plt.subplots(1, figsize =(24, 8))
+ax.set_ylim([4400000, 4550000])
+ax.set_xlim([460000, 750000])
+map_df.plot(column='CROP_TYPE', categorical=True, cmap='jet', linewidth=.2, edgecolor='0.4',
+         legend=True, legend_kwds={'bbox_to_anchor':(.975, 0.6),'fontsize':16,'frameon':True}, ax=ax)
+ax.axis('off')
+ax.set_title('South Platte Two-Way Option Market',fontsize=20)
+plt.tight_layout()
+
+
+
+
 map_df.plot(column='CROP_TYPE', cmap = 'jet', legend = True, 
             categorical=True, ax=ax)
-#ax.legend(bbox_to_anchor=(1.35, 1), loc='upper right', borderaxespad=0)
-
-# leg1 = ax.get_legend()
-# leg1.set_title("Crop Type")
-# new_legtxt = ['Corn', 'Alfalfa', 'Barley', 'Dry Beans', 'Pasture', 'Potatoes', 'Small Grain', 'Sorghum Grain', 'Sugar Beets', 'Sunflowers', 'Vegetables', 'Wheat Spring']
-# for ix,eb in enumerate(leg1.get_texts()):
-#     print(eb.get_text(), "-->", new_legtxt[ix])
-#     eb.set_text(new_legtxt[ix])
-
-
-# plt.show()
 
 
 
+plt.xlabel('X coordinate (m)')
+plt.ylabel('Y coordinate (m)')
 
 legend_labels = ['Corn', 'Alfalfa', 'Barley', 'Dry Beans', 'Pasture', 'Potatoes', 'Small Grain', 'Sorghum Grain', 'Sugar Beets', 'Sunflowers', 'Vegetables', 'Wheat Spring']
-#gplt.choropleth(map_df, hue='crops', cmap='Blues', scheme='quantiles',
-#                legend=True, legend_labels=legend_labels)
-
-# leg1 = ax.get_legend()
-# leg1.set_title("South Platte Irrigation")
-# ax.title.set_text("South Platte Irrigation")
-# plt.show()
