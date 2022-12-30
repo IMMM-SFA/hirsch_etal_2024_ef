@@ -415,6 +415,7 @@ print(map_df['StateMod_Structure'])
 map_df.drop(map_df[map_df.StateMod_Structure == 1].index, inplace=True)
 
 years = pd.Series(range(1950,2013))
+
 years = years.astype(str)
 # for i in years:
 #     map_df[i] = 0
@@ -448,9 +449,20 @@ map_df_update.index = map_df_update['StateMod_Structure']
 print(map_df_update.keys())
 map_df_update.columns = map_df_update.columns.str.replace('       ', '')
 Hydrologic_Year_Irrigation_Shortfalls = {}
-for i in years:
-    Hydrologic_Year_Irrigation_Shortfalls[years] = map_df_update.drop(map_df_update.index[map_df_update[years] == 0], inplace=True)
-    
+for i in range(1950,2013):
+    Hydrologic_Year_Irrigation_Shortfalls[i] = map_df_update.drop(map_df_update.index[map_df_update[i] <= 0])
+
+for i in range(1950,2013):
+    fig, ax = plt.subplots(1, figsize =(24, 8))
+    ax.set_ylim([4400000, 4550000])
+    ax.set_xlim([460000, 750000])
+    Hydrologic_Year_Irrigation_Shortfalls[i].plot(column='CROP_TYPE', categorical=True, cmap='jet', linewidth=.2, edgecolor='0.4',
+                legend=True, legend_kwds={'bbox_to_anchor':(.975, 0.6),'fontsize':16,'frameon':True}, ax=ax)
+    ax.axis('on')
+    ax.set_title('South Platte Two-Way Option Market in Hydrologic Year: ' + str(i),fontsize=20)
+    plt.tight_layout()
+
+
 
     
 print(Historical_Irrigation_Shortage_Sums.items())
@@ -509,7 +521,7 @@ ax.set_ylim([4400000, 4550000])
 ax.set_xlim([460000, 750000])
 map_df.plot(column='CROP_TYPE', categorical=True, cmap='jet', linewidth=.2, edgecolor='0.4',
          legend=True, legend_kwds={'bbox_to_anchor':(.975, 0.6),'fontsize':16,'frameon':True}, ax=ax)
-ax.axis('off')
+ax.axis('on')
 ax.set_title('South Platte Two-Way Option Market',fontsize=20)
 plt.tight_layout()
 
