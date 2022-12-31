@@ -61,6 +61,7 @@ import seaborn as sns
 from datetime import datetime
 from matplotlib.lines import Line2D
 import os
+import co_snow_metrics as cosnow
 
 
 # set random seed for reproducibility
@@ -170,7 +171,7 @@ structure_ids = uniqueValsList[1]
 
 ###################################################################################################
 
-fp = 'Div1_Irrig_2015.shp'
+fp = 'Div1_Irrig_2010.shp'
 map_df = gpd.read_file(fp) 
 print(map_df)
 
@@ -408,24 +409,25 @@ def assign_irrigation(row):
         result = 1
     return result
 
+years = pd.Series(range(1950,2013))
+years = years.astype(str)
 
 map_df['StateMod_Structure'] = map_df['SW_WDID1'].apply(assign_irrigation)
 print(map_df['StateMod_Structure'])
 
 map_df.drop(map_df[map_df.StateMod_Structure == 1].index, inplace=True)
 
-years = pd.Series(range(1950,2013))
-
-years = years.astype(str)
-# for i in years:
-#     map_df[i] = 0
 
 irrigation_structure_ids = pd.Series(map_df['StateMod_Structure'].unique())
 
 Historical_Irrigation = {}
 
+os.chdir('C:/Users/zacha/Documents/UNC/SP2016_StateMod/SP_update_test/xddparquet/')
+
 for i in irrigation_structure_ids:
     Historical_Irrigation[i]= pd.read_parquet(i + '.parquet', engine = 'pyarrow')
+
+os.chdir('C:/Users/zacha/Documents/UNC/SP2016_StateMod/')
 
 Historical_Irrigation_Shortage_Sums = {}
 
@@ -446,11 +448,27 @@ map_df_update = pd.merge(map_df, Historical_Irrigation_Shortages_forattach, on="
 map_df_update.index = map_df_update['StateMod_Structure']
 
 
-print(map_df_update.keys())
-map_df_update.columns = map_df_update.columns.str.replace('       ', '')
+# print(map_df_update.keys())
+# map_df_update.columns = map_df_update.columns.str.replace('       ', '')
 Hydrologic_Year_Irrigation_Shortfalls = {}
 for i in range(1950,2013):
-    Hydrologic_Year_Irrigation_Shortfalls[i] = map_df_update.drop(map_df_update.index[map_df_update[i] <= 0])
+    Hydrologic_Year_Irrigation_Shortfalls[i] = map_df_update.drop(map_df_update.index[map_df_update[i] == 0])
+
+Irrigators_Shorted = {}
+Irrigators_Fufilled = {}
+for i in range(1950,2013):
+    Irrigators_Shorted[i] = len(Hydrologic_Year_Irrigation_Shortfalls[i].axes[0]) / len(map_df_update.axes[0])
+    Irrigators_Fufilled[i] = 1 - len(Hydrologic_Year_Irrigation_Shortfalls[i].axes[0])/ len(map_df_update.axes[0])
+
+Percent_Irrigators_Shorted = pd.DataFrame.from_dict(Irrigators_Shorted, orient ='index')
+Percent_Irrigators_Shorted['shortage'] = Percent_Irrigators_Shorted[0]
+Percent_Irrigators_Fufilled = pd.DataFrame.from_dict(Irrigators_Fufilled, orient ='index')
+Percent_Irrigators_Fufilled['fufillment'] = Percent_Irrigators_Fufilled[0]
+
+plt.plot()
+plt.plot(cosnow.South_Platte_Snow,color='blue', label='% of average snowpack: South Platte')
+plt.plot(Percent_Irrigators_Fufilled['fufillment'], color = 'red', label = '% of modeled irrigator right fufillment')
+plt.legend(bbox_to_anchor=(1, 1), loc='upper right', borderaxespad=0)
 
 for i in range(1950,2013):
     fig, ax = plt.subplots(1, figsize =(24, 8))
@@ -465,75 +483,75 @@ for i in range(1950,2013):
 
 
     
-print(Historical_Irrigation_Shortage_Sums.items())
+# print(Historical_Irrigation_Shortage_Sums.items())
 
-map_df['Value'] = 0
+# map_df['Value'] = 0
 
-map_df.loc[map_df['CROP_TYPE'] == 'GRASS_PASTURE', 'Value'] = 401 * map_df['ACRES']
-map_df.loc[map_df['CROP_TYPE'] == 'ALFALFA', 'Value'] = 306 * map_df['ACRES']
-map_df.loc[map_df['CROP_TYPE'] == 'BARLEY', 'Value'] = 401 * map_df['ACRES']
-map_df.loc[map_df['CROP_TYPE'] == 'CORN', 'Value'] = 50 * map_df['ACRES']
-map_df.loc[map_df['CROP_TYPE'] == 'SMALL_GRAINS', 'Value'] = 401 * map_df['ACRES']
-map_df.loc[map_df['CROP_TYPE'] == 'SORGHUM_GRAIN', 'Value'] = 401 * map_df['ACRES']
-map_df.loc[map_df['CROP_TYPE'] == 'SUGAR_BEETS', 'Value'] = 506 * map_df['ACRES']
-map_df.loc[map_df['CROP_TYPE'] == 'DRY_BEANS', 'Value'] = 64 * map_df['ACRES']
-map_df.loc[map_df['CROP_TYPE'] == 'POTATOES', 'Value'] = 506 * map_df['ACRES']
-map_df.loc[map_df['CROP_TYPE'] == 'SUNFLOWER', 'Value'] = 401 * map_df['ACRES']
-map_df.loc[map_df['CROP_TYPE'] == 'VEGETABLES', 'Value'] = 506 * map_df['ACRES']
-map_df.loc[map_df['CROP_TYPE'] == 'WHEAT_SPRING', 'Value'] = 252 * map_df['ACRES']
-
-
-
-df = pd.DataFrame()
-map_df['crop'] = 0
+# map_df.loc[map_df['CROP_TYPE'] == 'GRASS_PASTURE', 'Value'] = 401 * map_df['ACRES']
+# map_df.loc[map_df['CROP_TYPE'] == 'ALFALFA', 'Value'] = 306 * map_df['ACRES']
+# map_df.loc[map_df['CROP_TYPE'] == 'BARLEY', 'Value'] = 401 * map_df['ACRES']
+# map_df.loc[map_df['CROP_TYPE'] == 'CORN', 'Value'] = 50 * map_df['ACRES']
+# map_df.loc[map_df['CROP_TYPE'] == 'SMALL_GRAINS', 'Value'] = 401 * map_df['ACRES']
+# map_df.loc[map_df['CROP_TYPE'] == 'SORGHUM_GRAIN', 'Value'] = 401 * map_df['ACRES']
+# map_df.loc[map_df['CROP_TYPE'] == 'SUGAR_BEETS', 'Value'] = 506 * map_df['ACRES']
+# map_df.loc[map_df['CROP_TYPE'] == 'DRY_BEANS', 'Value'] = 64 * map_df['ACRES']
+# map_df.loc[map_df['CROP_TYPE'] == 'POTATOES', 'Value'] = 506 * map_df['ACRES']
+# map_df.loc[map_df['CROP_TYPE'] == 'SUNFLOWER', 'Value'] = 401 * map_df['ACRES']
+# map_df.loc[map_df['CROP_TYPE'] == 'VEGETABLES', 'Value'] = 506 * map_df['ACRES']
+# map_df.loc[map_df['CROP_TYPE'] == 'WHEAT_SPRING', 'Value'] = 252 * map_df['ACRES']
 
 
-for c, crop in enumerate(map_df['CROP_TYPE'].unique()):
-    # df_2 = pd.DataFrame({'crop' : crop, 'num' : c})
-    # df_2['c'] = c
-    map_df['crop'].loc[map_df['CROP_TYPE'] == crop] = c
-    #df= pd.concat([df,df_2])
+
+# df = pd.DataFrame()
+# map_df['crop'] = 0
+
+
+# for c, crop in enumerate(map_df['CROP_TYPE'].unique()):
+#     # df_2 = pd.DataFrame({'crop' : crop, 'num' : c})
+#     # df_2['c'] = c
+#     map_df['crop'].loc[map_df['CROP_TYPE'] == crop] = c
+#     #df= pd.concat([df,df_2])
  
-print(df)
+# print(df)
 
-print(map_df['crop'])
+# print(map_df['crop'])
 
-fig, ax = plt.subplots(1, figsize =(24, 8))
-ax.set_ylim([4400000, 4550000])
-ax.set_xlim([460000, 750000])
-map_df.plot(ax = ax, cmap='rainbow')
-plt.legend()
+# fig, ax = plt.subplots(1, figsize =(24, 8))
+# ax.set_ylim([4400000, 4550000])
+# ax.set_xlim([460000, 750000])
+# map_df.plot(ax = ax, cmap='rainbow')
+# plt.legend()
 
-#legend_labels = ['Corn', 'Alfalfa', 'Barley', 'Dry Beans', 'Pasture', 'Potatoes', 'Small Grain', 'Sorghum Grain', 'Sugar Beets', 'Sunflowers', 'Vegetables', 'Wheat Spring']
+# #legend_labels = ['Corn', 'Alfalfa', 'Barley', 'Dry Beans', 'Pasture', 'Potatoes', 'Small Grain', 'Sorghum Grain', 'Sugar Beets', 'Sunflowers', 'Vegetables', 'Wheat Spring']
 
-fig, ax = plt.subplots(1, figsize =(24, 8))
-ax.set_ylim([4400000, 4550000])
-ax.set_xlim([460000, 750000])
+# fig, ax = plt.subplots(1, figsize =(24, 8))
+# ax.set_ylim([4400000, 4550000])
+# ax.set_xlim([460000, 750000])
 
-import pandas as pd
-import geopandas as gpd
-import json
-import matplotlib as mpl
-import pylab as plt
+# import pandas as pd
+# import geopandas as gpd
+# import json
+# import matplotlib as mpl
+# import pylab as plt
 
-fig, ax = plt.subplots(1, figsize =(24, 8))
-ax.set_ylim([4400000, 4550000])
-ax.set_xlim([460000, 750000])
-map_df.plot(column='CROP_TYPE', categorical=True, cmap='jet', linewidth=.2, edgecolor='0.4',
-         legend=True, legend_kwds={'bbox_to_anchor':(.975, 0.6),'fontsize':16,'frameon':True}, ax=ax)
-ax.axis('on')
-ax.set_title('South Platte Two-Way Option Market',fontsize=20)
-plt.tight_layout()
-
-
-
-
-map_df.plot(column='CROP_TYPE', cmap = 'jet', legend = True, 
-            categorical=True, ax=ax)
+# fig, ax = plt.subplots(1, figsize =(24, 8))
+# ax.set_ylim([4400000, 4550000])
+# ax.set_xlim([460000, 750000])
+# map_df.plot(column='CROP_TYPE', categorical=True, cmap='jet', linewidth=.2, edgecolor='0.4',
+#          legend=True, legend_kwds={'bbox_to_anchor':(.975, 0.6),'fontsize':16,'frameon':True}, ax=ax)
+# ax.axis('on')
+# ax.set_title('South Platte Two-Way Option Market',fontsize=20)
+# plt.tight_layout()
 
 
 
-plt.xlabel('X coordinate (m)')
-plt.ylabel('Y coordinate (m)')
 
-legend_labels = ['Corn', 'Alfalfa', 'Barley', 'Dry Beans', 'Pasture', 'Potatoes', 'Small Grain', 'Sorghum Grain', 'Sugar Beets', 'Sunflowers', 'Vegetables', 'Wheat Spring']
+# map_df.plot(column='CROP_TYPE', cmap = 'jet', legend = True, 
+#             categorical=True, ax=ax)
+
+
+
+# plt.xlabel('X coordinate (m)')
+# plt.ylabel('Y coordinate (m)')
+
+# legend_labels = ['Corn', 'Alfalfa', 'Barley', 'Dry Beans', 'Pasture', 'Potatoes', 'Small Grain', 'Sorghum Grain', 'Sugar Beets', 'Sunflowers', 'Vegetables', 'Wheat Spring']
