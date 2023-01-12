@@ -4,7 +4,53 @@ Created on Wed Nov 16 10:01:50 2022
 
 @author: zacha
 """
+###
 
+from osgeo import gdal, osr
+from osgeo.gdalconst import *
+import os
+import matplotlib.pyplot as plt
+import rasterio as rio
+import numpy as np
+import pandas as pd
+from shapely.geometry import Point, Polygon, LineString, mapping
+import shapely.ops as ops
+import geopandas as gpd
+import math
+import fiona
+from matplotlib.colors import ListedColormap
+import matplotlib.pylab as pl
+import rasterio
+import rasterio.plot
+from rasterio.mask import mask
+from rasterio.merge import merge
+import pyproj
+#from mapper import Mapper
+import seaborn as sns
+import imageio
+from matplotlib.patches import Patch
+from matplotlib.patches import Circle
+from matplotlib.lines import Line2D
+from datetime import datetime
+from geopy.geocoders import Nominatim
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+import csv
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.metrics import roc_auc_score
+import geopy.distance
+from functools import partial
+import json
+from PyPDF2 import PdfFileReader
+import tabula
+from copy import copy
+#from basin import Basin
+#import crss_reader as crss
+#from plotter import Plotter
+import scipy.stats as stats
+
+
+##########
 import numpy as np 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -40,6 +86,8 @@ import matplotlib.lines as mlines
 import contextily as cx
 #import pyproj as 
 from mpl_toolkits.basemap import Basemap
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 
 import os
 import re
@@ -62,6 +110,9 @@ from datetime import datetime
 from matplotlib.lines import Line2D
 import os
 import co_snow_metrics as cosnow
+import matplotlib.colors as colors
+from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
+
 
 
 # set random seed for reproducibility
@@ -171,9 +222,63 @@ structure_ids = uniqueValsList[1]
 
 ###################################################################################################
 
-fp = 'Div1_Irrig_2010.shp'
+irrigation_geodfs = ['2010', '2015', '2020']
+map_dfs = {}
+
+for i in irrigation_geodfs:
+    fp = 'Div1_Irrig_'+ str(i) +'.shp'
+    map_dfs[i] = gpd.read_file(fp)
+    plt.figure()
+    map_dfs[i]['CROP_TYPE'].value_counts(sort=False).plot.bar(rot=0)
+
+
+fp2 = 'Northern_Water_Boundary.shp'
+northern_water_boundary = gpd.read_file(fp2) 
+print(northern_water_boundary)
+northern_water_boundary[['geometry']].plot(facecolor="none", edgecolor="black")
+
+
+# fp3 = 'All_River_Basins.shp'
+# River_Basins = gpd.read_file(fp3) 
+# River_Basins[['geometry']].plot()
+
+# river_basins_of_interest = 'South Platte', 'Colorado'
+# river_basin_selection = River_Basins.loc[River_Basins['HU6NAME'].isin(river_basins_of_interest)]
+# river_basin_selection[['geometry']].plot(facecolor="none", edgecolor="black")
+
+
+# #test
+# river_basin_selection= rb.to_crs(northern_water_boundary.crs)
+
+# fig, ax = plt.subplots(figsize=(15, 15))
+# river_basin_selection.plot(ax=ax, color="pink")
+# northern_water_boundary.plot(ax=ax, color='black')
+
+
+
+
+# fp3 = 'Colorado_Municipalities.shp'
+# munis = gpd.read_file(fp3)
+# print(munis)
+
+
+# munis[['geometry']].plot()
+
+# municipalities = 'Boulder', 'Loveland', 'Longmont', 'Thornton', 'Westminster', 'Laffayette', 'Louisville', 'Golden', 'Englewood', 'Aurora', 'Arvada', 'Northglenn', 'Denver'
+
+
+
+# muni_selection = munis.loc[munis['first_city'].isin(municipalities)]
+
+# muni_selection[['geometry']].plot()
+
+
+
+###################################################################################################
+fp = 'Div1_Irrig_2020.shp'
 map_df = gpd.read_file(fp) 
 print(map_df)
+map_df.crs
 
 
 test = map_df.loc[:,['CROP_TYPE', 'geometry']]
@@ -415,6 +520,60 @@ years = years.astype(str)
 map_df['StateMod_Structure'] = map_df['SW_WDID1'].apply(assign_irrigation)
 print(map_df['StateMod_Structure'])
 
+### MARGINAL NET BENEFITS FROM AG PRODUCTION ###
+
+map_df['MNB'] = 0
+
+map_df.loc[map_df['CROP_TYPE'] == 'GRASS_PASTURE', 'MNB'] = 181 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'ALFALFA', 'MNB'] = 306 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'BARLEY', 'MNB'] = 12 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'CORN', 'MNB'] = 173 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'SMALL_GRAINS', 'MNB'] = 75 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'SORGHUM_GRAIN', 'MNB'] = 311 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'SUGAR_BEETS', 'MNB'] = 506 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'DRY_BEANS', 'MNB'] = 85 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'POTATOES', 'MNB'] = 506 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'SUNFLOWER', 'MNB'] = 740 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'VEGETABLES', 'MNB'] = 506 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'WHEAT_SPRING', 'MNB'] = 112 * map_df['ACRES']
+
+
+### EVAPOTRANSPIRATION REQUIREMENTS ###
+### USED GREELEY VALUES FOR ESTIMATED SEASONAL WATER REQUIREMENTS IN EASTERN CO ###
+
+map_df['EVAP_VALUE'] = 0
+
+map_df.loc[map_df['CROP_TYPE'] == 'GRASS_PASTURE', 'EVAP_VALUE'] = 25.7 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'ALFALFA', 'EVAP_VALUE'] = 37.1 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'BARLEY', 'EVAP_VALUE'] = 20.6 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'CORN', 'EVAP_VALUE'] = 23.9 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'SMALL_GRAINS', 'EVAP_VALUE'] = 20.6 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'SORGHUM_GRAIN', 'EVAP_VALUE'] = 20.9 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'SUGAR_BEETS', 'EVAP_VALUE'] = 27.1 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'DRY_BEANS', 'EVAP_VALUE'] = 15.7 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'POTATOES', 'EVAP_VALUE'] = 20.2 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'SUNFLOWER', 'EVAP_VALUE'] = 22.0 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'VEGETABLES', 'EVAP_VALUE'] = 22.7 * map_df['ACRES']
+map_df.loc[map_df['CROP_TYPE'] == 'WHEAT_SPRING', 'EVAP_VALUE'] = 20.6 * map_df['ACRES']
+
+### COST OF WATER ###
+
+map_df['TOTAL_COST'] = 0
+
+map_df.loc[map_df['CROP_TYPE'] == 'GRASS_PASTURE', 'TOTAL_COST'] = map_df['MNB']/(map_df['EVAP_VALUE']/12)
+map_df.loc[map_df['CROP_TYPE'] == 'ALFALFA', 'TOTAL_COST'] = map_df['MNB']/(map_df['EVAP_VALUE']/12)
+map_df.loc[map_df['CROP_TYPE'] == 'BARLEY', 'TOTAL_COST'] = map_df['MNB']/(map_df['EVAP_VALUE']/12)
+map_df.loc[map_df['CROP_TYPE'] == 'CORN', 'TOTAL_COST'] = map_df['MNB']/(map_df['EVAP_VALUE']/12)
+map_df.loc[map_df['CROP_TYPE'] == 'SMALL_GRAINS', 'TOTAL_COST'] = map_df['MNB']/(map_df['EVAP_VALUE']/12)
+map_df.loc[map_df['CROP_TYPE'] == 'SORGHUM_GRAIN', 'TOTAL_COST'] = map_df['MNB']/(map_df['EVAP_VALUE']/12)
+map_df.loc[map_df['CROP_TYPE'] == 'SUGAR_BEETS', 'TOTAL_COST'] = map_df['MNB']/(map_df['EVAP_VALUE']/12)
+map_df.loc[map_df['CROP_TYPE'] == 'DRY_BEANS', 'TOTAL_COST'] = map_df['MNB']/(map_df['EVAP_VALUE']/12)
+map_df.loc[map_df['CROP_TYPE'] == 'POTATOES', 'TOTAL_COST'] = map_df['MNB']/(map_df['EVAP_VALUE']/12)
+map_df.loc[map_df['CROP_TYPE'] == 'SUNFLOWER', 'TOTAL_COST'] = map_df['MNB']/(map_df['EVAP_VALUE']/12)
+map_df.loc[map_df['CROP_TYPE'] == 'VEGETABLES', 'TOTAL_COST'] = map_df['MNB']/(map_df['EVAP_VALUE']/12)
+map_df.loc[map_df['CROP_TYPE'] == 'WHEAT_SPRING', 'TOTAL_COST'] = map_df['MNB']/(map_df['EVAP_VALUE']/12)
+
+
 map_df.drop(map_df[map_df.StateMod_Structure == 1].index, inplace=True)
 
 
@@ -453,6 +612,10 @@ map_df_update.index = map_df_update['StateMod_Structure']
 Hydrologic_Year_Irrigation_Shortfalls = {}
 for i in range(1950,2013):
     Hydrologic_Year_Irrigation_Shortfalls[i] = map_df_update.drop(map_df_update.index[map_df_update[i] == 0])
+    
+Hydrologic_Year_Irrigation_Fulfillment = {}
+for i in range(1950,2013):
+    Hydrologic_Year_Irrigation_Fulfillment[i] = map_df_update.drop(map_df_update.index[map_df_update[i] > 0])
 
 Irrigators_Shorted = {}
 Irrigators_Fufilled = {}
@@ -466,8 +629,8 @@ Percent_Irrigators_Fufilled = pd.DataFrame.from_dict(Irrigators_Fufilled, orient
 Percent_Irrigators_Fufilled['fufillment'] = Percent_Irrigators_Fufilled[0]
 
 plt.plot()
-plt.plot(cosnow.South_Platte_Snow,color='blue', label='% of average snowpack: South Platte')
-plt.plot(Percent_Irrigators_Fufilled['fufillment'], color = 'red', label = '% of modeled irrigator right fufillment')
+plt.plot(cosnow.South_Platte_Snow['South_Platte'],color='blue', label='% of average snowpack: South Platte')
+#plt.plot(Percent_Irrigators_Fufilled['fufillment'], color = 'red', label = '% of modeled irrigator right fufillment')
 plt.legend(bbox_to_anchor=(1, 1), loc='upper right', borderaxespad=0)
 
 for i in range(1950,2013):
@@ -480,25 +643,49 @@ for i in range(1950,2013):
     ax.set_title('South Platte Two-Way Option Market in Hydrologic Year: ' + str(i),fontsize=20)
     plt.tight_layout()
 
+for i in range(1950,2013):
+    plt.figure()
+    plt.hist(Hydrologic_Year_Irrigation_Shortfalls[i][i])
+    plt.xlabel('Shortage (AF)')
+    plt.ylabel('Quantity of Irrigator Plots')
+    plt.title('Hydrologic Year:' +str(i))
+
+# # create the colorbar
+norm = colors.Normalize(vmin=map_df_update.TOTAL_COST.min(), vmax=map_df_update.TOTAL_COST.max())
+cbar = plt.cm.ScalarMappable(norm=norm, cmap='jet')
 
 
-    
+
+
+for i in cosnow.Wet_Years_list:
+    fig, ax = plt.subplots(1, figsize =(24, 8))
+    ax.set_ylim([4400000, 4550000])
+    ax.set_xlim([460000, 750000])
+    Hydrologic_Year_Irrigation_Shortfalls[i].plot(column='TOTAL_COST', categorical=False, cmap='jet', linewidth=.2, edgecolor='0.4',
+                legend=False, ax=ax)
+    ax_cbar = fig.colorbar(cbar, ax=ax)
+    # add label for the colorbar
+    ax_cbar.set_label('Cost ($)')
+    ax.axis('on')
+    ax.set_title('South Platte Two-Way Option Market in Hydrologic Year: ' + str(i) + ' (WET)',fontsize=20)
+    plt.tight_layout()
+
+for i in cosnow.Dry_Years_list:
+    fig, ax = plt.subplots(1, figsize =(24, 8))
+    ax.set_ylim([4400000, 4550000])
+    ax.set_xlim([460000, 750000])
+    Hydrologic_Year_Irrigation_Fulfillment[i].plot(column='TOTAL_COST', categorical=False, cmap='jet', linewidth=.2, edgecolor='0.4',
+                legend=False, ax=ax)
+    ax_cbar = fig.colorbar(cbar, ax=ax)
+    # add label for the colorbar
+    ax_cbar.set_label('Cost ($)')
+    ax.axis('on')
+    ax.set_title('South Platte Two-Way Option Market in Hydrologic Year: ' + str(i) + ' (DRY)',fontsize=20)
+    plt.tight_layout()
+
+
 # print(Historical_Irrigation_Shortage_Sums.items())
 
-# map_df['Value'] = 0
-
-# map_df.loc[map_df['CROP_TYPE'] == 'GRASS_PASTURE', 'Value'] = 401 * map_df['ACRES']
-# map_df.loc[map_df['CROP_TYPE'] == 'ALFALFA', 'Value'] = 306 * map_df['ACRES']
-# map_df.loc[map_df['CROP_TYPE'] == 'BARLEY', 'Value'] = 401 * map_df['ACRES']
-# map_df.loc[map_df['CROP_TYPE'] == 'CORN', 'Value'] = 50 * map_df['ACRES']
-# map_df.loc[map_df['CROP_TYPE'] == 'SMALL_GRAINS', 'Value'] = 401 * map_df['ACRES']
-# map_df.loc[map_df['CROP_TYPE'] == 'SORGHUM_GRAIN', 'Value'] = 401 * map_df['ACRES']
-# map_df.loc[map_df['CROP_TYPE'] == 'SUGAR_BEETS', 'Value'] = 506 * map_df['ACRES']
-# map_df.loc[map_df['CROP_TYPE'] == 'DRY_BEANS', 'Value'] = 64 * map_df['ACRES']
-# map_df.loc[map_df['CROP_TYPE'] == 'POTATOES', 'Value'] = 506 * map_df['ACRES']
-# map_df.loc[map_df['CROP_TYPE'] == 'SUNFLOWER', 'Value'] = 401 * map_df['ACRES']
-# map_df.loc[map_df['CROP_TYPE'] == 'VEGETABLES', 'Value'] = 506 * map_df['ACRES']
-# map_df.loc[map_df['CROP_TYPE'] == 'WHEAT_SPRING', 'Value'] = 252 * map_df['ACRES']
 
 
 
