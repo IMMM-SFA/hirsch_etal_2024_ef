@@ -789,11 +789,15 @@ structures_by_shortage.index = structures_by_shortage['StateMod_Structure']
 aggregate_geometries = map_df.dissolve(by='StateMod_Structure')
 structures_by_location = pd.merge(structures_by_cost, aggregate_geometries, on="StateMod_Structure")
 
+aggregate_geometries.plot()
+
 # # create the colorbar
 norm = colors.Normalize(vmin=structures_by_cost.TOTAL_COST.min(), vmax=structures_by_cost.TOTAL_COST.max())
 cbar = plt.cm.ScalarMappable(norm=norm, cmap='jet')
 
 structures_by_loc_cost = pd.merge(map_df_update, structures_by_cost, on="StateMod_Structure")
+
+structures_by_location.plot()
 
 from geopandas import GeoDataFrame
 
@@ -838,31 +842,110 @@ structures_by_consumptive_use.index = structures_by_consumptive_use['StateMod_St
 
 
 
+# value_of_water = {}
+
+# for i in irrigation_structure_ids:
+#     irrigation_set = structures_by_crop_sorted.loc[structures_by_crop_sorted['StateMod_Structure'] == i]
+#     values_of_water = []
+#     for y in range(1950,2013):
+#         water_avail = Historical_Irrigation_Shortage_Sums[i][y] 
+#         for crop in reversed(range(len(irrigation_set))):
+#             water_avail -= irrigation_set['CONSUMPTIVE_USE'].iloc[crop]
+#             if water_avail <= 0 or crop == 0:
+#                 values_of_water.append(irrigation_set['TOTAL_COST'].iloc[crop])
+#     value_of_water[i] = values_of_water
+
+    
+
+
 value_of_water = {}
-value_of_water[i] = pd.Series()
 
 for i in irrigation_structure_ids:
     irrigation_set = structures_by_crop_sorted.loc[structures_by_crop_sorted['StateMod_Structure'] == i]
-    values_of_water = []
+    values_of_water = pd.Series(index=years)
     for y in range(1950,2013):
-        water_avail = Historical_Irrigation_Shortage_Sums[i][y] 
+        water_avail = Historical_Irrigation_Shortage_Sums[i][y]
         for crop in reversed(range(len(irrigation_set))):
-            water_avail -= irrigation_set['CONSUMPTIVE_USE'].iloc[crop]
-            if water_avail <= 0 or crop == 0:
-                values_of_water.append(irrigation_set['TOTAL_COST'].iloc[crop])
+            if water_avail > 0:
+                water_avail -= irrigation_set['CONSUMPTIVE_USE'].iloc[crop]
+                if (water_avail <= 0):
+                    # print(water_avail)
+                    # print(crop)
+                    # print(irrigation_set['TOTAL_COST'].iloc[crop])
+                    values_of_water[str(y)] = irrigation_set['TOTAL_COST'].iloc[crop]
+                else:
+                    values_of_water[str(y)] = irrigation_set['TOTAL_COST'].iloc[crop]                    
+                    print(y)
+                    print(crop)
+    value_of_water[i] = values_of_water.fillna(irrigation_set['TOTAL_COST'].iloc[0], inplace=True)               
     value_of_water[i] = values_of_water
 
-              
+structures_by_yearly_water_value = pd.DataFrame()
+for i in irrigation_structure_ids:
+    structures_by_yearly_water_value[i] = value_of_water[i]
+
+yearly_water_values_forattach = structures_by_yearly_water_value.transpose()
+
+columnnames = {}
+count = 1949
+for i in yearly_water_values_forattach.columns:
+    count +=1
+    columnnames[i] = f"value_{count}"
+yearly_water_values_forattach.rename(columns = columnnames, inplace = True)
+yearly_water_values_forattach.columns
+
+yearly_water_values_forattach['StateMod_Structure'] = yearly_water_values_forattach.index
+map_df_update2 = pd.merge(structures_by_location, yearly_water_values_forattach, on="StateMod_Structure")
+map_df_update3 = pd.merge(map_df_update2, Historical_Irrigation_Shortages_forattach, on="StateMod_Structure")
+
+Hydrologic_Year_Irrigation_Shortfalls_v2 = {}
+for i in range(1950,2013):
+    Hydrologic_Year_Irrigation_Shortfalls_v2[i] = map_df_update3.drop(map_df_update3.index[map_df_update3[i] == 0])
+    
+Hydrologic_Year_Irrigation_Fulfillment_v2 = {}
+for i in range(1950,2013):
+    Hydrologic_Year_Irrigation_Fulfillment_v2[i] = map_df_update3.drop(map_df_update3.index[map_df_update3[i] > 0])
+
+# # create the colorbar
+# norm = colors.Normalize(vmin=map_df_update.TOTAL_COST.min(), vmax=map_df_update.TOTAL_COST.max())
+# cbar = plt.cm.ScalarMappable(norm=norm, cmap='jet')
 
 
 
-# for i in irrigation_structure_ids:
-#     for y in years:
-#         water_available = structures_by_consumptive_use[irrigation_structure_ids, years]
-        
 
+for i in cosnow.Wet_Years_list:
+    # create the colorbar
+    norm = colors.Normalize(vmin=map_df_update3['value_' + str(i)].min(), vmax=map_df_update3['value_' + str(i)].max())
+    cbar = plt.cm.ScalarMappable(norm=norm, cmap='jet')
 
+    fig, ax = plt.subplots(1, figsize =(24, 8))
+    ax.set_ylim([4400000, 4550000])
+    ax.set_xlim([460000, 750000])
+    Hydrologic_Year_Irrigation_Shortfalls_v2[i].plot(column= f"value_{i}", categorical=False, cmap='jet', linewidth=.2, edgecolor='0.4',
+                legend=False, ax=ax)
+    ax_cbar = fig.colorbar(cbar, ax=ax)
+    # add label for the colorbar
+    ax_cbar.set_label('Cost ($)')
+    ax.axis('on')
+    ax.set_title('South Platte Two-Way Option Market in Hydrologic Year: ' + str(i) + ' (WET)',fontsize=20)
+    plt.tight_layout()
 
+for i in cosnow.Dry_Years_list:
+    # create the colorbar
+    norm = colors.Normalize(vmin=map_df_update3['value_' + str(i)].min(), vmax=map_df_update3['value_' + str(i)].max())
+    cbar = plt.cm.ScalarMappable(norm=norm, cmap='jet')
+    
+    fig, ax = plt.subplots(1, figsize =(24, 8))
+    ax.set_ylim([4400000, 4550000])
+    ax.set_xlim([460000, 750000])
+    Hydrologic_Year_Irrigation_Fulfillment_v2[i].plot(column=f"value_{i}", categorical=False, cmap='jet', linewidth=.2, edgecolor='0.4',
+                legend=False, ax=ax)
+    ax_cbar = fig.colorbar(cbar, ax=ax)
+    # add label for the colorbar
+    ax_cbar.set_label('Cost ($)')
+    ax.axis('on')
+    ax.set_title('South Platte Two-Way Option Market in Hydrologic Year: ' + str(i) + ' (DRY)',fontsize=20)
+    plt.tight_layout()
 
 # print(Historical_Irrigation_Shortage_Sums.items())
 
