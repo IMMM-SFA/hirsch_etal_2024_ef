@@ -87,7 +87,7 @@ import contextily as cx
 #import pyproj as 
 from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
-
+import matplotlib.ticker as ticker
 
 import os
 import re
@@ -111,6 +111,7 @@ from matplotlib.lines import Line2D
 import os
 import co_snow_metrics as cosnow
 import matplotlib.colors as colors
+from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 
 
 
@@ -221,20 +222,20 @@ structure_ids = uniqueValsList[1]
 
 ###################################################################################################
 
-irrigation_geodfs = ['2010', '2015', '2020']
-map_dfs = {}
+# irrigation_geodfs = ['2010', '2015', '2020']
+# map_dfs = {}
 
-for i in irrigation_geodfs:
-    fp = 'Div1_Irrig_'+ str(i) +'.shp'
-    map_dfs[i] = gpd.read_file(fp)
-    plt.figure()
-    map_dfs[i]['CROP_TYPE'].value_counts(sort=False).plot.bar(rot=0)
+# for i in irrigation_geodfs:
+#     fp = 'Div1_Irrig_'+ str(i) +'.shp'
+#     map_dfs[i] = gpd.read_file(fp)
+#     plt.figure()
+#     map_dfs[i]['CROP_TYPE'].value_counts(sort=False).plot.bar(rot=0)
 
 
-fp2 = 'Northern_Water_Boundary.shp'
-northern_water_boundary = gpd.read_file(fp2) 
-print(northern_water_boundary)
-northern_water_boundary[['geometry']].plot(facecolor="none", edgecolor="black")
+# fp2 = 'Northern_Water_Boundary.shp'
+# northern_water_boundary = gpd.read_file(fp2) 
+# print(northern_water_boundary)
+# northern_water_boundary[['geometry']].plot(facecolor="none", edgecolor="black")
 
 
 # fp3 = 'All_River_Basins.shp'
@@ -578,65 +579,59 @@ map_df.drop(map_df[map_df.StateMod_Structure == 1].index, inplace=True)
 
 irrigation_structure_ids = pd.Series(map_df['StateMod_Structure'].unique())
 
-Historical_Irrigation = {}
+Historical_Irrigation_Historical_StateMod = {}
 
-os.chdir('C:/Users/zacha/Documents/UNC/SP2016_StateMod/SP_update_test/xddparquet/')
+os.chdir('C:/Users/zacha/Documents/UNC/SP2016_StateMod/historicalbaseline/xddparquet/')
 
 for i in irrigation_structure_ids:
-    Historical_Irrigation[i]= pd.read_parquet(i + '.parquet', engine = 'pyarrow')
+    Historical_Irrigation_Historical_StateMod[i]= pd.read_parquet(i + '.parquet', engine = 'pyarrow')
 
 os.chdir('C:/Users/zacha/Documents/UNC/SP2016_StateMod/')
 
-Historical_Irrigation_Shortage_Sums = {}
+Historical_Irrigation_Historical_StateMod_Shortage_Sums = {}
 
 for i in irrigation_structure_ids:
-    Historical_Irrigation_Shortage_Sums[i] = Historical_Irrigation[i].groupby('year').sum()['shortage']
+    Historical_Irrigation_Historical_StateMod_Shortage_Sums[i] = Historical_Irrigation_Historical_StateMod[i].groupby('year').sum()['shortage']
 
-Historical_Irrigation_Shortages = pd.DataFrame()
+Historical_Irrigation_Shortages_Historical_StateMod = pd.DataFrame()
 for i in irrigation_structure_ids:
-    Historical_Irrigation_Shortages[i] = Historical_Irrigation_Shortage_Sums[i]
+    Historical_Irrigation_Shortages_Historical_StateMod[i] = Historical_Irrigation_Historical_StateMod_Shortage_Sums[i]
     
 for i in irrigation_structure_ids:
-    plt.plot(Historical_Irrigation_Shortages[i])
-    plt.title('Modelled Irrigator Shortages')
+    plt.plot(Historical_Irrigation_Shortages_Historical_StateMod[i])
+    plt.title('Historical Irrigator Shortages')
 
-Historical_Irrigation_Shortages_forattach = Historical_Irrigation_Shortages.transpose()
+Historical_Irrigation_Shortages_forattach_Historical_StateMod = Historical_Irrigation_Shortages_Historical_StateMod.transpose()
 
-Historical_Irrigation_Shortages_forattach['StateMod_Structure'] = Historical_Irrigation_Shortages_forattach.index
-map_df_update = pd.merge(map_df, Historical_Irrigation_Shortages_forattach, on="StateMod_Structure")
-#map_df_update.index = map_df_update['StateMod_Structure']
+Historical_Irrigation_Shortages_forattach_Historical_StateMod['StateMod_Structure'] = Historical_Irrigation_Shortages_forattach_Historical_StateMod.index
+map_df_update = pd.merge(map_df, Historical_Irrigation_Shortages_forattach_Historical_StateMod, on="StateMod_Structure")
+map_df_update.index = map_df_update['StateMod_Structure']
 
-##### TEST ######
-
-structures_by_cost['StateMod_Structure'] = structures_by_cost.index
-for i in irrigation_structure_ids:
-    map_df_update['TOTAL_COST2'] = structures_by_cost[i]['TOTAL_COST']
 
 # print(map_df_update.keys())
 # map_df_update.columns = map_df_update.columns.str.replace('       ', '')
-Hydrologic_Year_Irrigation_Shortfalls = {}
-for i in range(1950,2013):
-    Hydrologic_Year_Irrigation_Shortfalls[i] = map_df_update.drop(map_df_update.index[map_df_update[i] == 0])
-    
-Hydrologic_Year_Irrigation_Fulfillment = {}
-for i in range(1950,2013):
-    Hydrologic_Year_Irrigation_Fulfillment[i] = map_df_update.drop(map_df_update.index[map_df_update[i] > 0])
 
-Irrigators_Shorted = {}
-Irrigators_Fufilled = {}
+Hydrologic_Year_Irrigation_Shortfalls_Historical_StateMod = {}
 for i in range(1950,2013):
-    Irrigators_Shorted[i] = len(Hydrologic_Year_Irrigation_Shortfalls[i].axes[0]) / len(map_df_update.axes[0])
-    Irrigators_Fufilled[i] = 1 - len(Hydrologic_Year_Irrigation_Shortfalls[i].axes[0])/ len(map_df_update.axes[0])
+    Hydrologic_Year_Irrigation_Shortfalls_Historical_StateMod[i] = map_df_update.drop(map_df_update.index[map_df_update[i] == 0])
 
-Percent_Irrigators_Shorted = pd.DataFrame.from_dict(Irrigators_Shorted, orient ='index')
-Percent_Irrigators_Shorted['shortage'] = Percent_Irrigators_Shorted[0]
-Percent_Irrigators_Fufilled = pd.DataFrame.from_dict(Irrigators_Fufilled, orient ='index')
-Percent_Irrigators_Fufilled['fufillment'] = Percent_Irrigators_Fufilled[0]
+Irrigators_Shorted_Historical_StateMod = {}
+Irrigators_Fufilled_Historical_StateMod = {}
+for i in range(1950,2013):
+    Irrigators_Shorted_Historical_StateMod[i] = len(Hydrologic_Year_Irrigation_Shortfalls_Historical_StateMod[i].axes[0]) / len(map_df_update.axes[0])
+    Irrigators_Fufilled_Historical_StateMod[i] = 1 - len(Hydrologic_Year_Irrigation_Shortfalls_Historical_StateMod[i].axes[0])/ len(map_df_update.axes[0])
+
+Percent_Irrigators_Shorted_Historical_StateMod = pd.DataFrame.from_dict(Irrigators_Shorted_Historical_StateMod, orient ='index')
+Percent_Irrigators_Shorted_Historical_StateMod['shortage'] = Percent_Irrigators_Shorted_Historical_StateMod[0]
+Percent_Irrigators_Fufilled_Historical_StateMod = pd.DataFrame.from_dict(Irrigators_Fufilled_Historical_StateMod, orient ='index')
+Percent_Irrigators_Fufilled_Historical_StateMod['fufillment'] = Percent_Irrigators_Fufilled_Historical_StateMod[0]
+
 
 plt.plot()
 plt.plot(cosnow.South_Platte_Snow['South_Platte'],color='blue', label='% of average snowpack: South Platte')
-#plt.plot(Percent_Irrigators_Fufilled['fufillment'], color = 'red', label = '% of modeled irrigator right fufillment')
-plt.legend(bbox_to_anchor=(1, 1), loc='upper right', borderaxespad=0)
+#plt.plot(Percent_Irrigators_Fufilled_Historical_StateMod['fufillment'], color = 'red', label = '% of historical irrigator right fufillment')
+plt.plot(irr.Percent_Irrigators_Fufilled['fufillment'], color = 'green', label = '% of modeled irrigator right fufillment')
+plt.legend(bbox_to_anchor=(1, 1), loc='best', borderaxespad=0)
 
 for i in range(1950,2013):
     fig, ax = plt.subplots(1, figsize =(24, 8))
@@ -688,185 +683,15 @@ for i in cosnow.Dry_Years_list:
     ax.set_title('South Platte Two-Way Option Market in Hydrologic Year: ' + str(i) + ' (DRY)',fontsize=20)
     plt.tight_layout()
 
-### SUM IRRIGATOR DISTRICTS BY TOTAL COST ###
-
-Irrigator_District_Value = pd.DataFrame()
-
-Irrigator_District_Value = map_df.groupby('StateMod_Structure').sum()['TOTAL_COST']
-
-
-### FIND AF/ACRE VALUE FOR EACH IRRIGATION DISTRICT ###
-
-Historical_Irrigation_Total_Demands = {}
-
-for i in irrigation_structure_ids:
-    Historical_Irrigation_Total_Demands[i] = Historical_Irrigation[i].groupby('year').sum()['demand']
-    
-
-
-Historical_Irrigation_Shortages = pd.DataFrame()
-for i in irrigation_structure_ids:
-    Historical_Irrigation_Shortages[i] = Historical_Irrigation_Shortage_Sums[i]
-    
-
-
-
-################## 01/13/2022 TEST #################################
-
-
-
-structures_by_crop = map_df.groupby(['StateMod_Structure','CROP_TYPE'], as_index=False)['ACRES'].sum()
-structures_by_acreage= map_df.groupby(['StateMod_Structure'], as_index=False)['ACRES'].sum()
-structures_by_shortage = pd.merge(structures_by_acreage, Historical_Irrigation_Shortages_forattach, on="StateMod_Structure")
-structures_by_shortage.index = structures_by_shortage['StateMod_Structure']
-
-
-for i in range(1950,2013):
-    plt.figure()
-    plt.hist(structures_by_shortage[i])
-    plt.xlabel('Shortage (AF)')
-    plt.ylabel('# of Structures')
-    plt.title('Hydrologic Year:' +str(i))
-    
-
-### MARGINAL NET BENEFITS FROM AG PRODUCTION ###
-
-structures_by_crop['MNB'] = 0
-
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'GRASS_PASTURE', 'MNB'] = 181 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'ALFALFA', 'MNB'] = 306 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'BARLEY', 'MNB'] = 12 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'CORN', 'MNB'] = 173 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'SMALL_GRAINS', 'MNB'] = 75 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'SORGHUM_GRAIN', 'MNB'] = 311 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'SUGAR_BEETS', 'MNB'] = 506 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'DRY_BEANS', 'MNB'] = 85 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'POTATOES', 'MNB'] = 506 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'SUNFLOWER', 'MNB'] = 740 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'VEGETABLES', 'MNB'] = 506 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'WHEAT_SPRING', 'MNB'] = 112 * structures_by_crop['ACRES']
-
-
-### USED GREELEY VALUES FOR ESTIMATED SEASONAL WATER REQUIREMENTS IN EASTERN CO ###
-
-structures_by_crop['CONSUMPTIVE_USE'] = 0
-
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'GRASS_PASTURE', 'CONSUMPTIVE_USE'] = 25.7 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'ALFALFA', 'CONSUMPTIVE_USE'] = 37.1 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'BARLEY', 'CONSUMPTIVE_USE'] = 20.6 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'CORN', 'CONSUMPTIVE_USE'] = 23.9 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'SMALL_GRAINS', 'CONSUMPTIVE_USE'] = 20.6 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'SORGHUM_GRAIN', 'CONSUMPTIVE_USE'] = 20.9 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'SUGAR_BEETS', 'CONSUMPTIVE_USE'] = 27.1 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'DRY_BEANS', 'CONSUMPTIVE_USE'] = 15.7 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'POTATOES', 'CONSUMPTIVE_USE'] = 20.2 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'SUNFLOWER', 'CONSUMPTIVE_USE'] = 22.0 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'VEGETABLES', 'CONSUMPTIVE_USE'] = 22.7 * structures_by_crop['ACRES']
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'WHEAT_SPRING', 'CONSUMPTIVE_USE'] = 20.6 * structures_by_crop['ACRES']
-
-### COST OF WATER ###
-
-structures_by_crop['TOTAL_COST'] = 0
-
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'GRASS_PASTURE', 'TOTAL_COST'] = structures_by_crop['MNB']/(structures_by_crop['CONSUMPTIVE_USE']/12)
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'ALFALFA', 'TOTAL_COST'] = structures_by_crop['MNB']/(structures_by_crop['CONSUMPTIVE_USE']/12)
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'BARLEY', 'TOTAL_COST'] = structures_by_crop['MNB']/(structures_by_crop['CONSUMPTIVE_USE']/12)
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'CORN', 'TOTAL_COST'] = structures_by_crop['MNB']/(structures_by_crop['CONSUMPTIVE_USE']/12)
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'SMALL_GRAINS', 'TOTAL_COST'] = structures_by_crop['MNB']/(structures_by_crop['CONSUMPTIVE_USE']/12)
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'SORGHUM_GRAIN', 'TOTAL_COST'] = structures_by_crop['MNB']/(structures_by_crop['CONSUMPTIVE_USE']/12)
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'SUGAR_BEETS', 'TOTAL_COST'] = structures_by_crop['MNB']/(structures_by_crop['CONSUMPTIVE_USE']/12)
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'DRY_BEANS', 'TOTAL_COST'] = structures_by_crop['MNB']/(structures_by_crop['CONSUMPTIVE_USE']/12)
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'POTATOES', 'TOTAL_COST'] = structures_by_crop['MNB']/(structures_by_crop['CONSUMPTIVE_USE']/12)
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'SUNFLOWER', 'TOTAL_COST'] = structures_by_crop['MNB']/(structures_by_crop['CONSUMPTIVE_USE']/12)
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'VEGETABLES', 'TOTAL_COST'] = structures_by_crop['MNB']/(structures_by_crop['CONSUMPTIVE_USE']/12)
-structures_by_crop.loc[structures_by_crop['CROP_TYPE'] == 'WHEAT_SPRING', 'TOTAL_COST'] = structures_by_crop['MNB']/(structures_by_crop['CONSUMPTIVE_USE']/12)
-
-structures_by_acreage= map_df.groupby(['StateMod_Structure'], as_index=False)['ACRES'].sum()
-structures_by_cost = structures_by_crop.groupby(['StateMod_Structure'], as_index=False)['TOTAL_COST'].sum()
-structures_by_shortage = pd.merge(structures_by_acreage, Historical_Irrigation_Shortages_forattach, on="StateMod_Structure")
-structures_by_shortage.index = structures_by_shortage['StateMod_Structure']
-
-aggregate_geometries = map_df.dissolve(by='StateMod_Structure')
-structures_by_location = pd.merge(structures_by_cost, aggregate_geometries, on="StateMod_Structure")
-
-# # create the colorbar
-norm = colors.Normalize(vmin=structures_by_cost.TOTAL_COST.min(), vmax=structures_by_cost.TOTAL_COST.max())
-cbar = plt.cm.ScalarMappable(norm=norm, cmap='jet')
-
-structures_by_loc_cost = pd.merge(map_df_update, structures_by_cost, on="StateMod_Structure")
-
-from geopandas import GeoDataFrame
-
-structures_by_loc_cost = GeoDataFrame(structures_by_loc_cost)
-
-structures_by_loc_cost['TOTAL_COST2'] = structures_by_loc_cost['TOTAL_COST_y']
-
-list(structures_by_loc_cost)
-
-for i in cosnow.Wet_Years_list:
-    fig, ax = plt.subplots(1, figsize =(24, 8))
-    ax.set_ylim([4400000, 4550000])
-    ax.set_xlim([460000, 750000])
-    structures_by_loc_cost[i].plot(column='TOTAL_COST2', categorical=False, cmap='jet', linewidth=.2, edgecolor='0.4',
-                legend=False, ax=ax)
-    ax_cbar = fig.colorbar(cbar, ax=ax)
-    # add label for the colorbar
-    ax_cbar.set_label('Cost ($)')
-    ax.axis('on')
-    ax.set_title('South Platte Two-Way Option Market in Hydrologic Year: ' + str(i) + ' (WET)',fontsize=20)
-    plt.tight_layout()
-
-for i in cosnow.Dry_Years_list:
-    fig, ax = plt.subplots(1, figsize =(24, 8))
-    ax.set_ylim([4400000, 4550000])
-    ax.set_xlim([460000, 750000])
-    structures_by_loc_cost[i].plot(column='TOTAL_COST_y', categorical=False, cmap='jet', linewidth=.2, edgecolor='0.4',
-                legend=False, ax=ax)
-    ax_cbar = fig.colorbar(cbar, ax=ax)
-    # add label for the colorbar
-    ax_cbar.set_label('Cost ($)')
-    ax.axis('on')
-    ax.set_title('South Platte Two-Way Option Market in Hydrologic Year: ' + str(i) + ' (DRY)',fontsize=20)
-    plt.tight_layout()
-
-################# 01/17/2023 ###################################
-
-structures_by_crop_sorted  = structures_by_crop.sort_values(['StateMod_Structure', 'TOTAL_COST'], ascending=(True, False))
-
-structures_by_consumptive_use = structures_by_crop.groupby(['StateMod_Structure'], as_index=False)['CONSUMPTIVE_USE'].sum()
-structures_by_consumptive_use.index = structures_by_consumptive_use['StateMod_Structure']
-
-
-
-value_of_water = {}
-value_of_water[i] = pd.Series()
-
-for i in irrigation_structure_ids:
-    irrigation_set = structures_by_crop_sorted.loc[structures_by_crop_sorted['StateMod_Structure'] == i]
-    values_of_water = []
-    for y in range(1950,2013):
-        water_avail = Historical_Irrigation_Shortage_Sums[i][y] 
-        for crop in reversed(range(len(irrigation_set))):
-            water_avail -= irrigation_set['CONSUMPTIVE_USE'].iloc[crop]
-            if water_avail <= 0 or crop == 0:
-                values_of_water.append(irrigation_set['TOTAL_COST'].iloc[crop])
-    value_of_water[i] = values_of_water
-
-              
-
-
-
-# for i in irrigation_structure_ids:
-#     for y in years:
-#         water_available = structures_by_consumptive_use[irrigation_structure_ids, years]
-        
-
-
-
 
 # print(Historical_Irrigation_Shortage_Sums.items())
 
+### FIND AF/ACRE VALUE FOR EACH IRRIGATION DISTRICT ###
 
+Historical_Irrigation_Total_Demands_Historical_StateMod = {}
+
+for i in irrigation_structure_ids:
+    Historical_Irrigation_Total_Demands_Historical_StateMod[i] = Historical_Irrigation_Historical_StateMod[i].groupby('year').sum()['demand']
 
 
 # df = pd.DataFrame()
