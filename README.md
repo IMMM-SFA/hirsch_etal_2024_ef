@@ -1,14 +1,15 @@
 _your zenodo badge here_
 
-# lastname-etal_year_journal
+# hirsch_etal_2023_tbd
 
-**A long-term global energy-economic model of carbon dioxide release from fossil fuel use**
+**Using two-way option contracts to facilitate temporal water re-allocation during drought **
 
-Jae Edmonds<sup>1\*</sup> and John Reilly<sup>1</sup>
+Zachary Hirsch<sup>1\*</sup>, HB Zeff <sup>1</sup>, Gregory Characklis <sup>1</sup>, Rohini Gupta <sup>2</sup>, Patrick Reed <sup>2</sup>
 
-<sup>1 </sup> Institute for Energy Analysis, Oak Ridge Associated Universities, 1346 Connecticut Avenue, NW, Washington, DC 20036, USA
+<sup>1 </sup> University of North Carolina at Chapel Hill, Center of Financial Risk in Environmental Systems
+<sup>2 </sup> Cornell University, Department of Civil and Environmental Engineering
 
-\* corresponding author:  email@myorg.gov
+\* corresponding author:  zhirsch@unc.edu
 
 ## Abstract
 In this paper the authors develop a long-term global energy-economic model which is capable of assessing alternative energy evolutions over periods of up to 100 years. The authors have sought to construct the model so that it can perform its assigned task with as simple a modelling system as possible. The model structure is fully documented and a brief summary of results is given.
@@ -40,7 +41,7 @@ Human, I.M. (2021). My output dataset name [Data set]. DataHub. https://doi.org/
 ## Contributing modeling software
 | Model | Version | Repository Link | DOI |
 |-------|---------|-----------------|-----|
-| model 1 | version | link to code repository | link to DOI dataset |
+| StateMod | v15 | link to code repository | link to DOI dataset |
 | model 2 | version | link to code repository | link to DOI dataset |
 | component 1 | version | link to code repository | link to DOI dataset |
 
@@ -54,8 +55,8 @@ Fill in detailed info here or link to other documentation that is a thorough wal
 
 | Script Name | Description | How to Run |
 | --- | --- | --- |
-| `step_one.py` | Script to run the first part of my experiment | `python3 step_one.py -f /path/to/inputdata/file_one.csv` |
-| `step_two.py` | Script to run the last part of my experiment | `python3 step_two.py -o /path/to/my/outputdir` |
+| `update_rsp.py` | Script to run the first part of my experiment | `python3 step_one.py -f /path/to/inputdata/file_one.csv` |
+| `ddm_extraction_timeseries.py` | Script to run the second part of my experiment | `python3 step_two.py -o /path/to/my/outputdir` |
 
 4. Download and unzip the output data from my experiment [Output data](#output-data)
 5. Run the following scripts in the `workflow` directory to compare my outputs to those from the publication
