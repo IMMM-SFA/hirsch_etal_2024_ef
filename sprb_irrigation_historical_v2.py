@@ -599,6 +599,10 @@ for i in irrigation_structure_ids:
     
 for i in irrigation_structure_ids:
     plt.plot(Historical_Irrigation_Shortages_Historical_StateMod[i])
+    #plt.set_ylim(),60000)
+    plt.ylim([0, 60000])
+    plt.xlabel('Hydrologic Year')
+    plt.ylabel('Shortage (AF)')
     plt.title('Historical Irrigator Shortages')
 
 Historical_Irrigation_Shortages_forattach_Historical_StateMod = Historical_Irrigation_Shortages_Historical_StateMod.transpose()
