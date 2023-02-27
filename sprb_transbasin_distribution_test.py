@@ -8,25 +8,25 @@ Created on Mon Aug 29 23:01:53 2022
 
 
 import os
-import re
+# import re
 import numpy as np
 import pandas as pd
-from SALib.sample import latin
-from joblib import Parallel, delayed
-import re
+# from SALib.sample import latin
+# from joblib import Parallel, delayed
+# import re
 import matplotlib.pyplot as plt
-import statsmodels.formula.api as sm
-import seaborn as sns
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Patch
-from matplotlib.colors import ListedColormap
-import scipy.stats as stats
-import seaborn as sns
-from datetime import datetime
-from matplotlib.lines import Line2D
-import os
+# import statsmodels.formula.api as sm
+# import seaborn as sns
+# import pandas as pd
+# import numpy as np
+# import matplotlib.pyplot as plt
+# from matplotlib.patches import Patch
+# from matplotlib.colors import ListedColormap
+# import scipy.stats as stats
+# import seaborn as sns
+# from datetime import datetime
+# from matplotlib.lines import Line2D
+# import os
 import uppercotransbasinexports as ucrb
 
 os.chdir('C:/Users/zacha/Documents/UNC/SP2016_StateMod/historicalbaseline/parquet/')
@@ -74,6 +74,14 @@ Historical_05_LHCBT = pd.read_parquet('05_LHCBT.parquet', engine='pyarrow')
 Historical_0404146RS = pd.read_parquet('0404146RS.parquet', engine='pyarrow')
 
 
+Olympus_Tunnel = Historical_0401000.groupby('year').sum()['carried']
+Adams_Tunnel = Historical_0404634.groupby('year').sum()['carried']
+
+Historical_0400692_X_Yearly = Historical_0400692_X.groupby('year').sum()
+
+### CHECK ###
+
+Check_1 = Adams_Tunnel - Olympus_Tunnel
 
 StVrain_Yearly_Exports = Historical_0400692_X.groupby('year').sum()['demand']
 
@@ -172,6 +180,8 @@ plt.figure()
 plt.plot(HorsetoothExports)
 plt.title('Hansen Feeder Canal C-BT Allocation')
 
+Horsetooth_Mean = HorsetoothExports.mean()
+
 plt.figure()
 plt.plot(CarterExports)
 plt.title('Carter Reservoir C-BT Allocation')
@@ -180,12 +190,12 @@ plt.figure()
 #plt.plot(Carter_Yearly_Imports_1['fromcarrierother'])
 plt.plot(TransbasinUsesYearly['use4'])
 
-Transbasin_to_Horsetooth = TransbasinUsesYearlyAllocations.iloc[46:63, 1]
+Transbasin_to_Horsetooth = TransbasinUsesYearlyAllocations.iloc[53:63, 1]
 Transbasin_to_Horsetooth = Transbasin_to_Horsetooth.reset_index()
 plt.figure()
 plt.plot(Transbasin_to_Horsetooth)
 
-Transbasin_to_Carter = TransbasinUsesYearlyAllocations.iloc[46:63, 3]
+Transbasin_to_Carter = TransbasinUsesYearlyAllocations.iloc[53:63, 3]
 Transbasin_to_Carter = Transbasin_to_Carter.reset_index()
 plt.figure()
 plt.plot(Transbasin_to_Carter)
@@ -200,25 +210,69 @@ Adapted_0400692_X = pd.DataFrame()
 Adapted_0400692_X['carried'] = ucrb.adams_tunnel_sp_imports['column']*transbasin_means.loc[0,'0400692_X']
 Adapted_0400692_X['index'] = range(0,756)
 
-BRCBT_Multiplier = 0.55
+Historical_05_BRCBT_Yearly = Historical_05_BRCBT.groupby('year').sum()
+BRCBT_Multipliers = Historical_05_BRCBT_Yearly['carried']/Historical_0400692_X_Yearly['demand']
+
+Historical_05_LongCBT_Yearly = Historical_05_LongCBT.groupby('year').sum()
+LongCBT_Multipliers = Historical_05_LongCBT_Yearly['carried']/Historical_0400692_X_Yearly['demand']
+LongCBT_Multiplier = LongCBT_Multipliers.iloc[53:63].mean()
+
+Historical_05LHCBT_Yearly = Historical_05_LHCBT.groupby('year').sum()
+LHCBT_Multipliers = Historical_05LHCBT_Yearly['carried']/Historical_0400692_X_Yearly['demand']
+LHCBT_Multiplier = LHCBT_Multipliers.iloc[53:63].mean()
+
+Historical_05SVCBT_Yearly = Historical_05_SVCBT.groupby('year').sum()
+SVCBT_Multipliers = Historical_05SVCBT_Yearly['carried']/Historical_0400692_X_Yearly['demand']
+SVCBT_Multiplier = SVCBT_Multipliers.iloc[53:63].mean()
+
+Historical_06_SWSP_IMP_Yearly = Historical_06_SWSP_IMP.groupby('year').sum()
+SWSP_Multipliers = Historical_06_SWSP_IMP_Yearly['carried']/Historical_0400692_X_Yearly['demand']
+SWSP_Multiplier = SWSP_Multipliers.iloc[53:63].mean()
+
+BRCBT_Multiplier = 1 - LongCBT_Multiplier - LHCBT_Multiplier - SVCBT_Multiplier - SWSP_Multiplier
+#BRCBT_Multiplier = .55
+## ^ was .55
 Adapted_05_BRCBT = pd.DataFrame()
 Adapted_05_BRCBT['carried'] = Adapted_0400692_X['carried']*BRCBT_Multiplier
 Adapted_05_BRCBT['index'] = range(0,756)
 
+Historical_060800_IMP_Yearly = Historical_060800_IMP.groupby('year').sum()
+SV060800_IMP_Multipliers = Historical_060800_IMP_Yearly['carried']/Historical_05_BRCBT_Yearly['carried']
+SV060800_IMP_Multiplier = SV060800_IMP_Multipliers.iloc[53:63].mean()
+
+Historical_06_CBT_IMP_Yearly = Historical_06_CBT_IMP.groupby('year').sum()
+SV06_CBT_IMP_Multipliers = Historical_06_CBT_IMP_Yearly['carried']/Historical_05_BRCBT_Yearly['carried']
+SV06_CBT_IMP_Multiplier = 1-SV060800_IMP_Multiplier
 
 infrastructure_allocations = pd.DataFrame()
 infrastructure_allocations['index'] = range(0,1)
 infrastructure_allocations.index = infrastructure_allocations['index']
-infrastructure_allocations['05_LongCBT'] = .1*-1
-infrastructure_allocations['05_BRCBT'] = 1*-1
-infrastructure_allocations['05_LHCBT'] = .05*-1
-infrastructure_allocations['05_SVCBT'] = .2*-1
-infrastructure_allocations['060800_IMP'] = .25*-1
-infrastructure_allocations['0600800_SV'] = .25
-infrastructure_allocations['06_CBT_IMP'] = .75*-1
-infrastructure_allocations['BCSC'] = .75
-infrastructure_allocations['06_SWSP_IMP'] = .1*-1
+infrastructure_allocations['05_LongCBT'] = LongCBT_Multiplier*-1
+infrastructure_allocations['05_BRCBT'] = -1
+infrastructure_allocations['05_LHCBT'] = LHCBT_Multiplier*-1
+infrastructure_allocations['05_SVCBT'] = SVCBT_Multiplier*-1
+infrastructure_allocations['060800_IMP'] = SV060800_IMP_Multiplier*-1
+infrastructure_allocations['0600800_SV'] = SV060800_IMP_Multiplier
+infrastructure_allocations['06_CBT_IMP'] = SV06_CBT_IMP_Multiplier*-1
+infrastructure_allocations['BCSC'] = SV06_CBT_IMP_Multiplier
+infrastructure_allocations['06_SWSP_IMP'] = SWSP_Multiplier*-1
 infrastructure_allocations['MoffatWTP'] = 1
+
+
+
+# infrastructure_allocations = pd.DataFrame()
+# infrastructure_allocations['index'] = range(0,1)
+# infrastructure_allocations.index = infrastructure_allocations['index']
+# infrastructure_allocations['05_LongCBT'] = .1*-1
+# infrastructure_allocations['05_BRCBT'] = 1*-1
+# infrastructure_allocations['05_LHCBT'] = .05*-1
+# infrastructure_allocations['05_SVCBT'] = .2*-1
+# infrastructure_allocations['060800_IMP'] = .25*-1
+# infrastructure_allocations['0600800_SV'] = .25
+# infrastructure_allocations['06_CBT_IMP'] = .75*-1
+# infrastructure_allocations['BCSC'] = .75
+# infrastructure_allocations['06_SWSP_IMP'] = .1*-1
+# infrastructure_allocations['MoffatWTP'] = 1
 
 BRCBT_Yearly = Historical_05_BRCBT.groupby('year').sum()
 Historical_060800_IMP_Yearly = Historical_060800_IMP.groupby('year').sum()
