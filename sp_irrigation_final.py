@@ -7,47 +7,19 @@ Created on Sun Jan 29 10:09:41 2023
 
 
 ##### import necessary packages #########
-
-# import numpy as np 
-# import matplotlib.pyplot as plt
-# import pandas as pd
-# from osgeo import gdal
-# import rasterio
-# from shapely.geometry import Point, Polygon, LineString
 import geopandas as gpd
-# import fiona
-# from matplotlib.colors import ListedColormap
-# import matplotlib.pylab as pl
-# from skimage import exposure
-# import seaborn as sns
-# import sys
-# from mpl_toolkits.axes_grid1.inset_locator import inset_axes
-# import numpy as np 
-# import matplotlib.pyplot as plt
-# import pandas as pd
-# from matplotlib.patches import Patch
-# from matplotlib.lines import Line2D
-# import geopandas as gpd
-# import seaborn as sns
-# from datetime import datetime
 import numpy as np
 import pandas as pd
-# import matplotlib.pyplot as plt
-# import seaborn as sns
-# import geopandas as gpd
-# #import shapefile as shp
-# import descartes
-# import statsmodels.formula.api as sm
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
 import contextily as cx
-# #import pyproj as 
-# from mpl_toolkits.basemap import Basemap
+from shapely.geometry import Point
 import matplotlib.pyplot as plt
 import os 
 import co_snow_metrics as cosnow
 import statemod_sp_adapted as muni
 import matplotlib.colors as colors
+import extract_ipy_southplatte as ipy
 
 ######### start analysis ################
 
@@ -71,6 +43,62 @@ print(northern_water_boundary)
 northern_water_boundary[['geometry']].plot(facecolor="none", edgecolor="black")
 northern_water_boundary.to_crs("epsg:3857")
 northern_water_boundary[['geometry']].plot(facecolor="none", edgecolor="black")
+
+fp3 = 'BLM_CO_ST_BNDY_20170109.shp'
+colorado_state_boundary = gpd.read_file(fp3)
+colorado_state_boundary = colorado_state_boundary.to_crs("epsg:3857")
+
+fp4 = 'Upper_Colorado_River_Basin_Boundary.shp'
+ucrb_boundary = gpd.read_file(fp4)
+ucrb_boundary = ucrb_boundary.to_crs("epsg:3857")
+ucrb_boundary[['geometry']].plot()
+
+fp5 = 'Major_Cities_that_Use_Colorado_River_Water.shp'
+co_cities = gpd.read_file(fp5)
+co_cities = co_cities.to_crs("epsg:3857")
+denver = gpd.GeoDataFrame(co_cities.loc[co_cities['NAME'] == 'Denver'])
+denver = denver.to_crs("epsg:3857")
+denver[['geometry']].plot()
+
+## https://github.com/OpenWaterFoundation/owf-data-co-transbasin-diversions ##
+fp6 = 'Colorado-Transbasin-Diversions-Primary-Gages.geojson'
+transbasin_diversions = gpd.read_file(fp6)
+transbasin_diversions_selection = transbasin_diversions.iloc[[9,10,14]]
+transbasin_diversions_selection = transbasin_diversions_selection.to_crs("epsg:3857")
+transbasin_diversions_selection[['geometry']].plot()
+
+fp7 = 'continental-divide-co.geojson'
+continental_divide = gpd.read_file(fp7)
+continental_divide = continental_divide.to_crs("epsg:3857")
+continental_divide[['geometry']].plot()
+
+#granby = gpd.points_from_xy(40.15366, -105.84568, z=None, crs=3857)
+granby = Point((4015366.03, -10584568.03))
+granby_point = gpd.GeoSeries([granby], crs={'init': 'epsg:3857'})
+granby_gdf = gpd.GeoDataFrame(geometry=gpd.GeoSeries(granby))
+granby_gdf.plot()
+
+### make colorado inset map ####
+
+fig, ax = plt.subplots(1, figsize =(24, 8))
+northern_water_boundary[['geometry']].plot(facecolor="yellow", edgecolor="blue", alpha = 0.3, ax=ax, label = 'Northern Water Boundary')
+colorado_state_boundary[['geometry']].plot(facecolor="none", edgecolor="black", ax=ax)
+ucrb_boundary[['geometry']].plot(facecolor="none", edgecolor="black", ax=ax, label = 'Upper Colorado River Basin')
+denver[['geometry']].plot(facecolor="green", edgecolor="black", ax=ax, label = 'Denver')
+transbasin_diversions_selection[['geometry']].plot(facecolor="red", edgecolor="black", ax=ax, label = 'Transbasin Diversions')
+continental_divide[['geometry']].plot(facecolor="none", edgecolor="red", ax=ax, label= 'Continental Divide')
+#granby_gdf[['geometry']].plot(facecolor="blue", edgecolor="black", ax=ax, label= 'Lake Granby')
+src_basemap = cx.providers.Stamen.Terrain
+cx.add_basemap( ax, source=src_basemap,crs = map_df.crs )
+ax.axis('off')
+ax.grid (False)
+ax.set_ylim([4429099.68, 5019999.71])
+ax.set_xlim([-12149912.89, -11347000.85])
+ax.legend(loc='lower right')
+plt.tight_layout()
+
+northern_water_boundary[['geometry']].plot(facecolor="none", edgecolor="blue")
+colorado_state_boundary[['geometry']].plot(facecolor="none", edgecolor="black")
 
 map_df= map_df.to_crs(epsg=3857)
 northern_water_boundary = northern_water_boundary.to_crs(epsg=3857)
@@ -311,6 +339,39 @@ def assign_irrigation(row):
 
 map_df['StateMod_Structure'] = map_df['SW_WDID1'].apply(assign_irrigation)
 
+## adjust acreages to only include surface water acreages as defined by StateMod 2012 acreage values ####
+   
+map_df = pd.merge(map_df, ipy.ipydata, on="StateMod_Structure")
+map_df['ACRES_SW'] = map_df['ACRES']* map_df['pctsurfacewater']
+
+## divide by structure specific conveyance efficiencies as defined by StateMod 2012 values in .ipy file ##
+### USED GREELEY VALUES FOR ESTIMATED SEASONAL WATER REQUIREMENTS IN EASTERN CO (IN AC/IN) convert to AC/FT by dividing by 12###
+
+
+map_df['CONSUMPTIVE_USE_AF'] = 0
+
+map_df.loc[map_df['CROP_TYPE'] == 'GRASS_PASTURE', 'CONSUMPTIVE_USE_AF'] = 25.7 * map_df['ACRES_SW']/12/map_df['maxsurf']
+map_df.loc[map_df['CROP_TYPE'] == 'ALFALFA', 'CONSUMPTIVE_USE_AF'] = 37.1 * map_df['ACRES_SW']/12/map_df['maxsurf']
+map_df.loc[map_df['CROP_TYPE'] == 'BARLEY', 'CONSUMPTIVE_USE_AF'] = 20.6 * map_df['ACRES_SW']/12/map_df['maxsurf']
+map_df.loc[map_df['CROP_TYPE'] == 'CORN', 'CONSUMPTIVE_USE_AF'] = 23.9 * map_df['ACRES_SW']/12/map_df['maxsurf']
+map_df.loc[map_df['CROP_TYPE'] == 'SMALL_GRAINS', 'CONSUMPTIVE_USE_AF'] = 20.6 * map_df['ACRES_SW']/12/map_df['maxsurf']
+map_df.loc[map_df['CROP_TYPE'] == 'SORGHUM_GRAIN', 'CONSUMPTIVE_USE_AF'] = 20.9 * map_df['ACRES_SW']/12/map_df['maxsurf']
+map_df.loc[map_df['CROP_TYPE'] == 'SUGAR_BEETS', 'CONSUMPTIVE_USE_AF'] = 27.1 * map_df['ACRES_SW']/12/map_df['maxsurf']
+map_df.loc[map_df['CROP_TYPE'] == 'DRY_BEANS', 'CONSUMPTIVE_USE_AF'] = 15.7 * map_df['ACRES_SW']/12/map_df['maxsurf']
+map_df.loc[map_df['CROP_TYPE'] == 'POTATOES', 'CONSUMPTIVE_USE_AF'] = 20.2 * map_df['ACRES_SW']/12/map_df['maxsurf']
+map_df.loc[map_df['CROP_TYPE'] == 'SUNFLOWER', 'CONSUMPTIVE_USE_AF'] = 22.0 * map_df['ACRES_SW']/12/map_df['maxsurf']
+map_df.loc[map_df['CROP_TYPE'] == 'VEGETABLES', 'CONSUMPTIVE_USE_AF'] = 22.7 * map_df['ACRES_SW']/12/map_df['maxsurf']
+map_df.loc[map_df['CROP_TYPE'] == 'WHEAT_SPRING', 'CONSUMPTIVE_USE_AF'] = 20.6 * map_df['ACRES_SW']/12/map_df['maxsurf']
+map_df.loc[map_df['CROP_TYPE'] == 'WHEAT_FALL', 'CONSUMPTIVE_USE_AF'] = 17.9 * map_df['ACRES_SW']/12/map_df['maxsurf']
+
+## divide further by sprinkler or flood irrigation efficiencies, these are structure specific values from the StateMod .ipy file from 2012 ###
+map_df['CONSUMPTIVE_USE_TOTAL'] = 0
+if map_df['IRRIG_TYPE'].loc == 'FLOOD':
+    map_df['CONSUMPTIVE_USE_TOTAL'] = map_df['CONSUMPTIVE_USE_AF']/map_df['floodeff']
+else:
+    map_df['CONSUMPTIVE_USE_TOTAL'] = map_df['CONSUMPTIVE_USE_AF']/map_df['spr']
+
+
 ## remove 'None' rows ####
 
 map_df_update = map_df.dropna(subset=['StateMod_Structure'])
@@ -321,9 +382,11 @@ print(map_df_update)
 irrigation_structure_ids = map_df_update['StateMod_Structure'].unique()
 irrigation_structure_ids_list = irrigation_structure_ids.tolist()
 
+    
 #### groupby StateMod Structure and Crop Type ###############
 
-map_df_aggregated_crops = map_df_update.groupby(['StateMod_Structure', 'CROP_TYPE'], as_index=False)["ACRES"].sum()
+map_df_aggregated_crops = map_df_update.groupby(['StateMod_Structure', 'CROP_TYPE'], as_index=False)["ACRES_SW","CONSUMPTIVE_USE_TOTAL"].sum()
+
 
 ### MARGINAL NET BENEFITS FROM AG PRODUCTION as defined by CSU ag extension enterprise budgets for Eastern CO
   ## and South Platte Valley where available ###
@@ -332,84 +395,62 @@ map_df_aggregated_crops['MNB'] = 0
 
 
 ## HB ##
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'GRASS_PASTURE', 'MNB'] = 181 * map_df_aggregated_crops['ACRES']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'GRASS_PASTURE', 'MNB'] = 181 * map_df_aggregated_crops['ACRES_SW']
 
 ## CSU ag extension - alfalfa hay - northeastern colorado - - 2021, net receipt before factor payments ###
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'ALFALFA', 'MNB'] = 436.29 * map_df_aggregated_crops['ACRES']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'ALFALFA', 'MNB'] = 436.29 * map_df_aggregated_crops['ACRES_SW']
 
 ## CSU ag extension - grass hay - western colorado - - 2020, net receipt before factor payments ###
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'BARLEY', 'MNB'] = 260.33 * map_df_aggregated_crops['ACRES']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'BARLEY', 'MNB'] = 260.33 * map_df_aggregated_crops['ACRES_SW']
 
 
 ## CSU ag extension - irrigated corn - northeastern colorado - - 2021, net receipt before factor payments ###
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'CORN', 'MNB'] = 352.54 * map_df_aggregated_crops['ACRES']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'CORN', 'MNB'] = 352.54 * map_df_aggregated_crops['ACRES_SW']
 
 ## HB ###
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SMALL_GRAINS', 'MNB'] = 75 * map_df_aggregated_crops['ACRES']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SMALL_GRAINS', 'MNB'] = 75 * map_df_aggregated_crops['ACRES_SW']
 
 
 ## CSU ag extension - sorghum grain - southeastern colorado - - 2017, net receipt before factor payments ###
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SORGHUM_GRAIN', 'MNB'] = 212.24 * map_df_aggregated_crops['ACRES']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SORGHUM_GRAIN', 'MNB'] = 212.24 * map_df_aggregated_crops['ACRES_SW']
 
 ## CSU ag extension - sugar beets - northeastern colorado - - 2021, net receipt before factor payments ###
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SUGAR_BEETS', 'MNB'] = 497.48 * map_df_aggregated_crops['ACRES']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SUGAR_BEETS', 'MNB'] = 497.48 * map_df_aggregated_crops['ACRES_SW']
 
 ## CSU ag extension - soybeans - northeastern colorado - - 2021, net receipt before factor payments ###
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'DRY_BEANS', 'MNB'] = 263.90 * map_df_aggregated_crops['ACRES']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'DRY_BEANS', 'MNB'] = 263.90 * map_df_aggregated_crops['ACRES_SW']
 
 ## CSU ag extension - potatoes - san luis valley - - 2021, net receipt before factor payments ###
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'POTATOES', 'MNB'] = 4.98 * map_df_aggregated_crops['ACRES']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'POTATOES', 'MNB'] = 4.98 * map_df_aggregated_crops['ACRES_SW']
 
 ## CSU ag extension - sunflowers - northeastern colorado - - 2021, net receipt before factor payments ###
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SUNFLOWER', 'MNB'] = 392.93 * map_df_aggregated_crops['ACRES']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SUNFLOWER', 'MNB'] = 392.93 * map_df_aggregated_crops['ACRES_SW']
 
 ## CSU ag extension - onions - western colorado - - 2021, net receipt before factor payments ###
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'VEGETABLES', 'MNB'] = 515.35 * map_df_aggregated_crops['ACRES']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'VEGETABLES', 'MNB'] = 515.35 * map_df_aggregated_crops['ACRES_SW']
 
 ## CSU ag extension - irrigated winter wheat - south platte valley - - 2021, net receipt before factor payments ###
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'WHEAT_SPRING', 'MNB'] = 153.43 * map_df_aggregated_crops['ACRES']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'WHEAT_SPRING', 'MNB'] = 153.43 * map_df_aggregated_crops['ACRES_SW']
 
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'WHEAT_FALL', 'MNB'] = 153.43 * map_df_aggregated_crops['ACRES']
-
-
-### USED GREELEY VALUES FOR ESTIMATED SEASONAL WATER REQUIREMENTS IN EASTERN CO (IN AC/IN) convert to AC/FT by dividing by 12###
-
-irrigation_efficiency = .905
-
-
-map_df_aggregated_crops['CONSUMPTIVE_USE_AF'] = 0
-
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'GRASS_PASTURE', 'CONSUMPTIVE_USE_AF'] = 25.7 * map_df_aggregated_crops['ACRES']/12/irrigation_efficiency
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'ALFALFA', 'CONSUMPTIVE_USE_AF'] = 37.1 * map_df_aggregated_crops['ACRES']/12/irrigation_efficiency
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'BARLEY', 'CONSUMPTIVE_USE_AF'] = 20.6 * map_df_aggregated_crops['ACRES']/12/irrigation_efficiency
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'CORN', 'CONSUMPTIVE_USE_AF'] = 23.9 * map_df_aggregated_crops['ACRES']/12/irrigation_efficiency
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SMALL_GRAINS', 'CONSUMPTIVE_USE_AF'] = 20.6 * map_df_aggregated_crops['ACRES']/12/irrigation_efficiency
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SORGHUM_GRAIN', 'CONSUMPTIVE_USE_AF'] = 20.9 * map_df_aggregated_crops['ACRES']/12/irrigation_efficiency
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SUGAR_BEETS', 'CONSUMPTIVE_USE_AF'] = 27.1 * map_df_aggregated_crops['ACRES']/12/irrigation_efficiency
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'DRY_BEANS', 'CONSUMPTIVE_USE_AF'] = 15.7 * map_df_aggregated_crops['ACRES']/12/irrigation_efficiency
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'POTATOES', 'CONSUMPTIVE_USE_AF'] = 20.2 * map_df_aggregated_crops['ACRES']/12/irrigation_efficiency
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SUNFLOWER', 'CONSUMPTIVE_USE_AF'] = 22.0 * map_df_aggregated_crops['ACRES']/12/irrigation_efficiency
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'VEGETABLES', 'CONSUMPTIVE_USE_AF'] = 22.7 * map_df_aggregated_crops['ACRES']/12/irrigation_efficiency
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'WHEAT_SPRING', 'CONSUMPTIVE_USE_AF'] = 20.6 * map_df_aggregated_crops['ACRES']/12/irrigation_efficiency
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'WHEAT_FALL', 'CONSUMPTIVE_USE_AF'] = 17.9 * map_df_aggregated_crops['ACRES']/12/irrigation_efficiency
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'WHEAT_FALL', 'MNB'] = 153.43 * map_df_aggregated_crops['ACRES_SW']
 
 ### CALCULATE THE MARGINAL VALUE OF WATER ###
 
 map_df_aggregated_crops['MARGINAL_VALUE_OF_WATER'] = 0
 
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'GRASS_PASTURE', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_AF']
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'ALFALFA', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_AF']
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'BARLEY', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_AF']
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'CORN', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_AF']
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SMALL_GRAINS', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_AF']
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SORGHUM_GRAIN', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_AF']
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SUGAR_BEETS', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_AF']
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'DRY_BEANS', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_AF']
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'POTATOES', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_AF']
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SUNFLOWER', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_AF']
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'VEGETABLES', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_AF']
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'WHEAT_SPRING', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_AF']
-map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'WHEAT_FALL', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_AF']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'GRASS_PASTURE', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_TOTAL']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'ALFALFA', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_TOTAL']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'BARLEY', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_TOTAL']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'CORN', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_TOTAL']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SMALL_GRAINS', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_TOTAL']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SORGHUM_GRAIN', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_TOTAL']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SUGAR_BEETS', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_TOTAL']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'DRY_BEANS', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_TOTAL']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'POTATOES', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_TOTAL']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'SUNFLOWER', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_TOTAL']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'VEGETABLES', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_TOTAL']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'WHEAT_SPRING', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_TOTAL']
+map_df_aggregated_crops.loc[map_df_aggregated_crops['CROP_TYPE'] == 'WHEAT_FALL', 'MARGINAL_VALUE_OF_WATER'] = map_df_aggregated_crops['MNB']/map_df_aggregated_crops['CONSUMPTIVE_USE_TOTAL']
 
 ##### sort by cost ############
 
@@ -432,7 +473,7 @@ irrigation_structure_ids_statemod = pd.Series(map_df_update['StateMod_Structure'
 
 Historical_Irrigation = {}
 
-os.chdir('C:/Users/zacha/Documents/UNC/SP2016_StateMod/SP_update_test/xddparquet_02_06/')
+os.chdir('C:/Users/zacha/Documents/UNC/SP2016_StateMod/SP_update_test/xddparquet_02_22/')
 
 for i in irrigation_structure_ids_statemod:
     try:
@@ -459,13 +500,27 @@ Historical_Irrigation_Shortages = pd.DataFrame()
 for i in irrigation_structure_ids_statemod:
     Historical_Irrigation_Shortages[i] = Historical_Irrigation_Shortage_Sums[i]
 
+## find surface water supplies delivered via statemod ###
 
+Historical_Irrigation_SW_Deliveries = {}
+for i in irrigation_structure_ids_statemod:
+    Historical_Irrigation_SW_Deliveries[i] = Historical_Irrigation[i].groupby('year')['river-priority', 'river-storage','river-other', 'carrier-priority', 'carrier-other'].sum()
+
+Historical_Irrigation_TOTAL_SW_DELIVERIES = {}
+for i in irrigation_structure_ids_statemod:
+    for y in range(1950,2013):
+        Historical_Irrigation_TOTAL_SW_DELIVERIES[i] = Historical_Irrigation_SW_Deliveries[i]['river-priority'] + Historical_Irrigation_SW_Deliveries[i]['river-storage'] + Historical_Irrigation_SW_Deliveries[i]['river-other'] + Historical_Irrigation_SW_Deliveries[i]['carrier-priority'] + Historical_Irrigation_SW_Deliveries[i]['carrier-other']
+
+consumptive_use_check = map_df_aggregated_crops_sorted.groupby('StateMod_Structure')['CONSUMPTIVE_USE_TOTAL'].sum()
+
+SW_Check = {}
+for i in irrigation_structure_ids_statemod:
+    SW_Check[i] = Historical_Irrigation_TOTAL_SW_DELIVERIES[i] - consumptive_use_check[i]
     
 for i in irrigation_structure_ids_statemod:
     plt.plot(Historical_Irrigation_Shortages[i])
     plt.xlabel('Hydrologic Year')
     plt.ylabel('Shortage (AF)')
-    plt.title('Adapted Irrigator Shortages')
     
     
 ### compare to historical statemod run ####
@@ -489,12 +544,13 @@ for i in irrigation_structure_ids_statemod:
     Historical_Irrigation_Shortages_Historical_StateMod[i] = Historical_Irrigation_Historical_StateMod_Shortage_Sums[i]
     
 for i in irrigation_structure_ids_statemod:
+    plt.figure()
     plt.plot(Historical_Irrigation_Shortages_Historical_StateMod[i])
     #plt.set_ylim(),60000)
-    plt.ylim([0, 60000])
+    #plt.ylim([0, 60000])
     plt.xlabel('Hydrologic Year')
     plt.ylabel('Shortage (AF)')
-    plt.title('Historical Irrigator Shortages')    
+    plt.title('Historical Irrigator Shortages ' + str(i))    
     
     
     
@@ -521,7 +577,7 @@ for i in cosnow.Wet_Years_list:
 ### find the year with the highest amt of shortage (driest year) for use to describe two-way option market ###
 muni.Northern_Water_Muni_Shortages.max()
 Driest_Year_str = (muni.Northern_Water_Muni_Shortages.idxmax(0))
-Driest_Year = range(1989,1990)
+Driest_Year = range(1954,1955)
 
 ### find the structure ids that are recieving water >0, include them in the market ####
 
@@ -537,7 +593,7 @@ for i in irrigation_structure_ids_statemod:
 
 consumptive_use_by_structure_v2 = {}
 for y in range(1950,2013):
-      consumptive_use_by_structure_v2[y] = map_df_aggregated_crops.groupby(['StateMod_Structure'], as_index=True)['CONSUMPTIVE_USE_AF'].sum()
+      consumptive_use_by_structure_v2[y] = map_df_aggregated_crops.groupby(['StateMod_Structure'], as_index=True)['CONSUMPTIVE_USE_TOTAL'].sum()
     
  
     
@@ -625,14 +681,14 @@ for y in range(1950,2013):
         #use_of_water = pd.DataFrame()
         water_avail_dry_year = muni.Northern_Water_Muni_Shortages['Shortage'].loc[y]
         for crop in reversed(range(len(irrigation_set_dry))):
-            if water_avail_dry_year > irrigation_set_dry['CONSUMPTIVE_USE_AF'].iloc[crop]:
-                use = irrigation_set_dry['CONSUMPTIVE_USE_AF'].iloc[crop]
+            if water_avail_dry_year > irrigation_set_dry['CONSUMPTIVE_USE_TOTAL'].iloc[crop]:
+                use = irrigation_set_dry['CONSUMPTIVE_USE_TOTAL'].iloc[crop]
             else:
                 use = max(water_avail_dry_year, 0)
             irrigation_set_dry['POSSIBLEMUNIUSAGE'].iloc[crop] = use
                 
                 
-            water_avail_dry_year -= irrigation_set_dry['CONSUMPTIVE_USE_AF'].iloc[crop]
+            water_avail_dry_year -= irrigation_set_dry['CONSUMPTIVE_USE_TOTAL'].iloc[crop]
         year_df = pd.concat([year_df, irrigation_set_dry])
                           
     uses_of_water_dry[y] = year_df   
@@ -641,8 +697,8 @@ for y in range(1950,2013):
 irrigation_uses_by_year_dry = {}
 consumptive_use_by_structure = {}
 for y in range(1950,2013):
-    irrigation_uses_by_year_dry[y] = uses_of_water_dry[y].groupby(['CROP_TYPE'], as_index=False)['CONSUMPTIVE_USE_AF'].sum()
-    consumptive_use_by_structure[y] = uses_of_water_dry[y].groupby(['StateMod_Structure'], as_index=False)['CONSUMPTIVE_USE_AF'].sum()
+    irrigation_uses_by_year_dry[y] = uses_of_water_dry[y].groupby(['CROP_TYPE'], as_index=False)['CONSUMPTIVE_USE_TOTAL'].sum()
+    consumptive_use_by_structure[y] = uses_of_water_dry[y].groupby(['StateMod_Structure'], as_index=False)['CONSUMPTIVE_USE_TOTAL'].sum()
 
 years = pd.Series(range(1950,2013))
 years = years.astype(str)
@@ -656,17 +712,17 @@ for i in irrigation_structure_ids_dry:
         water_avail_dry_year = muni.Northern_Water_Muni_Shortages['Shortage'].loc[y]
         for crop in reversed(range(len(irrigation_set))):
             if water_avail_dry_year > 0:
-                water_avail_dry_year -= irrigation_set['CONSUMPTIVE_USE_AF'].iloc[crop]
+                water_avail_dry_year -= irrigation_set['CONSUMPTIVE_USE_TOTAL'].iloc[crop]
                 if (water_avail_dry_year <= 0):
-                    # print(water_avail)
-                    # print(crop)
-                    # print(irrigation_set['TOTAL_COST'].iloc[crop])
-                    values_of_water[str(y)] = irrigation_set['MARGINAL_VALUE_OF_WATER'].iloc[crop]
-                else:
-                    values_of_water[str(y)] = irrigation_set['MARGINAL_VALUE_OF_WATER'].iloc[crop]                    
-                    #print(y)
-                    #print(crop)
-    #value_of_water[i] = values_of_water.fillna(irrigation_set['TOTAL_COST'].iloc[-1], inplace=True)               
+                #     # print(water_avail)
+                #     # print(crop)
+                #     # print(irrigation_set['TOTAL_COST'].iloc[crop])
+                #     values_of_water[str(y)] = irrigation_set['MARGINAL_VALUE_OF_WATER'].iloc[crop]
+                # else:
+                #     values_of_water[str(y)] = irrigation_set['MARGINAL_VALUE_OF_WATER'].iloc[crop]                    
+                #     #print(y)
+                #     #print(crop)
+                    value_of_water[i] = values_of_water.fillna(irrigation_set['MARGINAL_VALUE_OF_WATER'].iloc[-1], inplace=True)               
     value_of_water[i] = values_of_water
 
 structures_by_yearly_water_value = pd.DataFrame()
@@ -694,7 +750,7 @@ map_df_update2 = gpd.GeoDataFrame(map_df_update2)
 
 ### make the dry year market map ###
 
-for i in range(1989,1990):
+for i in range(1950,2013):
     # create the colorbar
     norm1 = colors.Normalize(vmin=map_df_update2['value_1989_dry'].min(), vmax=map_df_update2['value_1989_dry'].max())
     cbar = plt.cm.ScalarMappable(norm=norm1, cmap='jet')
@@ -707,11 +763,11 @@ for i in range(1989,1990):
     northern_water_boundary[['geometry']].plot(facecolor="none", edgecolor="black",linewidth=.8, label ="Northern Water Boundary", legend = True,  ax=ax)
     ax_cbar = fig.colorbar(cbar, ax=ax)
     # add label for the colorbar
-    ax_cbar.set_label(label='Marginal Value of Water/AF ($)',size = 15, weight='bold')
+    ax_cbar.set_label(label='Marginal Value of Water ($/AF)',size = 15, weight='bold')
     #plt.legend(loc="upper right")
     ax.axis('off')
     ax.grid (False)
-    ax.set_title('South Platte Two-Way Option Market in Driest Hydrologic Year',fontsize=20, weight='bold')
+    #ax.set_title('South Platte Two-Way Option Market in Driest Hydrologic Year',fontsize=20, weight='bold')
     src_basemap = cx.providers.Stamen.Terrain
     cx.add_basemap( ax, source=src_basemap, crs = map_df_update2.crs )
     plt.tight_layout()
@@ -726,7 +782,7 @@ for y in range(1950,2013):
 
 for i in cosnow.Dry_Years_list:
     irrigation_uses_by_year_dry[i] = irrigation_uses_by_year_dry[i].sort_values(by=['MARGINAL_VALUE_OF_WATER'], ascending=True)
-    irrigation_uses_by_year_dry[i] = irrigation_uses_by_year_dry[i][irrigation_uses_by_year_dry[i]['CONSUMPTIVE_USE_AF'] != 0]
+    irrigation_uses_by_year_dry[i] = irrigation_uses_by_year_dry[i][irrigation_uses_by_year_dry[i]['CONSUMPTIVE_USE_TOTAL'] != 0]
 
 ### need to subtract shortage value from highest valued crop in driest year ####
 
@@ -739,20 +795,20 @@ for i in range(1950,2013):
         #use_of_water = pd.DataFrame()
     water = 0
     for crop in (range(len(irrigation_uses_by_year_dry[i]))):  
-        water += irrigation_uses_by_year_dry[i]['CONSUMPTIVE_USE_AF'].iloc[crop]
+        water += irrigation_uses_by_year_dry[i]['CONSUMPTIVE_USE_TOTAL'].iloc[crop]
         print(water)
 
         irrigation_uses_by_year_dry[i]['CUM_USAGE'].iloc[crop] = water 
 
-for i in range(1989,1990):
-    fig, ax1 = plt.subplots(figsize=(7,5))
-    #ax2=ax1.twinx()
-    #sns.barplot(x='USAGE', y='TOTAL_COST', data=irrigation_uses_by_year_wet[i],ax=ax1)
-    ax1.set_title('South Platte Two-Way Option Market in Driest Hydrologic Year', fontsize=10, weight='bold')
-    plt.xlabel('Available Water Supply (AF)')
-    plt.ylabel('$/AF')
-    sns.lineplot(x='CUM_USAGE',y='MARGINAL_VALUE_OF_WATER', data=irrigation_uses_by_year_dry[i], ax=ax1)
-    plt.show()
+# for i in range(1989,1990):
+#     fig, ax1 = plt.subplots(figsize=(7,5))
+#     #ax2=ax1.twinx()
+#     #sns.barplot(x='USAGE', y='TOTAL_COST', data=irrigation_uses_by_year_wet[i],ax=ax1)
+#     ax1.set_title('South Platte Two-Way Option Market in Driest Hydrologic Year', fontsize=10, weight='bold')
+#     plt.xlabel('Available Water Supply (AF)')
+#     plt.ylabel('$/AF')
+#     #sns.lineplot(x='CUM_USAGE',y='MARGINAL_VALUE_OF_WATER', data=irrigation_uses_by_year_dry[i], ax=ax1)
+#     plt.show()
 
 ## make supply functions
     
@@ -807,9 +863,9 @@ for i in range(1989,1990):
      for index, row in irrigation_uses_by_year_dry[i].iterrows():
        #get total irrigated acreage (in thousand acres) for all listed crops
        if row['CROP_TYPE'] in overall_crop_areas:
-         overall_crop_areas[row['CROP_TYPE']] += row['CONSUMPTIVE_USE_AF'] / 1000.0
+         overall_crop_areas[row['CROP_TYPE']] += row['CONSUMPTIVE_USE_TOTAL'] / 1000.0
        else:
-         overall_crop_areas[row['CROP_TYPE']] = row['CONSUMPTIVE_USE_AF'] / 1000.0
+         overall_crop_areas[row['CROP_TYPE']] = row['CONSUMPTIVE_USE_TOTAL'] / 1000.0
          
      # #crop marginal net benefits ($/acre) come from enterpirse budget reports from the CSU ag extension
      marginal_value_of_water = {}
@@ -846,10 +902,10 @@ for i in range(1989,1990):
        #make sure y ticklabels line up with break points
        ax.set_yticks([0.0, 100.0, 200.0, 300.0, 400.0])
        ax.set_yticklabels(['$0', '$100', '$200', '$300', '$400'])
-       ax.set_ylabel('Marginal Value of Water/AF', fontsize = 42, weight = 'bold', fontname = 'Gill Sans MT')
+       ax.set_ylabel('Marginal Value of Water ($/AF)', fontsize = 42, weight = 'bold', fontname = 'Gill Sans MT')
        ax.set_xlabel('Irrigation Water Supply (tAF)', fontsize = 42, weight = 'bold', fontname = 'Gill Sans MT')
        ax.set_ylim([0.0, 400.0])
-       ax.set_xlim([0, 1100.0])
+       ax.set_xlim([0, 1000.0])
        ax.legend(loc = 'upper right', prop={'size':12})
        #ax.set_xlim([0, running_area * 1.05])
      for item in (ax.get_xticklabels()):
@@ -881,14 +937,14 @@ for y in range(1950,2013):
         #use_of_water = pd.DataFrame()
         water_avail_wet_year = Historical_Irrigation_Shortage_Sums[i][y]
         for crop in reversed(range(len(irrigation_set_wet))):
-            if water_avail_wet_year > irrigation_set_wet['CONSUMPTIVE_USE_AF'].iloc[crop]:
-                use = irrigation_set_wet['CONSUMPTIVE_USE_AF'].iloc[crop]
+            if water_avail_wet_year > irrigation_set_wet['CONSUMPTIVE_USE_TOTAL'].iloc[crop]:
+                use = irrigation_set_wet['CONSUMPTIVE_USE_TOTAL'].iloc[crop]
             else:
                 use = max(water_avail_wet_year, 0)
             irrigation_set_wet['USAGE'].iloc[crop] = use
                 
                 
-            water_avail_wet_year -= irrigation_set_wet['CONSUMPTIVE_USE_AF'].iloc[crop]
+            water_avail_wet_year -= irrigation_set_wet['CONSUMPTIVE_USE_TOTAL'].iloc[crop]
         year_df = pd.concat([year_df, irrigation_set_wet])
                           
     uses_of_water_wet[y] = year_df     
@@ -902,7 +958,7 @@ for i in irrigation_structure_ids_statemod:
         water_avail_wet_year = Historical_Irrigation_Shortage_Sums[i][y]
         for crop in reversed(range(len(irrigation_set_wet))):
             if water_avail_wet_year > 0:
-                water_avail_wet_year -= irrigation_set_wet['CONSUMPTIVE_USE_AF'].iloc[crop]
+                water_avail_wet_year -= irrigation_set_wet['CONSUMPTIVE_USE_TOTAL'].iloc[crop]
                 if (water_avail_wet_year <= 0):
                     # print(water_avail)
                     # print(crop)
@@ -925,7 +981,7 @@ irrigation_uses_by_year_wet = {}
 consumptive_use_by_structure_wet = {}
 for y in range(1950,2013):
     irrigation_uses_by_year_wet[y] = uses_of_water_wet[y].groupby(['CROP_TYPE'], as_index=False)['USAGE'].sum()
-    consumptive_use_by_structure_wet[y] = uses_of_water_wet[y].groupby(['StateMod_Structure'], as_index=False)['CONSUMPTIVE_USE_AF'].sum()
+    consumptive_use_by_structure_wet[y] = uses_of_water_wet[y].groupby(['StateMod_Structure'], as_index=False)['CONSUMPTIVE_USE_TOTAL'].sum()
 
 
 
@@ -969,10 +1025,10 @@ for i in range(1950,2013):
     northern_water_boundary[['geometry']].plot(facecolor="none", edgecolor="black",linewidth=.8, ax=ax)
     ax_cbar = fig.colorbar(cbar, ax=ax)
     # add label for the colorbar
-    ax_cbar.set_label(label='Potential Irrigable Land Revenue/AF ($)',size = 15, weight='bold')
+    ax_cbar.set_label(label='Marginal Value of Water ($/AF)',size = 15, weight='bold')
     ax.axis('off')
     ax.grid (False)
-    ax.set_title('South Platte Two-Way Option Market in a Wet Hydrologic Year' ,fontsize=20, weight='bold')
+    #ax.set_title('South Platte Two-Way Option Market in a Wet Hydrologic Year' ,fontsize=20, weight='bold')
     # src_basemap = cx.providers.Stamen.Terrain
     # cx.add_basemap( ax, source=src_basemap, alpha=0.6, zorder=8, crs = map_df.crs )
     plt.tight_layout()
@@ -1005,15 +1061,15 @@ for i in range(1950,2013):
 
         irrigation_uses_by_year_wet[i]['CUM_USAGE'].iloc[crop] = water 
 
-for i in range(1950,2013):
-    fig, ax1 = plt.subplots(figsize=(7,5))
-    #ax2=ax1.twinx()
-    #sns.barplot(x='USAGE', y='TOTAL_COST', data=irrigation_uses_by_year_wet[i],ax=ax1)
-    ax1.set_title('South Platte Two-Way Option Market in Wet Hydrologic Year', fontsize=10, weight='bold')
-    plt.xlabel('Available Water Supply (AF)')
-    plt.ylabel('$/AF')
-    sns.lineplot(x='CUM_USAGE',y='MARGINAL_VALUE_OF_WATER', data=irrigation_uses_by_year_wet[i], ax=ax1)
-    plt.show() 
+# for i in range(1950,2013):
+#     fig, ax1 = plt.subplots(figsize=(7,5))
+#     #ax2=ax1.twinx()
+#     #sns.barplot(x='USAGE', y='TOTAL_COST', data=irrigation_uses_by_year_wet[i],ax=ax1)
+#     ax1.set_title('South Platte Two-Way Option Market in Wet Hydrologic Year', fontsize=10, weight='bold')
+#     plt.xlabel('Available Water Supply (AF)')
+#     plt.ylabel('$/AF')
+#     #sns.lineplot(x='CUM_USAGE',y='MARGINAL_VALUE_OF_WATER', data=irrigation_uses_by_year_wet[i], ax=ax1)
+#     plt.show() 
     
     
     
@@ -1028,7 +1084,7 @@ for i in range(1950,2013):
         #use_of_water = pd.DataFrame()
     water = 0
     for crop in (range(len(irrigation_uses_by_year_dry[i]))):  
-        water += irrigation_uses_by_year_dry[i]['CONSUMPTIVE_USE_AF'].iloc[crop]
+        water += irrigation_uses_by_year_dry[i]['CONSUMPTIVE_USE_TOTAL'].iloc[crop]
         print(water)
 
         irrigation_uses_by_year_dry[i]['CUM_USAGE'].iloc[crop] = water 
@@ -1230,10 +1286,10 @@ for i in range(1950,2013):
       #make sure y ticklabels line up with break points
       ax.set_yticks([0.0, 100.0, 200.0, 300.0, 400.0])
       ax.set_yticklabels(['$0', '$100', '$200', '$300', '$400'])
-      ax.set_ylabel('Marginal Value of Water/AF', fontsize = 42, weight = 'bold', fontname = 'Gill Sans MT')
+      ax.set_ylabel('Marginal Value of Water ($/AF)', fontsize = 42, weight = 'bold', fontname = 'Gill Sans MT')
       ax.set_xlabel('Irrigation Water Demand (tAF)', fontsize = 42, weight = 'bold', fontname = 'Gill Sans MT')
       ax.set_ylim([0.0, 400.0])
-      ax.set_xlim([0, 200.0])
+      ax.set_xlim([0, 310.0])
       ax.legend(prop={'size':20})
       #ax.set_xlim([0, running_area * 1.05])
     for item in (ax.get_xticklabels()):
