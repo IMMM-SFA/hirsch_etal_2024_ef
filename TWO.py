@@ -15,6 +15,47 @@ import statemod_sp_adapted as muni
 import matplotlib.colors as colors
 import extract_ipy_southplatte as ipy
 import sp_irrigation_final as spirr
+import seaborn as sns
+from scipy.stats import norm
+
+## import CBI ###
+
+os.chdir('C:/Users/zacha/Documents/UNC/SP2016_StateMod/')
+CBI = pd.read_csv('cbi_timeseries.csv', header= None)
+CBI.columns =['date', 'snowpack', 'diversion', 'storage', 'cbi']
+CBI['date'] = pd.to_datetime(CBI["date"])
+CBI.index = CBI['date']
+CBI['year'] = CBI.index.year
+
+plt.figure()
+plt.plot(CBI['cbi'])
+#plt.title('CBI')
+plt.xlabel('Hydrologic Year')
+plt.ylabel('CBI (tAF)')
+
+CBI_Yearly = CBI.groupby('year').mean()['cbi']
+
+plt.figure()
+plt.plot(CBI_Yearly)
+# plt.axhline(y = 550, color = 'r', linestyle = 'dashed')
+# plt.axhline(y = 600, color = 'r', linestyle = 'dashed')
+# plt.axhline(y = 650, color = 'r', linestyle = 'dashed')
+# plt.axhline(y = 700, color = 'r', linestyle = 'dashed')
+plt.axhline(y = 775, color = 'r', linestyle = 'dashed', label = '')
+#plt.axhline(y = 675, color = 'g', linestyle = 'dashed')
+plt.xlabel('Hydrologic Year')
+plt.ylabel('CBI (tAF)')
+
+CBI_S4 = CBI_Yearly.loc[CBI_Yearly <= 575]
+CBI_S3 = CBI_Yearly.loc[CBI_Yearly <= 625]
+CBI_S2 = CBI_Yearly.loc[CBI_Yearly <= 675]
+CBI_S1 = CBI_Yearly.loc[CBI_Yearly <= 725]
+CBI_S0 = CBI_Yearly.loc[CBI_Yearly <= 775]
+
+CBI_Surplus = CBI_Yearly.loc[CBI_Yearly >= 800]
+
+
+
 
 ### import lake granby data ############
 
@@ -33,8 +74,33 @@ plt.ylabel('Spill (AF)')
 plt.title('Lake Granby')
 plt.xlim([1950, 2012])
 
+Wet_Year_Triggers = Granby_Spills.loc[Granby_Spills > 0]
 
-os.chdir('C:/Users/zacha/Documents/UNC/SP2016_StateMod/SP_update_test/xddparquet_02_22')
+Wet_Years = pd.DataFrame(index=range(1950,2013))
+Wet_Years['value'] = 0
+
+for i in Wet_Year_Triggers.index:
+    Wet_Years['value'].loc[i] = Wet_Year_Triggers[i]
+    
+        
+        
+# ## import south platte reservoir data ###
+
+# os.chdir('C:/Users/zacha/Documents/UNC/SP2016_StateMod/historicalbaseline/xreparquet_update/')
+# Boulder_Reservoir_Data = pd.read_parquet('0504515+.parquet', engine = 'pyarrow')
+# Boulder = Boulder_Reservoir_Data[Boulder_Reservoir_Data['account'] == 0]
+
+# Boulder_Spills = Boulder.groupby('year').sum()['spill']
+
+# plt.figure()
+# plt.plot(Boulder_Spills)
+# plt.xlabel('Hydrologic Year')
+# plt.ylabel('Spill (AF)')
+# plt.title('Boulder Reservoir')
+# plt.xlim([1950, 2012])
+
+
+os.chdir('C:/Users/zacha/Documents/UNC/SP2016_StateMod/SP_update_test/xddparquet_03_21')
 
 ThorntonIndoor = pd.read_parquet('02_Thorn_I.parquet', engine='pyarrow')
 ThorntonOutdoor = pd.read_parquet('02_Thorn_O.parquet', engine='pyarrow')
@@ -291,6 +357,25 @@ plt.title('Northern Water Municipal Shortages')
 Northern_Water_Muni_Shortages.max()
 Driest_Year = int(Northern_Water_Muni_Shortages.idxmax(0))
 
+Dry_Year_Triggers_v2 = CBI_S2.index
+
+Dry_Years = pd.DataFrame(index=range(1950,2013))
+Dry_Years['value'] = 0
+
+for i in Dry_Year_Triggers_v2:
+    Dry_Years['value'].loc[i] = Northern_Water_Muni_Shortages['Shortage'].loc[Northern_Water_Muni_Shortages.index == i]
+
+#Dry_Year_Triggers = Northern_Water_Muni_Shortages['Shortage'].loc[Northern_Water_Muni_Shortages['Shortage'] > 1100]
+#Dry_Year_Triggers = CBI_S2
+
+
+
+# Dry_Years = pd.DataFrame(index=range(1950,2013))
+# Dry_Years['value'] = 0
+
+# for i in Dry_Year_Triggers.index:
+#     Dry_Years['value'].loc[i] = Dry_Year_Triggers[i]
+
 ### dry year two-way option ####
 
 dry_year_two_dict = {}
@@ -299,7 +384,11 @@ for y in range(1950,2013):
     dry_year_two = pd.DataFrame()
     irrigation_set_dry_two = spirr.irrigation_uses_by_year_dry[y]
     irrigation_set_dry_two['MUNIUSAGE'] = 0
-    water_avail_dry_year = muni.Northern_Water_Muni_Shortages['Shortage'].loc[y]
+    if CBI_Yearly.loc[y] <= 675:
+    #if muni.Northern_Water_Muni_Shortages['Shortage'].loc[y] > 1100:
+        water_avail_dry_year = muni.Northern_Water_Muni_Shortages['Shortage'].loc[y]
+    else:
+        water_avail_dry_year = 0
     for crop in range(len(irrigation_set_dry_two)):
         if water_avail_dry_year > irrigation_set_dry_two['CONSUMPTIVE_USE_TOTAL'].iloc[crop]:
             use = irrigation_set_dry_two['CONSUMPTIVE_USE_TOTAL'].iloc[crop]
@@ -324,16 +413,35 @@ dry_year_max_payout_df = pd.DataFrame.from_dict(dry_year_max_payout, orient ='in
 dry_year_max_payout_df['payout'] = dry_year_max_payout_df[0]
 dry_year_max_payout_series = pd.Series(dry_year_max_payout_df[0])
 dry_year_max_payout_list = dry_year_max_payout_series.to_list()
+
 plt.figure()
 plt.plot(dry_year_max_payout_df)
 plt.xlabel('Hydrologic Year')
 plt.ylabel('Dry Year Payout($)')
 
+
+fig, ax1 = plt.subplots() 
+
+#plt.title('Dry Year - TWO')   
+ax1.set_xlabel('Hydrologic Year') 
+ax1.set_ylabel('Value of Re-allocated Water ($)', color = 'lightgreen') 
+ax1.plot(dry_year_max_payout_df.index, dry_year_max_payout_df , color = 'blue', linewidth = 4) 
+ax1.tick_params(axis ='y', labelcolor = 'lightgreen') 
+ax2 = ax1.twinx() 
+  
+ax2.set_ylabel('Water Re-allocated (AF)', color = 'blue') 
+ax2.plot(Dry_Years.index, Dry_Years , color = 'lightgreen', linestyle = 'dashed', linewidth = 2) 
+ax2.tick_params(axis ='y', labelcolor = 'blue') 
+
 dry_year_avg_payout = dry_year_max_payout_df.mean()
+
 
 # ### wet-year two-way option ###
 
-muni_surplus_water = 6406
+muni_surplus_water = 7690
+
+for i in Wet_Year_Triggers.index:
+    Wet_Years['value'].loc[i] = muni_surplus_water
 
 wet_year_two_dict = {}
 
@@ -341,7 +449,10 @@ for y in range(1950,2013):
     wet_year_two = pd.DataFrame()
     irrigation_set_wet_two = spirr.irrigation_uses_by_year_wet[y]
     irrigation_set_wet_two['MUNISURPLUS'] = 0
-    water_avail_wet_year = muni_surplus_water
+    if Granby_Spills.loc[y] > 0:
+        water_avail_wet_year = muni_surplus_water
+    else:
+        water_avail_wet_year = 0
     for crop in range(len(irrigation_set_wet_two)):
         if water_avail_wet_year > irrigation_set_wet_two['USAGE'].iloc[crop]:
             use = irrigation_set_wet_two['USAGE'].iloc[crop]
@@ -378,6 +489,50 @@ plt.title('Scenario 1')
 plt.xlabel('Hydrologic Year')
 plt.ylabel('Wet Year Payout($)')
 
+fig, ax1 = plt.subplots() 
+
+plt.title('Wet Years - TWO (Scenario 1)')   
+ax1.set_xlabel('Hydrologic Year') 
+ax1.set_ylabel('Ag-to-Urban Payment ($)', color = 'lightgreen') 
+ax1.plot(wet_year_max_payout_df_s1.index, wet_year_max_payout_df_s1, color = 'blue', linewidth = 4) 
+ax1.tick_params(axis ='y', labelcolor = 'lightgreen') 
+ax2 = ax1.twinx() 
+  
+ax2.set_ylabel('Water Re-allocated (AF)', color = 'blue') 
+ax2.plot(Wet_Years.index, Wet_Years , color = 'lightgreen', linestyle = 'dashed', linewidth = 2) 
+ax2.tick_params(axis ='y', labelcolor = 'blue') 
+
+
+# fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+# fig.subplots_adjust(hspace=0.05)  # adjust space between axes
+
+# # plot the same data on both axes
+# ax1.plot(wet_year_max_payout_df_s1.index, wet_year_max_payout_df_s1, color = 'blue', linewidth = 4) 
+# ax2.plot(wet_year_max_payout_df_s1.index, wet_year_max_payout_df_s1, color = 'blue', linewidth = 4) 
+# # zoom-in / limit the view to different portions of the data
+# ax1.set_ylim(7070, 7100)  # outliers only
+# ax2.set_ylim(0, 225)  # most of the data
+
+# # hide the spines between ax and ax2
+# ax1.spines.bottom.set_visible(False)
+# ax2.spines.top.set_visible(False)
+# #ax1.xaxis.tick_top()
+# ax1.tick_params(labeltop=False)  # don't put tick labels at the top
+# ax2.xaxis.tick_bottom()
+
+
+# d = .5  # proportion of vertical to horizontal extent of the slanted line
+# kwargs = dict(marker=[(-1, -d), (1, d)], markersize=12,
+#               linestyle="none", color='k', mec='k', mew=1, clip_on=False)
+# ax1.plot([0, 1], [0, 0], transform=ax1.transAxes, **kwargs)
+# ax2.plot([0, 1], [1, 1], transform=ax2.transAxes, **kwargs)
+
+
+
+
+
+
+
 wet_year_avg_payout_s1 = wet_year_max_payout_df_s1.mean()
 
 wet_year_max_payout_df_s2 = pd.DataFrame.from_dict(wet_year_max_payout_s2, orient ='index')
@@ -390,6 +545,19 @@ plt.title('Scenario 2')
 plt.xlabel('Hydrologic Year')
 plt.ylabel('Wet Year Payout($)')
 
+fig, ax1 = plt.subplots() 
+
+plt.title('Wet Years - TWO (Scenario 2)') 
+ax1.set_xlabel('Hydrologic Year') 
+ax1.set_ylabel('Ag-to-Urban Payment ($)', color = 'lightgreen') 
+ax1.plot(wet_year_max_payout_df_s2.index, wet_year_max_payout_df_s2, color = 'blue', linewidth = 4) 
+ax1.tick_params(axis ='y', labelcolor = 'lightgreen') 
+ax2 = ax1.twinx() 
+  
+ax2.set_ylabel('Water Re-allocated (AF)', color = 'blue') 
+ax2.plot(Wet_Years.index, Wet_Years , color = 'lightgreen', linestyle = 'dashed', linewidth = 2) 
+ax2.tick_params(axis ='y', labelcolor = 'blue') 
+
 wet_year_avg_payout_s2 = wet_year_max_payout_df_s2.mean()
 
 ##########################################################################
@@ -399,14 +567,18 @@ wet_year_avg_payout_s2 = wet_year_max_payout_df_s2.mean()
 
 ## lam is set to 0.25 unless otherwise specified (risk adjustment)
 ## df should be dataframe with payout per year 
-def wang_slim(payouts, lam = 0.25, contract = 'call', from_user = False):  
+## modified slightly -- from user = False means that it is from the insurer's perspective
+def wang_slim(payouts, lam = 0.25, contract = 'put', from_user = False):  
   if from_user == True: 
+      ## switch the signs because you are feeding a negative value where the payout occurs
+      ## all other values are zero
       payouts = -payouts
   if contract == 'put': 
       lam = -abs(lam)
   unique_pays = pd.DataFrame()
   unique_pays['unique'] = payouts.payout.unique()
-  unique_pays['prob'] = 0 
+  #print(unique_pays['unique'])
+  unique_pays['payment probability'] = 0 
   for j in range(len(unique_pays)):  
       count = 0
       val = unique_pays['unique'].iloc[j]
@@ -414,38 +586,257 @@ def wang_slim(payouts, lam = 0.25, contract = 'call', from_user = False):
           if payouts['payout'].iloc[i] == val: 
               count += 1
     #  print(count)
-      unique_pays['prob'].iloc[j] = count/len(payouts)
+      unique_pays['payment probability'].iloc[j] = count/len(payouts)
+      #print(unique_pays)
       
   unique_pays.sort_values(inplace=True, by='unique')
-  dum = unique_pays['prob'].cumsum()  # asset cdf
-  dum = st.norm.cdf(st.norm.ppf(dum) + lam)  # risk transformed payout cdf
-  dum = np.append(dum[0], np.diff(dum))  # risk transformed asset pdf
-  prem = (dum * unique_pays['unique']).sum()
-  print(prem)
+  #print(unique_pays)
+  dum1 = unique_pays['payment probability'].cumsum()  # asset cdf
+  #print(dum1)
+  plt.figure()
+  #plt.plot(unique_pays['unique'], dum1)
+  plt.xlabel('payment probability')
+  plt.ylabel('Density')
+  #sns.kdeplot(dum, color = 'blue')
+  dum2 = st.norm.cdf(st.norm.ppf(dum1) + lam)  # risk transformed payout cdf
+  #plt.plot(unique_pays['unique'], dum2)
+  print(dum2)
+  #sns.kdeplot(dum, color ='red')
+  dum3 = np.append(dum2[0], np.diff(dum2))  # risk transformed asset pdf
+  print(dum3)
+  #print(dum3)
+  sns.kdeplot(dum3, color ='green')
+  plt.xlim(0,1)
+  
+  prem = (dum3 * unique_pays['unique']).sum()
+  #print(prem)
+  #sns.kdeplot(prem, color ='blue')
+  #sns.kdeplot(prem, color = 'red')
+  #print(prem)
   payouts.sort_index(inplace=True)
 
-  if from_user == False: 
-      whole = (payouts['payout'] - prem)
-  else: 
-      payouts.sort_index(inplace=True)
+  if from_user == True: 
+     ## want the insurer's perspective
       whole = (prem - payouts['payout'])
+
+  else: 
+#      payouts.sort_index(inplace=True)
+     whole = (payouts['payout'] - prem)
+
   
   return prem, whole
 
-dry_year_prems, dry_year_whole = wang_slim(dry_year_max_payout_df, lam = 0.25, contract = 'call', from_user = False)
-wet_year_s1_prems, wet_year_s1_whole = wang_slim(wet_year_max_payout_df_s1, lam = 0.25, contract = 'call', from_user = False)
-wet_year_s2_prems, wet_year_s2_whole = wang_slim(wet_year_max_payout_df_s2, lam = 0.25, contract = 'call', from_user = False)
+dry_year_prems, dry_year_whole = wang_slim(dry_year_max_payout_df, lam = 0.25, \
+                                           contract = 'call', from_user = True)
+print(dry_year_max_payout_df['payout'].mean())
+print(dry_year_prems)
+print((dry_year_prems + dry_year_max_payout_df['payout']).mean())
+print(dry_year_whole.mean())
+wet_year_s1_prems, wet_year_s1_whole = wang_slim(wet_year_max_payout_df_s1, \
+                                                 lam = 0.25, contract = 'call',\
+                                                     from_user = True)
+wet_year_s2_prems, wet_year_s2_whole = wang_slim(wet_year_max_payout_df_s2, \
+                                                 lam = 0.25, contract = 'call', \
+                                                     from_user = True)
 
 
+    
+    
+    
+    
+    
 plt.plot(dry_year_whole)
+
+dry_year_whole_avg = dry_year_whole.mean()
+
 plt.plot(wet_year_s1_whole)
 plt.plot(wet_year_s2_whole)
 
 premiums_s1 = dry_year_prems + wet_year_s1_prems
+
 premiums_s2 = dry_year_prems + wet_year_s2_prems
 
-premiums_s1_peraf = (dry_year_prems + wet_year_s1_prems)/muni_surplus_water
-premiums_s2_peraf = (dry_year_prems + wet_year_s2_prems)/muni_surplus_water
+
+Dry_Year_Total_Water_Reallocated = Dry_Years['value'].sum()
+Dry_Year_Total_Premiums = dry_year_prems*len(dry_year_max_payout_df)
+
+Dry_Year_Average_Premium = Dry_Year_Total_Premiums/Dry_Year_Total_Water_Reallocated
+
+
+
+Wet_Year_Total_Water_Reallocated = Wet_Years['value'].sum()
+Wet_Year_S1_Total_Premiums = wet_year_s1_prems*len(wet_year_max_payout_series_s1)
+Wet_Year_S2_Total_Premiums = wet_year_s2_prems*len(wet_year_max_payout_series_s2)
+
+Wet_Year_S1_Average_Premium = Wet_Year_S1_Total_Premiums/Wet_Year_Total_Water_Reallocated
+Wet_Year_S2_Average_Premium = Wet_Year_S2_Total_Premiums/Wet_Year_Total_Water_Reallocated
+
+
+S1_Fixed_Cost = 0
+S1_Diff = wet_year_s1_prems - S1_Fixed_Cost
+
+S2_Fixed_Cost = 0
+S2_Diff = wet_year_s2_prems - S2_Fixed_Cost
+
+S1_Exercise = pd.Series(index=range(1950,2013))
+for i in range(1950,2013):
+    if i in Wet_Year_Triggers:
+       S1_Exercise[i] = (S1_Diff/(Wet_Years['value'].loc[i]))
+    else:
+       S1_Exercise[i] = 0
+
+S2_Exercise = pd.Series(index=range(1950,2013))
+for i in range(1950,2013):
+    if i in Wet_Year_Triggers:
+       S2_Exercise[i] = (S2_Diff/(Wet_Years['value'].loc[i]))
+    else:
+       S2_Exercise[i] = 0
+
+
+dry_year_fixed = -dry_year_prems/2
+        
+Dry_Year_Exercise = pd.Series(index=range(1950,2013))
+for i in range(1950,2013):
+    if i in Dry_Year_Triggers:
+       Dry_Year_Exercise[i] = (dry_year_fixed/(Dry_Years['value'].loc[i]))
+       print(Dry_Years['value'][i])
+    else:
+       Dry_Year_Exercise[i] = 0
+    print(Dry_Year_Exercise[i])
+
+Dry_Year_total_dollars = Dry_Year_Exercise*Dry_Years['value']
+plt.figure()
+plt.plot(-dry_year_prems)
+
+   
+
+    
+
+#prem = b (AF) + fixed
+
+
+
+
+S1_Premium = -(Dry_Year_Average_Premium + Wet_Year_S1_Average_Premium)
+S2_Premium = -(Dry_Year_Average_Premium + Wet_Year_S2_Average_Premium)
+
+
+
+
+S1 = pd.DataFrame(index=range(1950,2013))
+S1['premium'] = 0
+
+for i in S1.index:
+    S1['premium'].loc[i] = S1_Premium
+S1['premium'] = S1['premium'].fillna(0)
+    
+S2 = pd.DataFrame(index=range(1950,2013))
+S2['premium'] = 0
+
+for i in S2.index:
+    S2['premium'].loc[i] = S2_Premium
+S2['premium'] = S2['premium'].fillna(0)
+
+DryYear = pd.DataFrame(index=range(1950,2013))
+DryYear['premium'] = 0   
+
+for i in DryYear.index:
+    DryYear['premium'].loc[i] = -(Dry_Year_Average_Premium)
+DryYear['premium'] = DryYear['premium'].fillna(0)
+
+#from Brian MacPherson email, C-BT units currently selling for $75,000/unit = $97,500/AF
+
+CBT_Water_Right = 97500
+
+## annualized at 30yrs, 6% interest, $97500 for CBT unit ###
+Annualized_Perm_Right_Cost = 7083.27
+
+Annualized_Perm_Right = pd.DataFrame(index=range(1950,2013))
+Annualized_Perm_Right['premium'] = 0
+
+for i in Annualized_Perm_Right.index:
+    Annualized_Perm_Right['premium'].loc[i] = Annualized_Perm_Right_Cost
+    
+
+# ## Dry-year option ###
+
+# ## using mickelson et. al ###
+
+# ## exercise fee = $90 in 1988 = $227.60 today
+# Dry_Year_90 = 227.60
+# ## exercise fee = $45 in 1988 = $113.80 today
+# Dry_Year_45 = 113.80
+# ## exercise fee = $135 in 1988 = $341.40 today
+# Dry_Year_135 = 341.40
+
+# DryYear = pd.DataFrame(index=range(1950,2013))
+# DryYear['premium'] = 0
+
+# for i in S1.index:
+#     S1['premium'].loc[i] = S1_Premium + S1_Exercise[i]
+    
+# S2 = pd.DataFrame(index=range(1950,2013))
+# S2['premium'] = 0
+
+# for i in S2.index:
+#     S2['premium'].loc[i] = S2_Premium + S2_Exercise[i]
+# S2['premium'] = S2['premium'].fillna(0)    
+
+# Dry_Year_Option = pd.Series(index=range(1950,2013))
+# for i in range(1950,2013):
+#     if i in Dry_Year_Triggers:
+#        Dry_Year_Option[i] = 135
+#     else:
+#        Dry_Year_Option[i] = 90
+
+
+plt.figure()
+plt.xlabel('Hydrologic Year')
+plt.ylabel('Cost ($/AF)')
+plt.plot(S1, linestyle = 'solid', marker = 'x', markersize = 6, label='Profit Maximizing Utilities')
+plt.plot(S2, linestyle = 'solid', marker = 'd', markersize = 6, label= 'Utilties lease back for $30/AF')
+plt.plot(Annualized_Perm_Right, linestyle = 'solid', marker = '.', markersize = 6, label= 'Permanent Water Right Purchase')
+plt.legend(bbox_to_anchor=(1.65, 1), loc='upper right', borderaxespad=0)
+
+
+fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+fig.subplots_adjust(hspace=0.05)  # adjust space between axes
+
+# plot the same data on both axes
+ax1.plot(S1, linestyle = 'solid', marker = 'x', markersize = 6, label='Wet Year Option (MV of Water/AF)')
+ax1.plot(S2, linestyle = 'solid', marker = 'd', markersize = 6, label= 'Wet Year Option (at $30/AF)')
+ax1.plot(Annualized_Perm_Right, linestyle = 'solid', marker = '.', markersize = 6, label= 'Permanent Water Right Purchase')
+ax1.plot(DryYear, linestyle = 'solid', marker = 'h', markersize = 6, label= 'Dry Year Option')
+ax2.plot(S1, linestyle = 'solid', marker = 'x', markersize = 6, label='Wet Year Option (MV of Water/AF)')
+ax2.plot(S2, linestyle = 'solid', marker = 'd', markersize = 6, label= 'Wet Year Option (at $30/AF)')
+ax2.plot(Annualized_Perm_Right, linestyle = 'solid', marker = '.', markersize = 6, label= 'Permanent Water Right Purchase')
+ax2.plot(DryYear, linestyle = 'solid', marker = 'h', markersize = 6, label= 'Dry Year Option')
+
+# zoom-in / limit the view to different portions of the data
+ax1.set_ylim(7070, 7100)  # outliers only
+ax2.set_ylim(90, 190)  # most of the data
+
+# hide the spines between ax and ax2
+ax1.spines.bottom.set_visible(False)
+ax2.spines.top.set_visible(False)
+#ax1.xaxis.tick_top()
+ax1.tick_params(labeltop=False)  # don't put tick labels at the top
+ax2.xaxis.tick_bottom()
+
+
+d = .5  # proportion of vertical to horizontal extent of the slanted line
+kwargs = dict(marker=[(-1, -d), (1, d)], markersize=12,
+              linestyle="none", color='k', mec='k', mew=1, clip_on=False)
+ax1.plot([0, 1], [0, 0], transform=ax1.transAxes, **kwargs)
+ax2.plot([0, 1], [1, 1], transform=ax2.transAxes, **kwargs)
+ax1.legend(bbox_to_anchor=(1.65, 1), loc='upper right', borderaxespad=0, frameon = False)
+plt.xlabel('Hydrologic Year')
+plt.ylabel('Cost ($/AF)')
+
+plt.show()
+    
+
+
 
 # def id_payouts_index(inputs, strike, cap, model): 
 #     payouts = pd.DataFrame(index = np.arange(0, len(inputs)),columns=['payout']) 
