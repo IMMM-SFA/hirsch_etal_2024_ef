@@ -1,6 +1,6 @@
 _your zenodo badge here_
 
-# hirsch_etal_2023_tbd
+# hirsch_etal_2023_ef
 
 **Using two-way option contracts to facilitate temporal water re-allocation during drought **
 
@@ -12,7 +12,7 @@ Zachary Hirsch<sup>1\*</sup>, HB Zeff <sup>1</sup>, Gregory Characklis <sup>1</s
 \* corresponding author:  zhirsch@unc.edu
 
 ## Abstract
-In this paper the authors develop a long-term global energy-economic model which is capable of assessing alternative energy evolutions over periods of up to 100 years. The authors have sought to construct the model so that it can perform its assigned task with as simple a modelling system as possible. The model structure is fully documented and a brief summary of results is given.
+Water markets in the Western U.S. have the ability to re-allocate water temporarily during drought, often as short-term water rights leases from lower value irrigation to higher value urban uses. Regulatory approval of transfers, however, is typically lengthy and involves high transaction costs that arise from expensive technical and legal analyses, discouraging leasing.  This leads to less efficient allocation, as municipalities often react by purchasing large volumes of permanent water rights which are used only to maintain supply reliability during drought. Thus, less water is available to irrigators in wet/normal years, and municipalities pay for large volumes of infrequently used rights. This research explores the development of a multi-year two-way option (TWO) contract that pairs leasing from irrigators to urban users in drought with leases from urban users to irrigators during wet periods. The modeling framework developed to assess TWO performance includes consideration of the hydrologic, engineered, and institutional systems governing the South Platte River Basin in Colorado where increased competition for water between municipalities (e.g. Boulder), and irrigators has been observed in recent years. The framework is built around StateMod, a network-based water allocation model used by state regulators to evaluate water rights allocations and potential rights transfers.  Results suggest that the TWO could allow for reduced municipal rights holdings and costs while still maintaining urban water supply reliability, at the same time providing irrigators with increased agricultural productivity in wet years, and the ability to generate additional revenues via option payments from municipalities in dry years.  
 
 ## Journal reference
 Edmonds, J., & Reilly, J. (1983). A long-term global energy-economic model of carbon dioxide release from fossil fuel use. Energy Economics, 5(2), 74-88. DOI: https://doi.org/10.1016/0140-9883(83)90014-2
