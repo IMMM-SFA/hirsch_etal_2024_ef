@@ -47,12 +47,12 @@ Human, I.M. (2021). My output dataset name [Data set]. DataHub. https://doi.org/
 | component 1 | version | link to code repository | link to DOI dataset |
 
 ## Reproduce my experiment
-Fill in detailed info here or link to other documentation that is a thorough walkthrough of how to use what is in this repository to reproduce your experiment.
 
-
-1. Install the software components required to conduct the experiement from [Contributing modeling software](#contributing-modeling-software)
-2. Download and install the supporting input data required to conduct the experiement from [Input data](#input-data)
-3. Run the following scripts in the `workflow` directory to re-create this experiment:
+## Pre-processing
+1. Download the StateMod Model 15.00.01 Executable from: https://cdss.colorado.gov/software/statemod
+2. Download the South Platte and Upper Colorado StateMod input files from: https://cdss.colorado.gov/modeling-data/surface-water-statemod
+3. Run the following scripts in the 'pre_processing' file to update StateMod input files
+4. Re-run the South Platte StateMod to produce new outputs for use in post-processing
 
 | Script Name | Description | How to Run |
 | --- | --- | --- |
