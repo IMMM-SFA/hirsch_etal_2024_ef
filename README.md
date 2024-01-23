@@ -13,10 +13,10 @@ Zachary M. Hirsch<sup>1\*</sup>, Harrison B. Zeff <sup>1</sup>, Rohini S. Gupta 
 \* corresponding author:  zacharyhirsch1@yahoo.com
 
 ## Abstract
-Many water markets in the Western United States (U.S.) have the ability to reallocate water temporarily during drought, often as short-term water rights leases from lower value irrigated activities to higher value urban uses. Regulatory approval of water transfers, however, typically takes time and involves high transaction costs that arise from technical and legal analyses, discouraging short-term leasing.  This leads municipalities to protect against drought-related shortfalls by purchasing large volumes of infrequently used permanent water rights. High transaction costs also result in municipal water rights rarely being leased back to irrigators in wet or normal years, reducing agricultural productivity. This research explores the development of a multi-year two-way option (TWO) contract that facilitates leasing from agricultural-to-urban users during drought and leasing from urban-to agricultural users during wet periods. The modeling framework developed to assess performance of the TWO contracts includes consideration of the hydrologic, engineered, and institutional systems governing the South Platte River Basin in Colorado where there is growing competition for water between municipalities (e.g., the city of Boulder) and irrigators. The modeling framework is built around StateMod, a network-based water allocation model used by state regulators to evaluate water rights allocations and potential rights transfers.  Results suggest that the TWO contracts could allow municipalities to maintain supply reliability with significantly reduced rights holdings at lower cost, while increasing agricultural productivity in wet and normal years. Additionally, the TWO contracts provide irrigators with additional revenues via net payments of option fees from municipalities.  
+Many water markets in the Western United States (U.S.) have the ability to reallocate water temporarily during drought, often as short-term water rights leases from lower value irrigated activities to higher value urban uses. Regulatory approval of water transfers, however, typically takes time and involves high transaction costs that arise from technical and legal analyses, discouraging short-term leasing. This leads municipalities to protect against drought-related shortfalls by purchasing large volumes of infrequently used permanent water rights. High transaction costs also result in municipal water rights rarely being leased back to irrigators in wet or normal years, reducing agricultural productivity. This research explores the development of a multi-year two-way option (TWO) contract that facilitates leasing from agricultural-to-urban users during drought and leasing from urban-to agricultural users during wet periods. The modeling framework developed to assess performance of the TWO contracts includes consideration of the hydrologic, engineered, and institutional systems governing the South Platte River Basin in Colorado where there is growing competition for water between municipalities (e.g., the city of Boulder) and irrigators. The modeling framework is built around StateMod, a network-based water allocation model used by state regulators to evaluate water rights allocations and potential rights transfers. Results suggest that the TWO contracts could allow municipalities to maintain supply reliability with significantly reduced rights holdings at lower cost, while increasing agricultural productivity in wet and normal years. Additionally, the TWO contracts provide irrigators with additional revenues via net payments of option fees from municipalities.
 
 ## Journal reference
-Edmonds, J., & Reilly, J. (1983). A long-term global energy-economic model of carbon dioxide release from fossil fuel use. Energy Economics, 5(2), 74-88. DOI: https://doi.org/10.1016/0140-9883(83)90014-2
+
 
 ## Code reference
 References for each minted software release for all code involved.  
@@ -30,14 +30,9 @@ Human, I.M. (2021, April 14). Project/repo:v0.1.0 (Version v0.1.0). Zenodo. http
 ## Data reference
 
 ### Input data
-Reference for each minted data source for your input data.  For example:
 
-Human, I.M. (2021). My input dataset name [Data set]. DataHub. https://doi.org/some-doi-number
 
 ### Output data
-Reference for each minted data source for your output data.  For example:
-
-Human, I.M. (2021). My output dataset name [Data set]. DataHub. https://doi.org/some-doi-number
 
 ## Contributing modeling software
 | Model | Version | Repository Link | DOI |
@@ -46,7 +41,14 @@ Human, I.M. (2021). My output dataset name [Data set]. DataHub. https://doi.org/
 | model 2 | version | link to code repository | link to DOI dataset |
 | component 1 | version | link to code repository | link to DOI dataset |
 
-## Reproduce my experiment
+## Reproduce my experiment*
+
+Organize three separate folders on your local machine. 
+1) for the UCRB StateMod model (for pre-processing)
+2) for the SPRB StateMod model (for pre-processing)
+3) for the adapted SPRB StateMod model (for post-processing)
+
+*All working directories must be changed in order for the code to run.
 
 ## Pre-processing
 1. Download the StateMod Model 15.00.01 Executable from: https://cdss.colorado.gov/software/statemod
