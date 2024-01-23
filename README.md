@@ -53,8 +53,10 @@ Organize three separate folders on your local machine.
 ## Pre-processing
 1. Download the StateMod Model 15.00.01 Executable from: https://cdss.colorado.gov/software/statemod
 2. Download the South Platte and Upper Colorado StateMod input files from: https://cdss.colorado.gov/modeling-data/surface-water-statemod
-3. Run the following scripts in the 'pre_processing' file to update StateMod input files
-4. Re-run the South Platte StateMod to produce new outputs for use in post-processing
+3. Run StateMod v15 for both the Upper Colorado and South Platte
+3*. If South Platte StateMod fails to run, try replacing the .opr file to 'SP2016_rev1501.opr' which can be downloaded here: https://github.com/OpenCDSS/cdss-app-statemod-fortran/issues/73
+4. Run the following scripts in the 'pre_processing' file to update StateMod input files
+5. Re-run the South Platte StateMod to produce new outputs for use in post-processing
 
 | Script Name | Description | How to Run |
 | --- | --- | --- |
