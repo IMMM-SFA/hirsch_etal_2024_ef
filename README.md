@@ -54,7 +54,8 @@ Organize three separate folders on your local machine.
 1. Download the StateMod Model 15.00.01 Executable from: https://cdss.colorado.gov/software/statemod
 2. Download the South Platte and Upper Colorado StateMod input files from: https://cdss.colorado.gov/modeling-data/surface-water-statemod
 3. Run StateMod v15 for both the Upper Colorado and South Platte (using simulate, option 2)
-3*. If South Platte StateMod fails to run, try replacing the .opr file to 'SP2016_rev1501.opr' which can be downloaded here: https://github.com/OpenCDSS/cdss-app-statemod-fortran/issues/73
+4. If South Platte StateMod fails to run, try replacing the .opr file to 'SP2016_rev1501.opr' which can be downloaded here: https://github.com/OpenCDSS/cdss-app-statemod-fortran/issues/73
+5. Call 'statemod_data_extraction.py' to extract StateMod demand data (.xdd) into parquet files. Change the name of the .xdd file to 'sp2016_H_S0_1.xdd'. You must use an 'ids' file to indicate which StateMod structures you want a parquet for. Sample code to call this: python statemod_data_extraction.py --ids C:\path\ids_file.txt --output C:\path\xddparquet C:/path/sp2016_H_S0_1.xdd
 5. Run the following scripts in the 'pre_processing' file to update StateMod input files
 6. Re-run the South Platte StateMod to produce new outputs for use in post-processing
 
