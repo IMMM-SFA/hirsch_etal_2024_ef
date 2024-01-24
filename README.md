@@ -2,20 +2,21 @@ _your zenodo badge here_
 
 # hirsch_etal_2023_ef
 
-**Using two-way option contracts to facilitate temporal water re-allocation during drought **
+**Two-Way Option Contracts that Enhance Adaptive Water Reallocation in the Western United States **
 
-Zachary Hirsch<sup>1\*</sup>, HB Zeff <sup>1</sup>, Gregory Characklis <sup>1</sup>, Rohini Gupta <sup>2</sup>, Patrick Reed <sup>2</sup>
+Zachary M. Hirsch<sup>1\*</sup>, Harrison B. Zeff <sup>1</sup>, Rohini S. Gupta <sup>2</sup>, Chris R. Vernon <sup>3</sup>, Patrick M. Reed <sup>2</sup>, and Gregory W. Characklis <sup>1</sup>
 
 <sup>1 </sup> University of North Carolina at Chapel Hill, Center of Financial Risk in Environmental Systems
 <sup>2 </sup> Cornell University, Department of Civil and Environmental Engineering
+<sup>3 </sup> Pacific Northwest National Laboratory
 
-\* corresponding author:  zhirsch@unc.edu
+\* corresponding author:  zacharyhirsch1@yahoo.com
 
 ## Abstract
-Water markets in the Western U.S. have the ability to re-allocate water temporarily during drought, often as short-term water rights leases from lower value irrigation to higher value urban uses. Regulatory approval of transfers, however, is typically lengthy and involves high transaction costs that arise from expensive technical and legal analyses, discouraging leasing.  This leads to less efficient allocation, as municipalities often react by purchasing large volumes of permanent water rights which are used only to maintain supply reliability during drought. Thus, less water is available to irrigators in wet/normal years, and municipalities pay for large volumes of infrequently used rights. This research explores the development of a multi-year two-way option (TWO) contract that pairs leasing from irrigators to urban users in drought with leases from urban users to irrigators during wet periods. The modeling framework developed to assess TWO performance includes consideration of the hydrologic, engineered, and institutional systems governing the South Platte River Basin in Colorado where increased competition for water between municipalities (e.g. Boulder), and irrigators has been observed in recent years. The framework is built around StateMod, a network-based water allocation model used by state regulators to evaluate water rights allocations and potential rights transfers.  Results suggest that the TWO could allow for reduced municipal rights holdings and costs while still maintaining urban water supply reliability, at the same time providing irrigators with increased agricultural productivity in wet years, and the ability to generate additional revenues via option payments from municipalities in dry years.  
+Many water markets in the Western United States (U.S.) have the ability to reallocate water temporarily during drought, often as short-term water rights leases from lower value irrigated activities to higher value urban uses. Regulatory approval of water transfers, however, typically takes time and involves high transaction costs that arise from technical and legal analyses, discouraging short-term leasing. This leads municipalities to protect against drought-related shortfalls by purchasing large volumes of infrequently used permanent water rights. High transaction costs also result in municipal water rights rarely being leased back to irrigators in wet or normal years, reducing agricultural productivity. This research explores the development of a multi-year two-way option (TWO) contract that facilitates leasing from agricultural-to-urban users during drought and leasing from urban-to agricultural users during wet periods. The modeling framework developed to assess performance of the TWO contracts includes consideration of the hydrologic, engineered, and institutional systems governing the South Platte River Basin in Colorado where there is growing competition for water between municipalities (e.g., the city of Boulder) and irrigators. The modeling framework is built around StateMod, a network-based water allocation model used by state regulators to evaluate water rights allocations and potential rights transfers. Results suggest that the TWO contracts could allow municipalities to maintain supply reliability with significantly reduced rights holdings at lower cost, while increasing agricultural productivity in wet and normal years. Additionally, the TWO contracts provide irrigators with additional revenues via net payments of option fees from municipalities.
 
 ## Journal reference
-Edmonds, J., & Reilly, J. (1983). A long-term global energy-economic model of carbon dioxide release from fossil fuel use. Energy Economics, 5(2), 74-88. DOI: https://doi.org/10.1016/0140-9883(83)90014-2
+
 
 ## Code reference
 References for each minted software release for all code involved.  
@@ -29,14 +30,9 @@ Human, I.M. (2021, April 14). Project/repo:v0.1.0 (Version v0.1.0). Zenodo. http
 ## Data reference
 
 ### Input data
-Reference for each minted data source for your input data.  For example:
 
-Human, I.M. (2021). My input dataset name [Data set]. DataHub. https://doi.org/some-doi-number
 
 ### Output data
-Reference for each minted data source for your output data.  For example:
-
-Human, I.M. (2021). My output dataset name [Data set]. DataHub. https://doi.org/some-doi-number
 
 ## Contributing modeling software
 | Model | Version | Repository Link | DOI |
@@ -45,13 +41,23 @@ Human, I.M. (2021). My output dataset name [Data set]. DataHub. https://doi.org/
 | model 2 | version | link to code repository | link to DOI dataset |
 | component 1 | version | link to code repository | link to DOI dataset |
 
-## Reproduce my experiment
-Fill in detailed info here or link to other documentation that is a thorough walkthrough of how to use what is in this repository to reproduce your experiment.
+## Reproduce my experiment*
 
+Organize three separate folders on your local machine. 
+1) for the UCRB StateMod model (for pre-processing)
+2) for the SPRB StateMod model (for pre-processing)
+3) for the adapted SPRB StateMod model (for post-processing)
 
-1. Install the software components required to conduct the experiement from [Contributing modeling software](#contributing-modeling-software)
-2. Download and install the supporting input data required to conduct the experiement from [Input data](#input-data)
-3. Run the following scripts in the `workflow` directory to re-create this experiment:
+*All working directories must be changed in order for the code to run.
+
+## Pre-processing
+1. Download the StateMod Model 15.00.01 Executable from: https://cdss.colorado.gov/software/statemod
+2. Download the South Platte and Upper Colorado StateMod input files from: https://cdss.colorado.gov/modeling-data/surface-water-statemod
+3. Run StateMod v15 for both the Upper Colorado and South Platte (using simulate, option 2)
+4. If South Platte StateMod fails to run, try replacing the .opr file to 'SP2016_rev1501.opr' which can be downloaded here: https://github.com/OpenCDSS/cdss-app-statemod-fortran/issues/73
+5. Call 'statemod_data_extraction.py' to extract StateMod demand data (.xdd) into parquet files. Change the name of the .xdd file to 'sp2016_H_S0_1.xdd'. You must use an 'ids' file to indicate which StateMod structures you want a parquet for. Sample code to call this: python statemod_data_extraction.py --ids C:\path\ids_file.txt --output C:\path\xddparquet C:/path/sp2016_H_S0_1.xdd
+5. Run the following scripts in the 'pre_processing' file to update StateMod input files
+6. Re-run the South Platte StateMod to produce new outputs for use in post-processing
 
 | Script Name | Description | How to Run |
 | --- | --- | --- |
