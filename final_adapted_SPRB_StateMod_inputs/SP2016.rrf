@@ -1,0 +1,112 @@
+#COMMENTS
+# If the ID had an associated Plan ID, then we used the same return ID and return flow pattern as those present in the .prf file
+# If there was not an associated Plan ID, knowing the recharge areas we used GIS to estimate the associated return headgates 
+# and return flow patterns.
+#0102513_Rn: Recharge Area: 0102030
+#0102513_Rs: Recharge Area: 0102025
+#6402519_R: Served only by wells. Recharge areas: 6402027, 6402228, 6402230
+#6402525_R: Recharge Areas: 6402514, 6404404, 6404405, 6404414
+#6402536_R: Recharge Areas: 6402159-6402162, 6402164, 6402166, 6402167, 6402710
+#6402539_R: Recharge Areas: 6402020, 6402037, 6402126, 6402222, 6402243, 6402253, 6402254, 6402365, 6402384, 6402385
+#6402542_RH:4 Recharge Pits: 6401995, 6401996, 6401997, 6401998
+#6402542_R: Rechearge Areas: 6402280 and 6402373
+#_______________________________________________________
+#                                                                                                                                                                                                                                     
+#     (Free format)                                                                                                                                                                                                                   
+#      ID       cwelid:   Reservoir ID                                                                                                                                                                                                     
+#      Dep Id   crtnidw2: River ID return by diversion                                                                                                                                                                                
+#      Dep %    pcttotw2: Percent of return to location                                                                                                                                                                               
+#      Table #  irtndlw2: Return table id                                                                                                                                                                                             
+#                                                                                                                                                                                                                                     
+# ID         Ret ID          Ret %    Table #       Comment (e.g.return type, Name, etc.)                                                                                                                                                 
+#----------exb----------exb------exb----------exb-------------------------------e                                                                                                                                                     
+#                                                                                                                                                                                                                                     
+# _________________________________________________________                                                                                                                                                                     
+0102513_Rn   0100511          100.    1100       Res Rech  
+0102513_Rs   0100514          100.    1100       Res Rech  
+0102518_R    0100524           70.    1500       Res Rech  
+0102518_R    0100688           30.    1500       Res Rech  
+0102522_R    0100513           60.    1100       Res Rech  
+0102522_R    0100507_D         40.    1100       Res Rech  
+0102528_R    0100518          100.    1100       Res Rech  
+0102529_R    0100520           40.    1100       Res Rech  
+0102529_R    0100524           50.    1100       Res Rech  
+0102529_R    0100687           10.    1100       Res Rech  
+0102535_R    0100524           20.    1200       Res Rech  
+0102535_R    0100687           60.    1200       Res Rech  
+0102535_R    6400535           20.    1200       Res Rech  
+0103339_R    0100511          100.    1100       Res Rech
+0103816      0100507_D        100.    1100       Empire Seep
+0103570      0100511          100.    1100       Bijou Seep
+0103817      0100514          100.    1300       Jackson Seep
+0103651      0100503_D        100.    1100       Riverside Seep
+#
+6402517_R    6400502          100.    1200       Res Rech  
+6402517_RP   6400502          100.    1200       Res Rech  
+6402517_RS   6400502          100.    1600       Res Rech  
+6402518_R    6400508           60.    1200       Res Rech  
+6402518_R    6400507           40.    1200       Res Rech  
+6402519_R    6400504          100.    1700       Res Rech  
+6402525_R    6400508           50.    1700       Res Rech  
+6402525_R    6400511_D         50.    1700       Res Rech  
+6402526_R    6400522_D        100.    642526     Res Rech  
+6400525_A    6400524          100.       4       Changed WR RA
+6400528_A    6400526          100.       4       Changed WR RA
+6402515      6400522_D        100     642515     Res Rech
+6402536_RH   6400508           60.    1200       Res Rech  
+6402536_RH   6400507           40.    1200       Res Rech  
+6402536_RI   6400516          100.    1200       Res Rech  
+6402536_RB   6400518          100.    1200       Res Rech  
+6402536_R    6400516           60.    1100       Res Rech  
+6402536_R    6400514           40.    1100       Res Rech  
+6402539_RC   6400526          100.    1300       Res Rech  
+6402539_RP   6400532           80.    1300       Res Rech  
+6402539_RP   6400531           20.    1300       Res Rech  
+6402539_RS   6400526           70.    1200       Res Rech  
+6402539_RS   6400522_D         30.    1200       Res Rech  
+6402539_RT   6400522_D         56.    1200       Res Rech  
+6402539_RT   6400519           44.    1200       Res Rech  
+6402539_RF   6400528           60.    1200       Res Rech  
+6402539_RF   6400522_D         40.    1200       Res Rech  
+6402539_R    6400530           50.    1300       Res Rech  
+6402539_R    6400525           10.    1200       Res Rech  
+6402539_R    6400531           40.    1200       Res Rech  
+6402540_R    6400522_D         40.    1600       Res Rech  
+6402540_R    6400520           60.    1600       Res Rech  
+6402542_RL   6499999          100.    1600       Res Rech  
+6402542_RP   6400502           60.    1200       Res Rech  
+6402542_RP   6499999           40.    1200       Res Rech  
+6402542_RH   6400501          100.    1700       Res Rech  
+6402542_R    6400501           50.    1700       Res Rech  
+6402542_R    6499999           50.    1200       Res Rech  
+6403392_R    6400525           40.    1100       Res Rech  
+6403392_R    6400533           30.    1100       Res Rech  
+6403552      6400533          100.    1300       Prewitt Seep
+#
+#_________________________________________________________________________________
+#
+#  ID       Ret ID          Ret %      Table #  Comment (e.g.return type, Name, etc.)                    
+#----------exb----------exb------exb----------exb-------------------------------e
+0200824_R    0200828          79.0       2       Res Rech
+0200824_R    0200834          21.0       2       Res Rech
+0200825_R    0200828          28.0       1       Res Rech
+0200825_R    0200834          72.0       1       Res Rech
+0202003_R    0200808          69.1      13       Res Rech
+0202003_R    0200808          18.6      13       Res Rech
+0202003_R    0200808          12.3      13       Res Rech
+#
+# hdt 3/31/16 Added RF locations for accretions for Central's augmentation reservoirs
+0200808_RC   0200809         100.0       4       Changed WR RA
+0200810_RC   0200812         100.0       4       Changed WR RA
+0200812_RC   0200822         100.0       4       Changed WR RA
+0200813_RC   0200821         100.0       4       Changed WR RA
+0200824_RC   0200825         100.0       4       Changed WR RA
+0200830_RC   0200834         100.0       4       Changed WR RA
+0200837_RC   06754000        100.0       4       Changed WR RA
+# hdt 3/31/16 Added RF locations for accretions for Central's augmentation reservoirs
+0200808_RS   0200809         100.0       4       Changed WR RA
+0200810_RS   0200812         100.0       4       Changed WR RA
+0200812_RS   0200822         100.0       4       Changed WR RA
+0200821_RS   0200825         100.0       4       Changed WR RA
+# hdt 3/31/16 Added RF locations for accretions for Brighton's augmentation reservoir
+0200808_RB   0200809         100.0       4       Changed WR RA

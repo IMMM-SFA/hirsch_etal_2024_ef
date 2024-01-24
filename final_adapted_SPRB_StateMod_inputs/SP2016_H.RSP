@@ -1,0 +1,82 @@
+#
+#
+# SP2016_H.rsp
+# StateMod Response File for Simulation
+#  Model must be run with StateMod Version 15.00.01 or greater
+#  
+#  Order of operations to create BF and simulation of SP2016
+#   1) Run SP2016_BF.rsp with Baseflow Option 1
+#   2) Run SP2016_BF_Regression.TSTool to fill remaining natural flow via regression for gages in WD 6
+#   3) Run SP2016_BFx.rsp with Baseflow Option 9
+#   4) Run SP2016_H.rsp with Simulation Option 2
+#
+# Type                                    Name
+# ______________________________________  ________________________________________________________________________
+Control                                 = SP2016.ctl                                                                                                                                                                                                                                                         
+#
+# 	River and Stream
+River_Network                           = SP2016.rin  
+StreamGage_Station                      = SP2016.ris
+StreamGage_Historic_Monthly             = SP2016.rih
+StreamEstimate_Coefficients             = SP2016.rib
+Stream_Base_Monthly                     = SP2016_BFx.xbm
+# ______________________________________                
+#
+# 	Diversions                       
+Diversion_Station                       = SP2016.dds   
+Diversion_Right                         = SP2016_A.ddr  
+Diversion_Historic_Monthly              = SP2016.ddh   
+Diversion_Demand_Monthly                = SP2016_A.ddm
+# ______________________________________
+#
+# 	Wells
+Well_Station                            = SP2016.wes  
+Well_Right                              = SP2016_NoDuplicates.wer  
+Well_Historic_Monthly                   = SP2016_A.weh  
+Well_Demand_Monthly                     = SP2016_A.weh 
+# ______________________________________
+#
+#	Reservoirs    
+Reservoir_Station                       = SP2016.res   
+Reservoir_Right                         = SP2016_A.rer 
+Reservoir_Historic_Monthly              = SP2016.eom
+Reservoir_Target_Monthly                = SP2016_A.tar
+Reservoir_Return                        = SP2016.rrf
+# ______________________________________                
+#
+# 	Climate
+Evaporation_Annual                      = SP2016.eva
+# ______________________________________                
+#
+# 	Instream Flows
+Instreamflow_Station                    = SP2016.ifs                                                                                                                                                                                                                                                                             
+Instreamflow_Right                      = SP2016.ifr
+Instreamflow_Demand_AverageMonthly      = SP2016.ifa                                                                                                                                                                                                                                                                              
+# ______________________________________                
+#
+# 	CU Data
+# Files used directly from the basin-wide SPDSS StateCU consumptive use analysis
+#
+StateCU_Structure                       = SP2016_crop.str   
+IrrigationPractice_Yearly               = SP2016_Z.ipy    
+ConsumptiveWaterRequirement_Monthly     = SP2016_A.ddc
+#
+# ______________________________________                
+#
+# 	Plans
+Plan_Data                               = SP2016.pln
+Plan_Wells                              = SP2016.plw
+Plan_Recharge                           = SP2016.plr
+Plan_Return                             = SP2016.prf
+# ______________________________________                
+#
+# 	Unit Response File
+DelayTable_Monthly                      = SP2016.dly
+# ______________________________________                
+#
+# 	Operational Right File
+Operational_Right                       = SP2016_ZERO.opr
+# ______________________________________                
+#
+# 	GUI FIles
+Network                                 = ..\Network\SP2016.net

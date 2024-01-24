@@ -1,0 +1,75 @@
+#      (Free format)                                                                                                                                                                                                                  
+#	Plan ID	Recharge Plan                                                                                                                                                                                                               
+#	Res Right	Reservoir right (not used)                                                                                                                                                                                                
+#	Res Station	Reservoir station                                                                                                                                                                                                       
+#	Res Owner	Resevoir owner                                                                                                                                                                                                            
+#	Comments	Comments (not used)	                                                                                                                                                                                                       
+#                                                                                                                                                                                                                                     
+# Note Reservoir Right ID is currently not used                                                                                                                                                                                       
+#
+# Reservoir  Reservoir    Reservoir                                                                                                                                                                                       
+# Plan ID    Right ID     Str ID          Owner Comments                                                                                                                                                                              
+#----------exb----------exb----------exb------exb----------------------e                                                                                                                                                              
+0102513_PlR  0102513_Rn.1 0102513_Rn          1    Res Recharge to Aug Plan
+0102513_PlR  0102513_Rs.1 0102513_Rs          1    Res Recharge to Aug Plan
+0102518_PlR  0102518_R.1  0102518_R           1    Res Recharge to Aug Plan
+0102522_PlR  0102522_R.1  0102522_R           1    Res Recharge to Aug Plan
+0102528_PlR  0102528_R.1  0102528_R           1    Res Recharge to Aug Plan
+0102529_PlR  0102529_R.1  0102529_R           1    Res Recharge to Aug Plan
+0102535_PlR  0102535_R.1  0102535_R           1    Res Recharge to Aug Plan
+0103339_PlR  0103339_R.1  0103339_R           1    Res Recharge to Aug Plan
+0103570_PlR  0103570_R.1  0103570             1    Res Recharge to Aug Plan
+#
+6402517_PlR  6402517_R.1  6402517_R           1    Res Recharge to Aug Plan
+6402517_PlR  6402517_RP.1 6402517_RP          1    Res Recharge to Aug Plan
+6402517_PlR  6402517_RS.1 6402517_RS          1    Res Recharge to Aug Plan
+6402518_PlR  6402518_R.1  6402518_R           1    Res Recharge to Aug Plan
+6402519_PlR  6402519_R.1  6402519_R           1    Res Recharge to Aug Plan
+6402525_PlR  6402525_R.1  6402525_R           1    Res Recharge to Aug Plan
+6402526_PlR  6402526_R.1  6402526_R           1    Res Recharge to Aug Plan
+6402526_PlR  6400525_A.1  6400525_A           1    Changed WR RA to Aug Plan
+6402526_PlR  6400528_A.1  6400528_A           1    Changed WR RA to Aug Plan
+6402526_PlR  6402515.01   6402515             1    Changed WR RA to Aug Plan
+6402536_PlR  6402536_RH.1 6402536_RH          1    Res Recharge to Aug Plan
+6402536_PlR  6402536_RI.1 6402536_RI          1    Res Recharge to Aug Plan
+6402536_PlR  6402536_RB.1 6402536_RB          1    Res Recharge to Aug Plan
+6402536_PlR  6402536_R.1  6402536_R           1    Res Recharge to Aug Plan
+6402539_PlR  6402539_RC.1 6402539_RC          1    Res Recharge to Aug Plan
+6402539_PlR  6402539_RP.1 6402539_RP          1    Res Recharge to Aug Plan
+6402539_PlR  6402539_RS.1 6402539_RS          1    Res Recharge to Aug Plan
+6402539_PlR  6402539_RT.1 6402539_RT          1    Res Recharge to Aug Plan
+6402539_PlR  6402539_RF.1 6402539_RF          1    Res Recharge to Aug Plan
+6402539_PlR  6402539_R.1  6402539_R           1    Res Recharge to Aug Plan
+6402540_PlR  6402540_R.1  6402540_R           1    Res Recharge to Aug Plan
+6402542_PlR  6402542_RL.1 6402542_RL          1    Res Recharge to Aug Plan
+6402542_PlR  6402542_RP.1 6402542_RP          1    Res Recharge to Aug Plan
+6402542_PlR  6402542_RH.1 6402542_RH          1    Res Recharge to Aug Plan
+6402542_PlR  6402542_R.1  6402542_R           1    Res Recharge to Aug Plan
+6403392_PlR  6403392_R.1  6403392_R           1    Res Recharge to Aug Plan
+#
+# Reservoir  Reservoir    Reservoir                                                                                                                                                                                       
+# Plan ID    Right ID     Str ID          Owner Comments                                                                                                                                                                              
+#----------exb----------exb----------exb------exb----------------------e                                                                                                                                                              
+0200824_PlR  0200824_R.1  0200824_R           1    Res Recharge to Aug Plan
+0200825_PlR  0200825_R.1  0200825_R           1    Res Recharge to Aug Plan
+0202003_PlR  0202003_R.1  0202003_R           1    Res Recharge to Aug Plan
+#
+# hdt 3/31/16 Added aug reservoir rights and tied them to overall recharge reservoir accretions plans
+# Central changed ditch share aug reservoirs tied to overall recharge reservoir accretion plan
+9903394_PlR  0200808_RC.1 0200808_RC          1    Changed WR RA to Aug Plan
+9903394_PlR  0200810_RC.1 0200810_RC          1    Changed WR RA to Aug Plan
+9903394_PlR  0200812_RC.1 0200812_RC          1    Changed WR RA to Aug Plan
+9903394_PlR  0200813_RC.1 0200813_RC          1    Changed WR RA to Aug Plan
+9903394_PlR  0200824_RC.1 0200824_RC          1    Changed WR RA to Aug Plan
+9903394_PlR  0200830_RC.1 0200830_RC          1    Changed WR RA to Aug Plan
+9903394_PlR  0200837_RC.1 0200837_RC          1    Changed WR RA to Aug Plan
+#
+# Brighton changed ditch share aug reservoirs tied to overall recharge reservoir accretion plan
+9902541_PlR  0200808_RB.1 0200808_RB          1    Changed WR RA to Aug Plan
+#
+# SACWSD changed ditch share aug reservoirs tied to overall recharge reservoir accretion plan
+9902502_PlR  0200808_RS.1 0200808_RS          1    Changed WR RA to Aug Plan
+9902502_PlR  0200810_RS.1 0200810_RS          1    Changed WR RA to Aug Plan
+9902502_PlR  0200812_RS.1 0200812_RS          1    Changed WR RA to Aug Plan
+9902502_PlR  0200821_RS.1 0200821_RS          1    Changed WR RA to Aug Plan
+#

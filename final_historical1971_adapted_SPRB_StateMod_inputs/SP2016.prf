@@ -1,0 +1,234 @@
+# Plan Return Flow File (*.prf)
+#
+# USR - Table 4 is immediate return flows, which is used to assign bypass requirements to T&C Plans
+#	 Table numbers in the 100s, 200s and 300s (e.g., 100, 105, and 110) are winter return flow percentages for assignment to T&C Plans
+#        May need to revise the PSCO Meadow Island RFs to St Vrain vs. South Platte (see PSCoMISPRFs)
+#        Using Table 170 for PSCoSPRFs2 which is a combination of PSCo's Hewes Cook and Jay Thomas RF obligation. Table 170 is an esimate of PSCo's Hewes Cook winter RF percentages
+#        Using Table 130 for CenPVLBRFs which is a combination of PSCo's Platteville and Lupton Bottom RF obligations. Table 130 is an esimate of PSCo's Lupton Bottom winter RF percentages
+#
+# SP2013L - See Plan File (.pln) for associated plan structures
+#        'Table' based on carrier structure identified in the operating rule file
+#        'Return ID' based on carrier structure primary return location identified in the direct diversion file
+#                                                                                                                                                                                                                                     
+#     (Free format)                                                                                                                                                                                                                   
+#     ID       cwelid:   Plan ID                                                                                                                                                                                                      
+#     Dep Id   crtnidw2: River ID return by diversion                                                                                                                                                                                 
+#     Dep %    pcttotw2: Percent of return to location                                                                                                                                                                                
+#     Table #  irtndlw2: Return table id                                                                                                                                                                                              
+#                                                                                                                                                                                                                                     
+# ID         Ret ID          Ret %  Table        Comment (e.g.return type, Name, etc.)                                                                                                                                                 
+#----------exb----------exb------exb----------exb-------------------------------e                                                                                                                                                     
+0102518_PlC  0100524           70.  1500        Canal Rech     
+0102518_PlC  0100688           30.  1500        Canal Rech     
+0102522_PlC  0100513           60.  1100        Canal Rech     
+0102522_PlC  0100507_D         40.  1100        Canal Rech     
+0102528_PlC  0100518          100.  1100        Canal Rech     
+0102529_PlC  0100520           40.  1100        Canal Rech     
+0102529_PlC  0100524           50.  1100        Canal Rech     
+0102529_PlC  0100687           10.  1100        Canal Rech     
+0102535_PlC  0100524           20.  1200        Canal Rech     
+0102535_PlC  0100687           60.  1200        Canal Rech     
+0102535_PlC  6400535           20.  1200        Canal Rech     
+0103339_PlC  0100511          100.  1100        Canal Rech     
+#
+6402517_PCP  6400502          100.  1200        Canal Rech     
+6402517_PCS  6400502          100.  1600        Canal Rech     
+6402518_PlC  6400508           60.  1200        Canal Rech     
+6402518_PlC  6400507           40.  1200        Canal Rech     
+6402526_PlC  6400522_D        100.  1700        Canal Rech     
+6402536_PCI  6400516          100.  1200        Canal Rech     
+6402536_PCH  6400508           60.  1200        Canal Rech     
+6402536_PCH  6400507           40.  1200        Canal Rech     
+6402536_PCP  6400513          100.  1300        Canal Rech     
+6402536_PCB  6400518          100.  1200        Canal Rech     
+6402539_PCC  6400526          100.  1300        Canal Rech     
+6402539_PCP  6400532           80.  1300        Canal Rech     
+6402539_PCP  6400531           20.  1300        Canal Rech     
+6402539_PCS  6400526           70.  1200        Canal Rech     
+6402539_PCS  6400522_D         30.  1200        Canal Rech     
+6402539_PCT  6400522_D         56.  1200        Canal Rech     
+6402539_PCT  6400519           44.  1200        Canal Rech     
+6402539_PCF  6400528           60.  1200        Canal Rech     
+6402539_PCF  6400522_D         40.  1200        Canal Rech     
+6402540_PlC  6400522_D         40.  1600        Canal Rech     
+6402540_PlC  6400520           60.  1600        Canal Rech     
+6402542_PCL  6499999          100.  1600        Canal Rech     
+6402542_PCP  6400502           60.  1200        Canal Rech     
+6402542_PCP  6499999           40.  1200        Canal Rech     
+6403392_PlC  6400525           40.  1100        Canal Rech     
+6403392_PlC  6400533           30.  1100        Canal Rech     
+6403392_PlC  6400511_D         30.  1100        Canal Rech 
+#
+6400525_RF   6400525_RF       100.     4        TC_Plan
+6400525_RF   6400525_RF      -100.  640525      TC_Plan
+#
+6400528_RF   6400528_RF       100.     4        TC_Plan
+6400528_RF   6400528_RF      -100.  640528      TC_Plan
+#
+# Plan ID   NA                      Ret ID         Ret % Table #
+#----------eb----------------------eb----------eb------eb------e
+AurLastChRF                         AurLastChRF   100.00       4
+#
+#BriFulRFs                           BriFulRFs     100.00       4
+BriFulRFs                           BriFulRFs    -100.00     115
+#
+#CenFulRFs                           CenFulRFs     100.00       4
+CenFulRFs                           CenFulRFs    -100.00     105
+#CenBriRFs                           CenBriRFs     100.00       4
+CenBriRFs                           CenBriRFs    -100.00     125
+# hdt 3/10/2016 Split Central's Platteville and Lupton Bottom RFs into two nodes
+#CenPVLBRFs                          CenPVLBRFs    100.00       4
+#CenPVLBRFs                          CenPVLBRFs   -100.00     130
+CenPVRFs                            CenPVRFs     -100.00     130
+CenLBRFs                            CenLBRFs     -100.00     131
+#CenFarmRFs                          CenFarmRFs    100.00       4
+CenFarmRFs                          CenFarmRFs   -100.00     165
+#CenSN3RFs                           CenSN3RFs     100.00       4
+CenSN3RFs                           CenSN3RFs    -100.00     190
+#CenHighRFs                          CenHighRFs    100.00       4
+CenHighRFs                          CenHighRFs   -100.00     200
+#
+#ConM_AgRFs                          ConMSPRRFs     75.00       4
+#ConM_AgRFs                          ConMClCkRFs    25.00       4
+ConM_AgRFs                          ConMSPRRFs    -75.00     240
+ConM_AgRFs                          ConMClCkRFs   -25.00     240
+#ConM_WelRFs                         ConMSPRRFs     31.00       4
+#ConM_WelRFs                         ConMClCkRFs    69.00       4
+ConM_WelRFs                         ConMSPRRFs    -31.00     241
+ConM_WelRFs                         ConMClCkRFs   -69.00     241
+#
+CoorsAug3                           CoorsAug3     100.00       4
+CoorsAug7                           CoorsAug7     100.00       4
+CoorsAug12                          CoorsAug12    100.00       4
+#
+KershRFs                            KershRFs      100.00       4
+#
+#NglnFulRFs                          NglnFulRFs    100.00       4
+NglnFulRFs                          NglnFulRFs   -100.00     110
+NglnBDCRFs                          NglnBDCRFs    100.00       4
+NglnBDCRFs                          NglnBDCRFs   -100.00     112
+#NglennLBRFs                         NglennLBRFs   100.00       4
+NglennLBRFs                         NglennLBRFs  -100.00     145
+#
+# rfp 3/9/2016 ***Need to check why the positive return on PSCoMISPRFs does not sum to 100%
+#PSCoMISPRFs                         PSCoMISPRFs    12.00       4
+PSCoMISPRFs                         PSCoMISPRFs  -100.00     160
+PSCoFishApr                         PSCoClCkRFs	   16.00       4
+PSCoFishApr                         PSCoSPRFs      84.00       4
+PSCoFishApr                         PSCoSPRFs    -100.00     176
+PSCoFishMay                         PSCoClCkRFs	   24.00       4
+PSCoFishMay                         PSCoSPRFs      76.00       4
+PSCoFishMay                         PSCoSPRFs    -100.00     176
+PSCoFishJun                         PSCoClCkRFs	   29.00       4
+PSCoFishJun                         PSCoSPRFs      71.00       4
+PSCoFishJun                         PSCoSPRFs    -100.00     176
+PSCoFishJul                         PSCoClCkRFs	   32.00       4
+PSCoFishJul                         PSCoSPRFs      68.00       4
+PSCoFishJul                         PSCoSPRFs    -100.00     176
+PSCoFishAug                         PSCoClCkRFs	   36.00       4
+PSCoFishAug                         PSCoSPRFs      64.00       4
+PSCoFishAug                         PSCoSPRFs    -100.00     176
+PSCoFishSep                         PSCoClCkRFs	   33.00       4
+PSCoFishSep                         PSCoSPRFs      67.00       4
+PSCoFishSep                         PSCoSPRFs    -100.00     176
+PSCoFishOct                         PSCoClCkRFs	   28.00       4
+PSCoFishOct                         PSCoSPRFs      72.00       4
+PSCoFishOct                         PSCoSPRFs    -100.00     176
+PSCoSPRFs                           PSCoSPRFs     100.00       4
+PSCoSPRFs                           PSCoSPRFs    -100.00     176
+PSCoSPRFs2                          PSCoSPRFs2    100.00       4
+PSCoSPRFs2                          PSCoSPRFs2   -100.00     170
+PSCoLBRFs                           PSCoLBRFs     100.00       4
+PSCoLBRFs                           PSCoLBRFs    -100.00     140
+#
+#SAC_FulRFs                          SAC_FulRFs    100.00       4
+SAC_FulRFs                          SAC_FulRFs   -100.00     100
+#SAC_BriRFs                          SAC_BriRFs    100.00       4
+SAC_BriRFs                          SAC_BriRFs   -100.00     120
+SABurRFsSum                         SABurRFsSum   100.00       4
+SABurRFsYR                          SABurRFsYR   -100.00     205
+#SAC_LBRFs                           SAC_LBRFs     100.00       4
+SAC_LBRFs                           SAC_LBRFs    -100.00     135
+#SAC_MI1RFs                          SAC_MI1RFs    100.00       4
+SAC_MI1RFs                          SAC_MI1RFs   -100.00     155
+#
+SpinMtnDRF                          SpinMtnDRF   -100.00     300
+SpinDRF_03                          SpinDRF_03   -100.00     303
+SpinDRF_04                          SpinDRF_04   -100.00     304
+SpinDRF_07                          SpinDRF_07   -100.00     307
+SpinDRF_11                          SpinDRF_11   -100.00     311
+SpinDRF_13                          SpinDRF_13   -100.00     313
+SpinDRF_16                          SpinDRF_16   -100.00     316
+SpinDRF_17                          SpinDRF_17   -100.00     317
+SpinDRF_21                          SpinDRF_21   -100.00     321
+#
+# Combined FHL Returns from Case Nos. 87CW334 and 02CW266 result in 5 return flow locations 
+#    (abv Ralston; blw Ralston; Ralston, abv Fulton; abv Platteville; abv Mdw Island No. 1) that are further aggreated to the following to simplify representation
+ThChurchRFs                         ThChurchRFs   100.00       4 
+ThChurchRFs                         ThChurchRFs  -100.00     251 
+ThFHL_RFs                           ThLCC_RFs      13.00       4 
+ThFHL_RFs                           ThBDC_RFs      19.00       4 
+ThFHL_RFs                           ThornSPRFs1    68.00       4 
+ThFHL_RFs                           ThLCC_RFs     -13.00     252 
+ThFHL_RFs                           ThBDC_RFs     -19.00     252 
+ThFHL_RFs                           ThornSPRFs1   -68.00     252 
+ThFishRFs1                          ThLCC_RFs      46.00       4 
+ThFishRFs1                          ThornSPRFs1    54.00       4
+ThFishRFs1                          ThLCC_RFs     -46.00     253 
+ThFishRFs1                          ThornSPRFs1   -54.00     253
+ThFishRFs2                          ThLCC_RFs      46.00       4 
+ThFishRFs2                          ThornSPRFs1    54.00       4
+ThCoAg89RFs                         ThornSPRFs1   100.00       4 
+ThCoAg89RFs                         ThornSPRFs1  -100.00     254 
+ThCoAg02RFs                         ThornSPRFs1    46.00       4 
+ThCoAg02RFs        	            ThornSPRFs2    54.00       4
+ThCoAg02RFs                         ThornSPRFs1   -46.00     255 
+ThCoAg02RFs                         ThornSPRFs2   -54.00     255
+ThLCC89RFs                          ThornSPRFs1   100.00       4 
+ThLCC89RFs                          ThornSPRFs1  -100.00     256 
+ThLCC02RFs                          ThornSPRFs1    69.00       4 
+ThLCC02RFs                          ThornSPRFs2    31.00       4
+ThLCC02RFs                          ThornSPRFs1   -69.00     257 
+ThLCC02RFs                          ThornSPRFs2   -31.00     257
+#ThBDC_RFs                           ThBDC_RFs     100.00       4
+#ThBDC_RFs                           ThBDC_RFs    -100.00     205
+#ThornSPRFs                          ThornSPRFs    100.00       4
+#ThornSPRFs                          ThornSPRFs   -100.00     205
+#ThornBurRFs                         ThornBurRFs   100.00       4
+ThBurRFsSum                         ThBurRFsSum   100.00       4
+ThBurRFsYR                          ThBurRFsYR   -100.00     205
+#
+WestyChRFs                           WestBDCRFs     8.00       4
+WestyChRFs                          WestyLCCRFs	   14.00       4
+WestyChRFs                           WestySPRFs    78.00       4
+WestyChRFs                           WestBDCRFs    -8.00     261
+WestyChRFs                          WestyLCCRFs	  -14.00     261
+WestyChRFs                           WestySPRFs   -78.00     261
+WestyFHLRFs                          WestBDCRFs     9.00       4
+WestyFHLRFs                         WestyLCCRFs	    9.00       4
+WestyFHLRFs                          WestySPRFs    82.00       4
+WestyFHLRFs                          WestBDCRFs    -9.00     262
+WestyFHLRFs                         WestyLCCRFs	   -9.00     262
+WestyFHLRFs                          WestySPRFs   -82.00     262
+#
+#
+#Plan ID    NA                      Ret ID         Ret % Table #
+#----------eb----------------------eb--------      --eb------eb------e
+Longmont_TC                         05LONG_RFOs         100.00       4
+Longmont_TC                         05LONG_RFOs        -100.00     515
+#
+# Plan ID   NA                      Ret ID         Ret % Table #
+#----------eb----------------------eb----------eb------eb------e
+06538_L_RF                          06LAF_RFO     100.00       4
+06538_B_RF                          06BOU_RFO     100.00       4
+06538_B_RF                          06BOU_RFO    -100.00    6538
+06543_B_RF                          06BOU_RFO     100.00       4
+06543_B_RF                          06BOU_RFO    -100.00    6543
+06565_L_RF                          06LAF_RFO     100.00       4
+06565_V_RF                          06LOU_RFO     100.00       4
+06650_L_RF                          06LAF_RFO     100.00       4
+06650_V_RF                          06LOU_RFO     100.00       4
+06576_L_RF                          06LAF_RFO     100.00       4
+06569_L_RF                          06LAF_RFO     100.00       4
+06567_L_RF                          06LAF_RFO     100.00       4
+06567_V_RF                          06LOU_RFO     100.00       4

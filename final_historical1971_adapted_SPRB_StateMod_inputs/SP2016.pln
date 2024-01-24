@@ -1,0 +1,1171 @@
+#
+# SP2016 Plan data
+#
+#
+#     Card 1   Control
+#     format:  (a12, a24, a12, 6i8, a12, i4) - can be read as free format
+#
+#     Plan ID:              Pid     Include _ instead of blanks
+#     Plan Name:            Pname   Include _ instead of blanks
+#     Plan Location         iPsta   River node where the plan is located 
+#     Plan On/Off:          Pon     On (1) or Off (0) switch
+#
+#     Plan Type             iPlnTyp  1 = Terms and Conditions (T&C)
+#                                    2 = Well Augmentation
+#                                    3 = Reservoir Reuse
+#                                    4 = Non Reservoir Reuse (e.g., WWTP)
+#                                    5 = Reuse to a Reservoir from Tmtn
+#                                    6 = Reuse to a Diversion from Tmtn
+#                                    7 = Transmountain import
+#                                    8 = Recharge Plan
+#                                    9 = Out-of-Priority Diversion or Storage
+#                                   10 = Special Well Augmentation (e.g., Designated Basin, Coffin Wells, etc.)
+#                                   11 = Accounting Plan (used with South Platte Compact Release - Type 40 rule and South Platte Compact Storage - Type 50 rule)
+#                                   12 = Release Limit Plan (e.g., HUP Pool Release Limit)
+#                                   13 = Changed Water Rights Plan
+#
+#     Plan Efficiency (%)   Peff    Enter 0 if not used
+#                                   Enter 1 to read 12 plan efficiency values (%)
+#                                   Enter -1 if data is provided in an Operating Rule file (*.opr)
+#                                   Enter 999 to use the source structure's efficiency
+#     Plan Return Flow ID   iPrf    Enter 0 if not used
+#                                   Enter 1 if data is provided for a T&C Plan in a Plan Return Flow file (*.prf)
+#                                   Enter 8 if data is provided for a Recharge Plan in a Plan Return Flow file (*.prf)
+#                                   Enter 999 to use the source structure's return flow data
+#     Plan Failure Switch   iPfail  Used only for a T&C Plan (iPlntype = 1)
+#                                   Enter 0 to not turn plan off if it fails
+#                                   Enter 1 to turn a plan off if it fails
+#                                   1 = Do stop and accumulate failures to be paid in subsequent time steps
+#     Plan Initial Storage  Psto1   Storage in Plan structure at beginning of simulation
+#                                   Used only for Plan Types 3, 9 and 12       
+#                                   Set to 0 for other Plan Types
+#     Plan Source           Psource Source ID of the structure where plan water becomes available 
+#                                   Used only for Plan Type 8 based on Source of Recharge
+#                                   Set to 'Reservoir' for Seepage; Set to 'Diversion' for Canal Loss
+#                                   Set to NA for other Plan Types
+#     Plan Account          iPAcc   Source Account of the structure where plan water becomes available 
+#                                   Used only for Plan Type 8 with Psource = Reservoir    
+#
+#     Card 2   Plan Efficiency Data
+#              Include only if the plan efficiency variable (Peff) = 1
+#     Free Format
+#
+#     Plan ID:              Pid     Include _ instead of blanks
+#     Plan Efficiency       Peff(1,j), j=1,12 Plan efficiency for month 1-12
+#                                   Note the first entry corresponds to the first month specified in the control file
+#
+#
+# ID        Name                    RiverLoc      ON/Off  iPtype    Peff    iPrf  iPfail   Psto1 Psource     IPAcc
+#----------eb----------------------eb----------eb------eb------eb------eb------eb------eb------exb----------eb------e
+#
+# PLAN STRUCTURES ORDERED BELOW EITHER BY PLAN TYPE OR SPECIFIC USE (e.g., Burlington Ditch system, Cosmic operations, etc.) 
+#
+# AUGMENTATION PLANS
+#
+0802593     AuroraWellAugPlan       0802593            1       2       0       0       0       0 "Pumping     "0
+0703390     CoorsA_AugPlan          0703390            1       2       0       0       0       0 "Pumping     "0
+07_C_AugPln CoorsC_AugPlan          07_C_AugPln        1       1       0       0       0       0 "Diversion   "0
+9902502     SACWSDAugPlan           9902502            1       2       0       0       0       0 "Pumping     "0
+9902541     BrightonAugPlan         9902541            1       2       0       0       0       0 "Pumping     "0
+#
+9903334_A   GMSReachAAugPln         9903334_A          1       2       0       0       0       0 "Pumping     "0
+9903394_A   WASReachAAugPln         9903394_A          1       2       0       0       0       0 "Pumping     "0
+9903334_B   GMSReachBAugPln         9903334_B          1       2       0       0       0       0 "Pumping     "0
+9903394_B   WASReachBAugPln         9903394_B          1       2       0       0       0       0 "Pumping     "0
+9903334_C   GMSReachCAugPln         9903334_C          1       2       0       0       0       0 "Pumping     "0
+9903394_C   WASReachCAugPln         9903394_C          1       2       0       0       0       0 "Pumping     "0
+9903334_D   GMSReachDAugPln         9903334_D          1       2       0       0       0       0 "Pumping     "0
+9903394_D   WASReachDAugPln         9903394_D          1       2       0       0       0       0 "Pumping     "0
+9903334_E   GMSReachEAugPln         9903334_E          1       2       0       0       0       0 "Pumping     "0
+9903394_E   WASReachEAugPln         9903394_E          1       2       0       0       0       0 "Pumping     "0
+9903334_F   GMSReachFAugPln         9903334_F          1       2       0       0       0       0 "Pumping     "0
+9903394_F   WASReachFAugPln         9903394_F          1       2       0       0       0       0 "Pumping     "0
+#
+9903394_PlR CentralAugPln           9903394_PlR        1       8       0       8       0       0 "Reservoir   "0
+9902502_PlR SACWSDAugPln            9902502_PlR        1       8       0       8       0       0 "Reservoir   "0
+9902541_PlR BrightonAugPln          9902541_PlR        1       8       0       8       0       0 "Reservoir   "0
+#
+#
+# ID        Name                    RiverLoc      ON/Off  iPtype    Peff    iPrf  iPfail   Psto1 Psource     IPAcc
+#----------eb----------------------eb----------eb------eb------eb------eb------eb------eb------exb----------eb------e
+#
+# TRANSBASIN / INTER-BASIN IMPORT PLANS
+2302201     BeeryDTransferPlan      2302201            1      13       0       0       0       0 "Diversion   "0
+2302907_Pln MichCkAbvJeffersonPln   2302907_Pln        1      13       0       0       0       0 "Diversion   "0
+2302908_Pln JeffCkNrJeffersonPlan   2302908_Pln        1      13       0       0       0       0 "Diversion   "0
+2302910_Pln OhlerGulchGagePlan      2302910_Pln        1      13       0       0       0       0 "Diversion   "0
+2302914_Pln FrenchCkGagePlan        2302914_Pln        1      13       0       0       0       0 "Diversion   "0
+2302916_Pln SchattingerGagePlan     2302916_Pln        1      13       0       0       0       0 "Diversion   "0
+BerthoudPln BerthoudPassDPlan       BerthoudPln        1      11     999     999       0       0 "ImportPln   "0
+Berthoud_C  BerthoudPassCarrier     Berthoud_C         1      13       0       0       0       0 "Diversion   "0
+0704625     BerthoudPassDPlan       0704625            1       7     999     999       0       0 "ImportPln   "0
+BoreasPln   BoreasPassDPlan         BoreasPln          1      11     999     999       0       0 "ImportPln   "0
+Boreas_C    BoreasPassCarrier       Boreas_C           1      13       0       0       0       0 "Diversion   "0
+2304611     BoreasPassDPlan         2304611            1       7     999     999       0       0 "ImportPln   "0
+GumlickPln  GumlickTunnelPlan       GumlickPln         1      11     999     999       0       0 "ImportPln   "0
+Gumlick_C   JonePassCarrier         Gumlick_C          1      13       0       0       0       0 "Diversion   "0
+0704650     GumlickTunnelPlan       0704650            1       7     999     999       0       0 "ImportPln   "0
+HomestkPln  HomestakePipelinePlan   HomestkPln         1      11     999     999       0       0 "ImportPln   "0
+Homestk_C   HomestakePL_Carrier     Homestk_C          1      13       0       0       0       0 "Diversion   "0
+HOMSPICO    HomestakePipelinePlan   HOMSPICO           1       7     999     999       0       0 "ImportPln   "0
+RobTunPln   RobertsTunnelPlan       RobTunPln          1      11     999     999       0       0 "ImportPln   "0
+RobTun_C    RobertsTunnelCarrier    RobTun_C           1      13       0       0       0       0 "Diversion   "0
+8000653     RobertsTunnelPlan       8000653            1       7     999     999       0       0 "ImportPln   "0
+SandHillPln SandHillPlan            SandHillPln        1      11     999     999       0       0 "ImportPln   "0
+SandHill_C  SandHillPlan            SandHill_C         1       7     999     999       0       0 "ImportPln   "0
+StratCkPln  StraightCkTunnelPlan    StratCkPln         1      11     999     999       0       0 "ImportPln   "0
+StratCk_C   StraightCkTunnelCarrier StratCk_C          1      13       0       0       0       0 "Diversion   "0
+0700903     StraightCkTunnelPlan    0700903            1       7     999     999       0       0 "ImportPln   "0
+VidlerPln   VidlerTunnelPlan        VidlerPln          1      11     999     999       0       0 "ImportPln   "0
+Vidler_C    VidlerTunnelCarrier     Vidler_C           1      13       0       0       0       0 "Diversion   "0
+0704626     VidlerTunnelPlan        0704626            1       7     999     999       0       0 "ImportPln   "0
+BearCkPln   BearCkDivnPlan          BearCkPln          1       4       0       0       0       0 "Diversion   "0
+#
+#
+# ID        Name                    RiverLoc      ON/Off  iPtype    Peff    iPrf  iPfail   Psto1 Psource     IPAcc
+#----------eb----------------------eb----------eb------eb------eb------eb------eb------eb------exb----------eb------e
+#
+#     CHANGED DITCH SHARE PLANS (generally listed in upstream to downstream order)
+#
+#   WATER DISTRICTS 8, 9, 32, 80
+#
+# SOUTH FORK SOUTH PLATTE
+2302900_Pln SFkSPRAbvAnteroPln      2302900_Pln        1      13       0       0       0       0 "Diversion   "0
+2302901_Pln 4MileNrHarstelPln       2302901_Pln        1      13       0       0       0       0 "Diversion   "0
+2302902_Pln SPR_SantaMariaPln       2302902_Pln        1      13       0       0       0       0 "Diversion   "0
+2302903_Pln SFkSPRAbvSpinneyPln     2302903_Pln        1      13       0       0       0       0 "Diversion   "0
+2302904_Pln 4MileAtHighCkPln        2302904_Pln        1      13       0       0       0       0 "Diversion   "0
+2302906_Pln TroutGaroPln            2302906_Pln        1      13       0       0       0       0 "Diversion   "0
+2302907_Pln SprBranchAbMidFkPln     2302907_Pln        1      13       0       0       0       0 "Diversion   "0
+2302908_Pln MidSPR_PrincePln        2302908_Pln        1      13       0       0       0       0 "Diversion   "0
+2302909_Pln TroutGaroPln            2302909_Pln        1      13       0       0       0       0 "Diversion   "0
+2302910_Pln SprBranchAbMidFkPln     2302910_Pln        1      13       0       0       0       0 "Diversion   "0
+2302911_Pln MidSPR_PrincePln        2302911_Pln        1      13       0       0       0       0 "Diversion   "0
+2302912_Pln SPR_SantaMariaPln       2302912_Pln        1      13       0       0       0       0 "Diversion   "0
+2302913_Pln SFkSPRAbvSpinneyPln     2302913_Pln        1      13       0       0       0       0 "Diversion   "0
+2302914_Pln 4MileAtHighCkPln        2302914_Pln        1      13       0       0       0       0 "Diversion   "0
+2302915_Pln TroutGaroPln            2302915_Pln        1      13       0       0       0       0 "Diversion   "0
+2302916_Pln SprBranchAbMidFkPln     2302916_Pln        1      13       0       0       0       0 "Diversion   "0
+2302917_Pln MidSPR_PrincePln        2302917_Pln        1      13       0       0       0       0 "Diversion   "0
+2302918_Pln MidSPR_PrincePln        2302918_Pln        1      13       0       0       0       0 "Diversion   "0
+#
+# TARRYALL CREEK CHANGED RIGHTS
+TaryTempPln ChangedRightsForRel     TaryTempPln        1      13       0       0       0       0 "Diversion   "0
+#
+# CONDUIT 20
+Cond20Pln   Cond20ChangedRightsPln  Cond20Pln          1      13       0       0       0       0 "Diversion   "0
+Cnd20DirPln Cond20DirectFlowPln     Cnd20DirPln        1      13       0       0       0       0 "Diversion   "0
+#
+# ENGLEWOOD INTAKE DITCH
+EngIntPln  EnglewoodNevadaDPlan     EngIntPln          1      13       0       0       0       0 "Diversion   "0
+#
+# LAST CHANCE DITCH
+LastDSplPln LastChanceDSplPlan      LastDSplPln        1      13       0       0       0       0 "Diversion   "0
+AurIntPln1  AuroraIntakePlanW2083   AurIntPln1         1      13       0       0       0       0 "Diversion   "0
+AurIntPln2  AuroraIntakePln91CW117  AurIntPln2         1      13       0       0       0       0 "Diversion   "0
+AurIntPln3  AuroraIntakePln1964     AurIntPln3         1      13       0       0       0       0 "Diversion   "0
+AurLastChRF AuroraLastChanceD_RFs   AurLastChRF        1       1      -1       1       0       0 "Diversion   "0
+DenLastDPln DenverLastChanceDPln    DenLastDPln        1      13       0       0       0       0 "Diversion   "0
+EngLastDPln EnglwdLastChanceDPln    EngLastDPln        1      13       0       0       0       0 "Diversion   "0
+#
+# FARMERS AND GARDNERS DITCH
+FandGSplPln FarmGardSplitPlan       FandGSplPln        1      13       0       0       0       0 "Diversion   "0
+FandGIrrPln FarmGardIrrigPlan       FandGIrrPln        1      13       0       0       0       0 "Diversion   "0
+FandGIndPln FarmGardIndusPlan       FandGIndPln        1      13       0       0       0       0 "Diversion   "0
+#
+#
+# ID        Name                    RiverLoc      ON/Off  iPtype    Peff    iPrf  iPfail   Psto1 Psource     IPAcc
+#----------eb----------------------eb----------eb------eb------eb------eb------eb------eb------exb----------eb------e
+#
+#   WATER DISTRICT 7
+#
+# CHURCH DITCH
+#   Two Church Split plans to address Coors having prorata ownership of, more or less, Priority 1
+ChrchSplPl1 ChurchDSplitPlan2       ChrchSplPl1        1      13       0       0       0       0 "Diversion   "0
+ChrchSplPln ChurchDSplitPlan1       ChrchSplPln        1      13       0       0       0       0 "Diversion   "0
+ChrchIrrPln ChurchDIrrigPlan        ChrchIrrPln        1      13       0       0       0       0 "Diversion   "0
+ArvChPln    ArvadaChurchDPlan       ArvChPln           1      13       0       0       0       0 "Diversion   "0
+CoorsChPln  CoorsChurchDPlan        CoorsChPln         1      13       0       0       0       0 "Diversion   "0
+GoldChPln   GoldenChurchDPlan       GoldChPln          1      13       0       0       0       0 "Diversion   "0
+NglennChPln NglennChurchDPlan       NglennChPln        1      13       0       0       0       0 "Diversion   "0
+ThChurchPln ThorntonChurchDPlan     ThChurchPln        1      13       0       0       0       0 "Diversion   "0
+WestyChPln  WestyChurchDPlan        WestyChPln         1      13       0       0       0       0 "Diversion   "0
+#
+# GOLDEN CITY DITCH
+GldnCtyDPln GoldenCityDitchPlan     GldnCtyDPln        1      13       0       0       0       0  Diversion    0
+#
+# AGRICULTURAL DITCH
+AgSplPln    AgDitchSplitPlan        AgSplPln           1      13       0       0       0       0 "Diversion   "0
+AgIrrPln    AgDIrrigPlan            AgIrrPln           1      13       0       0       0       0 "Diversion   "0
+ConM_Ag_Pln ConMutualAgDPlan        ConM_Ag_Pln        1      13       0       0       0       0 "Diversion   "0
+CoorsAgPln  CoorsAgDPlan            CoorsAgPln         1      13       0       0       0       0 "Diversion   "0
+WelchPln    WelchPlan               WelchPln           1      13       0       0       0       0 "Diversion   "0
+WelcConMPln WelchConMutPlan         WelcConMPln        1      13       0       0       0       0 "Diversion   "0
+WelchIrrPln WelchIrrigPlan          WelchIrrPln        1      13       0       0       0       0 "Diversion   "0
+#
+# FARMERS' HIGH LINE CANAL
+FHL_SplPln  FHLSplitPlan            FHL_SplPln         1      13       0       0       0       0 "Diversion   "0
+FHL_IrrPln  FHLIrrigPlan            FHL_IrrPln         1      13       0       0       0       0 "Diversion   "0
+ArvFHLPln   ArvadaFHLPlan           ArvFHLPln          1      13       0       0       0       0 "Diversion   "0
+CoorsFHLPln CoorsFHLPlan            CoorsFHLPln        1      13       0       0       0       0 "Diversion   "0
+ThFHLPln    ThorntonFHLPlan         ThFHLPln           1      13       0       0       0       0 "Diversion   "0
+WestyFHLPln WestyFHLPlan            WestyFHLPln        1      13       0       0       0       0 "Diversion   "0
+#
+# WANNAMAKER DITCH
+WannSplPln  WannamakerDSplPlan      WannSplPln         1      13       0       0       0       0 "Diversion   "0
+WannIrrPln  WannamakerDIrrigPlan    WannIrrPln         1      13       0       0       0       0 "Diversion   "0
+CoorsWanPln CoorsWannamakerDPlan    CoorsWanPln        1      13       0       0       0       0 "Diversion   "0
+#
+# LEE STEWART ESKINS DITCH
+LSE_SplPln  LSEDitchSplitPlan       LSE_SplPln         1      13       0       0       0       0 "Diversion   "0
+LSE_IrrPln  LSEIrrigPlan            LSE_IrrPln         1      13       0       0       0       0 "Diversion   "0
+Gold_LSEPln GoldenLSEPlan           Gold_LSEPln        1      13       0       0       0       0 "Diversion   "0
+GoldLSE2Pln GoldenLSEPlanAfterLoss  GoldLSE2Pln        1      13       0       0       0       0 "Diversion   "0
+GldPri12Pln GoldenLSEPriority12Pln  GldPri12Pln        1      13       0       0       0       0 "Diversion   "0
+ConM_LSEPln ConMutualLSEPlan        ConM_LSEPln        1      13       0       0       0       0 "Diversion   "0
+ConM_LS2Pln ConMutualLSE1988Plan    ConM_LS2Pln        1      13       0       0       0       0 "Diversion   "0
+#
+# ROCKY MOUNTAIN DITCH
+RM_SplPln   RkyMtnDSplitPlan        RM_SplPln          1      13       0       0       0       0 "Diversion   "0
+RM_IrrPln   RkyMtnDIrrigPlan        RM_IrrPln          1      13       0       0       0       0 "Diversion   "0
+ConM_RM_Pln ConMutualRkyMtnDPlan    ConM_RM_Pln        1      13       0       0       0       0 "Diversion   "0
+CoorsRM_Pln CoorsRkyMtnDPlan        CoorsRM_Pln        1      13       0       0       0       0 "Diversion   "0
+#
+# RENO JUCHEM DITCH
+RJ_SplPln   RenoJuchemDSplitPln     RJ_SplPln          1      13       0       0       0       0 "Diversion   "0
+RJ_IrrPln   RenoJuchemDIrrigPln     RJ_IrrPln          1      13       0       0       0       0 "Diversion   "0
+CoorsRJPln  CoorsRenoJuchemDPlan    CoorsRJPln         1      13       0       0       0       0 "Diversion   "0
+ArvRJPln    ArvadaRenoJuchemDPlan   ArvRJPln           1      13       0       0       0       0 "Diversion   "0
+#
+# SLOUGH DITCHES
+SluSplit1   SloughDNo1SplPlan       SluSplit1          1      13       0       0       0       0 "Diversion   "0
+SluSplit2   SloughDNo2SplPlan       SluSplit2          1      13       0       0       0       0 "Diversion   "0
+SluSplit3   SloughDNo3SplPlan       SluSplit3          1      13       0       0       0       0 "Diversion   "0
+SluSplit4   SloughDNo4SplPlan       SluSplit4          1      13       0       0       0       0 "Diversion   "0
+SluSplit5   SloughDNo5SplPlan       SluSplit5          1      13       0       0       0       0 "Diversion   "0
+ArvSluPln   ArvadaSloughDPlan       ArvSluPln          1      13       0       0       0       0 "Diversion   "0
+CoorsSluPln CoorsSloughDPlan        CoorsSluPln        1      13       0       0       0       0 "Diversion   "0
+GoldSluPln  GoldenSloughDPlan       GoldSluPln         1      13       0       0       0       0 "Diversion   "0
+#
+# SOUTH SIDE DITCH 
+SouthSidPln CoorsSouthSideCredits   SouthSidPln        1      13       0       0       0       0 "Diversion   "0
+#
+# KERSHAW DITCH
+KerSplPln   KershawDSplitPlan       KerSplPln          1      13       0       0       0       0 "Diversion   "0
+KerIrrPln   KershawIrrigPlan        KerIrrPln          1      13       0       0       0       0 "Diversion   "0
+ThKerPln    ThorntonKershawDPlan    ThKerPln           1      13       0       0       0       0 "Diversion   "0
+WestyKerPln WestyKershawDPlan       WestyKerPln        1      13       0       0       0       0 "Diversion   "0
+WestKer1Pln Westy68CW398KershPln    WestKer1Pln        1      13       0       0       0       0 "Diversion   "0
+WestKer2Pln Westy68CW398KershPln    WestKer2Pln        1      13       0       0       0       0 "Diversion   "0
+#
+# FISHER DITCH
+FishSplPln  FisherDSpliPlan         FishSplPln         1      13       0       0       0       0 "Diversion   "0
+FishIrrPln  FisherIrrigPlan         FishIrrPln         1      13       0       0       0       0 "Diversion   "0
+PSCoFishPln PSCoFisherDPlan         PSCoFishPln        1      13       0       0       0       0 "Diversion   "0
+ThFishPln   ThorntonFisherDPlan     ThFishPln          1      13       0       0       0       0 "Diversion   "0
+#
+# COLORADO AGRICULTURAL DITCH
+CoAgSplPln  ColoAgDSplitPlan        CoAgSplPln         1      13       0       0       0       0 "Diversion   "0
+CoAgIrrPln  ColoAgIrrigPlan         CoAgIrrPln         1      13       0       0       0       0 "Diversion   "0
+ThCoAg89Pln ThorntonCoAg89CW132Pln  ThCoAg89Pln        1      13       0       0       0       0 "Diversion   "0
+ThCoAg02Pln ThorntonCoAg02CW266Pln  ThCoAg02Pln        1      13       0       0       0       0 "Diversion   "0
+#
+# LOWER CLEAR CREEK DITCH
+LCC_SplPln  LCCDSplitPlan           LCC_SplPln         1      13       0       0       0       0 "Diversion   "0
+LCC_IrrPln  LCCDIrrigPlan           LCC_IrrPln         1      13       0       0       0       0 "Diversion   "0
+Ngl_LCCPln  NorthglennLCCDPlan      Ngl_LCCPln         1      13       0       0       0       0 "Diversion   "0
+ThLCC89Pln  ThorntonLCC89CW132Plan  ThLCC89Pln         1      13       0       0       0       0 "Diversion   "0
+ThLCC02Pln  ThorntonLCC02CW132Plan  ThLCC02Pln         1      13       0       0       0       0 "Diversion   "0
+#
+# CHANGED WATER RIGHTS RELEASE LIMIT PLANS
+#
+Welch_RL    ConMutualWelchLim       USP_RL             1      12     999     999       0       0 0700699       0
+Ag_ConM_RL  ConMutualAgDitchLim     USP_RL             1      12     999     999       0       0 0700502       0
+AgCoors_RL  CoorsAgDitchLimLim      USP_RL             1      12     999     999       0       0 0700502       0
+AurInt_RL1  AuroraW2083_Limit       USP_RL             1      12     999     999       0       0 0700502       0
+AurInt_RL2  AuroraW91CW117_Limit    USP_RL             1      12     999     999       0       0 0700502       0
+ChrchCo_RL  CoorsChurchDitchLim     USP_RL             1      12     999     999       0       0 0700540       0
+ChrchGo_RL  GoldenChurchDitchLim    USP_RL             1      12     999     999       0       0 0700540       0
+ChrchNg_RL  NglennChurchDitchLim    USP_RL             1      12     999     999       0       0 0700540       0
+ChrchTh_RL  ThorntonChurchDitchLim  USP_RL             1      12     999     999       0       0 0700540       0
+ChrchWe_RL  WestyChurchDitchLim     USP_RL             1      12     999     999       0       0 0700540       0
+FHL_Coo_RL  CoorsFHLLim             USP_RL             1      12     999     999       0       0 0700569       0
+FHL_Thn_RL  ThornFHLLim             USP_RL             1      12     999     999       0       0 0700569       0
+FHL_Wes_RL  WestyFHLLim             USP_RL             1      12     999     999       0       0 0700569       0
+WannCoo_RL  CoorsWannLim            USP_RL             1      12     999     999       0       0 0700698       0
+LSEConM_RL  ConM_LSE_Lim            USP_RL             1      12     999     999       0       0 0700601       0
+LSEGol1_RL  Golden_LSE_Pri12_Lim    USP_RL             1      12     999     999       0       0 0700601       0
+LSEGol2_RL  Golden_LSE_Lim          USP_RL             1      12     999     999       0       0 0700601       0
+CoorsRM_RL  CoorsRkyMtnLim          USP_RL             1      12     999     999       0       0 0700652       0
+# The following entry is just a place holder in case approach to representing RJ prorata %age is changed to 100%
+WesKer86_RL Westy_86CW398_ExchLim   USP_RL             1      12     999     999       0       0 0700597       0
+WesKer93_RL Westy_93CW176_KerExcLim USP_RL             1      12     999     999       0       0 0700597       0
+WesMan93_RL Westy_93CW176_ManExcLim USP_RL             1      12     999     999       0       0 0700597       0
+CoorsRJ_RL  CoorsRenoJ_Lim          USP_RL             1      12     999     999       0       0 0700652       0
+FishTh_RL   ThorntonFisherLim       USP_RL             1      12     999     999       0       0 0700570       0
+FishPSC_RL  PSCoFisherLim           USP_RL             1      12     999     999       0       0 0700570       0
+ThCoAg89_RL Thorn89caseCoAgRelLim   USP_RL             1      12     999     999       0       0 0700549       0
+ThCoAg02_RL Thorn02caseCoAgRelLim   USP_RL             1      12     999     999       0       0 0700549       0
+ThLCC_89_RL Thorn89caseLCC_RelLim   USP_RL             1      12     999     999       0       0 0700547       0
+ThLCC_02_RL Thorn02caseLCC_RelLim   USP_RL             1      12     999     999       0       0 0700547       0
+#
+# ID        Name                    RiverLoc      ON/Off  iPtype    Peff    iPrf  iPfail   Psto1 Psource     IPAcc
+#----------eb----------------------eb----------eb------eb------eb------eb------eb------eb------exb----------eb------e
+#
+#   WATER DISTRICT 2
+#
+# BURLINGTON DITCH 
+Bur10Split  Burlington10.28Divn     Bur10Split         1      13       0       0       0       0 "Diversion   "0
+SABur10Pln  SABurlington10.28       SABur10Pln         1      13       0       0       0       0 "Diversion   "0
+ThBur10Pln  ThorntonBurlington10.28 ThBur10Pln         1      13       0       0       0       0 "Diversion   "0
+LBBur10Pln  LittBurlBurlington10.28 LBBur10Pln         1      13       0       0       0       0 "Diversion   "0
+SanstSplit  Sanstad6Divn            SanstSplit         1      13       0       0       0       0 "Diversion   "0
+SASanstPln  SASanstad6              SASanstPln         1      13       0       0       0       0 "Diversion   "0
+ThSanstPln  ThorntonSanstad6        ThSanstPln         1      13       0       0       0       0 "Diversion   "0
+LBSanstPln  LittleBurlSanstad6      LBSanstPln         1      13       0       0       0       0 "Diversion   "0
+Well7Split  Wellington7Divn         Well7Split         1      13       0       0       0       0 "Diversion   "0
+SAWell7Pln  SAWellington7           SAWell7Pln         1      13       0       0       0       0 "Diversion   "0
+ThWell7Pln  ThorntonWellington7     ThWell7Pln         1      13       0       0       0       0 "Diversion   "0
+LBWell7Pln  LittleBurlWellington7   LBWell7Pln         1      13       0       0       0       0 "Diversion   "0
+200_85Split Barr1885divn            200_85Split        1      13       0       0       0       0 "Diversion   "0
+SA200_85Pln SA200_1885Divn          SA200_85Pln        1      13       0       0       0       0 "Diversion   "0
+Th200_85Pln Thornton200_1885Divn    Th200_85Pln        1      13       0       0       0       0 "Diversion   "0
+LB200_85Pln LittleBurl200_1885Divn  LB200_85Pln        1      13       0       0       0       0 "Diversion   "0
+FB200_85Pln FricoBarr200_1885Divn   FB200_85Pln        1      13       0       0       0       0 "Diversion   "0
+HID20085Pln Henrylyn200_1885Divn    HID20085Pln        1      13       0       0       0       0 "Diversion   "0
+150_85Split Burlington1885Divn      150_85Split        1      13       0       0       0       0 "Diversion   "0
+FB150_85Pln FricoBarr150_1885Divn   FB150_85Pln        1      13       0       0       0       0 "Diversion   "0
+HID15085Pln Henrylyn150_1885Divn    HID15085Pln        1      13       0       0       0       0 "Diversion   "0
+#
+# FULTON DITCH
+FulSplPln   FultonSplitPlan         FulSplPln          1      13       0       0       0       0 "Diversion   "0
+FulIrrPln   FultonIrrigPlan         FulIrrPln          1      13       0       0       0       0 "Diversion   "0
+SAC_FulPln  FultonSACWSDChange      SAC_FulPln         1      13       0       0       0       0 "Diversion   "0
+BriFulPln   FultonBrightonChange    BriFulPln          1      13       0       0       0       0 "Diversion   "0
+NglnFulPln  FultonNorthglennChange  NglnFulPln         1      13       0       0       0       0 "Diversion   "0
+CenFulPln   FultonCentralChange     CenFulPln          1      13       0       0       0       0 "Diversion   "0
+#
+# BRIGHTON DITCH
+BriSplPln   BrightonSplitPlan       BriSplPln          1      13       0       0       0       0 "Diversion   "0
+BriIrrPln   BrightonIrrigPlan       BriIrrPln          1      13       0       0       0       0 "Diversion   "0
+SAC_BriPln  SACWSDBrightonChange    SAC_BriPln         1      13       0       0       0       0 "Diversion   "0
+CenBriPln   BrightonCentralChangE   CenBriPln          1      13       0       0       0       0 "Diversion   "0
+#
+# LUPTON BOTTOM DITCH
+LM_SplPln   LuptonMeadowsSplitPlan  LM_SplPln          1      13       0       0       0       0 "Diversion   "0
+SAC_LMPln   SACWSDLB10cfsChange     SAC_LMPln          1      13       0       0       0       0 "Diversion   "0
+PSCoLMPln   PSCoLB10cfsChange       PSCoLMPln          1      13       0       0       0       0 "Diversion   "0
+CenLMPln    CentralLB10cfsChange    CenLMPln           1      13       0       0       0       0 "Diversion   "0
+LB_SplPln   LuptonBottomSplitPlan   LB_SplPln          1      13       0       0       0       0 "Diversion   "0
+LB_IrrPln   LuptonBottomIrrigPlan   LB_IrrPln          1      13       0       0       0       0 "Diversion   "0
+NglennLBPln LBNorthglennChange      NglennLBPln        1      13       0       0       0       0 "Diversion   "0
+PSCoLBPln   PSCoLuptonBottomChange  PSCoLBPln          1      13       0       0       0       0 "Diversion   "0
+SAC_LBPln   SACWSDLuptonBtmChange   SAC_LBPln          1      13       0       0       0       0 "Diversion   "0
+CenLBPln    LBCentralChange         CenLBPln           1      13       0       0       0       0 "Diversion   "0
+#
+# PLATTEVILLE DITCH
+PVSplPln    PlattevilleSplPln       PVSplPln           1      13       0       0       0       0 "Diversion   "0
+PV_IrrPln   PlattevilleIrrigPln     PV_IrrPln          1      13       0       0       0       0 "Diversion   "0
+CenPVPln    CentralPVChange         CenPVPln           1      13       0       0       0       0 "Diversion   "0
+#
+# MEADOW ISLAND 1 DITCH
+MI1SplPln   MeadowIsland1SplitPlan  MI1SplPln          1      13       0       0       0       0 "Diversion   "0
+MI1IrrPln   MeadowIsland1IrrigPln   MI1IrrPln          1      13       0       0       0       0 "Diversion   "0
+SAC_MI1Pln  SACWSDMI1Change         SAC_MI1Pln         1      13       0       0       0       0 "Diversion   "0
+#
+# MEADOW ISLAND 2 DITCH
+M2SenSplPln MeadowIsland2SenSplPlan M2SenSplPln        1      13       0       0       0       0 "Diversion   "0
+M2JunSplPln MeadowIsland2JunSplPlan M2JunSplPln        1      13       0       0       0       0 "Diversion   "0
+MI2IrrPln   MeadowIsland1IrrigPln   MI2IrrPln          1      13       0       0       0       0 "Diversion   "0
+PSCoMI2Pln1 PSCoMI2SenChange        PSCoMI2Pln1        1      13       0       0       0       0 "Diversion   "0
+PSCoMI2Pln2 PSCoMI2JunChange        PSCoMI2Pln2        1      13       0       0       0       0 "Diversion   "0
+#
+# FARMERS INDEPENDENT DITCH
+FarmSplPln  FarmersIndSplitPlan     FarmSplPln         1      13       0       0       0       0 "Diversion   "0
+FarmIrrPln  FarmersIndIrrigPln      FarmIrrPln         1      13       0       0       0       0 "Diversion   "0
+CenFarmPln  CentralFarmersChange    CenFarmPln         1      13       0       0       0       0 "Diversion   "0
+#
+# HEWES COOK DITCH
+HewesSplPln HewsCookSplitPlan       HewesSplPln        1      13       0       0       0       0 "Diversion   "0
+HewesIrrPln HewesCookIrrigPln       HewesIrrPln        1      13       0       0       0       0 "Diversion   "0
+PSCoHewsPln PSCHewesCookChange      PSCoHewsPln        1      13       0       0       0       0 "Diversion   "0
+#
+# SECTION NO. 3 DITCH
+SN3SplPln   SectionNo3SplPln        SN3SplPln          1      13       0       0       0       0 "Diversion   "0
+SN3IrrPln   SectionNo3IrrigPln      SN3IrrPln          1      13       0       0       0       0 "Diversion   "0
+CenSN3Pln   CentralSN3Change        CenSN3Pln          1      13       0       0       0       0 "Diversion   "0
+#
+# HIGHLAND DITCH
+HighSplPln  HighlandSplitPlan       HighSplPln         1      13       0       0       0       0 "Diversion   "0
+HighIrrPln  HighlandIrrigPln        HighIrrPln         1      13       0       0       0       0 "Diversion   "0
+CenHighPln  CentralHighlandChange   CenHighPln         1      13       0       0       0       0 "Diversion   "0
+#
+#
+# ID        Name                    RiverLoc      ON/Off  iPtype    Peff    iPrf  iPfail   Psto1 Psource     IPAcc
+#----------eb----------------------eb----------eb------eb------eb------eb------eb------eb------exb----------eb------e
+#
+# TERMS AND CONDITIONS
+BriFulRFs   BrightonFultonRFs       BriFulRFs          1       1      -1       1       0       0 "Diversion   "0
+CenFulRFs   CentalFultonRFs         CenFulRFs          1       1      -1       1       0       0 "Diversion   "0
+CenBriRFs   CentralBrightonRFs      CenBriRFs          1       1      -1       1       0       0 "Diversion   "0
+CenPVRFs    CentralPVRFs            CenPVRFs           1       1      -1       1       0       0 "Diversion   "0
+CenLBRFs    CentralLBRFs            CenLBRFs           1       1      -1       1       0       0 "Diversion   "0
+CenFarmRFs  FarmersCentralRFs       CenFarmRFs         1       1      -1       1       0       0 "Diversion   "0
+CenSN3RFs   SectionNo3CentralRFs    CenSN3RFs          1       1      -1       1       0       0 "Diversion   "0
+CenHighRFs  HighlandCentralRFs      CenHighRFs         1       1      -1       1       0       0 "Diversion   "0
+ConM_AgRFs  ConMutualAgDitchRFs     ConM_AgRFs         1       1      -1       1       0       0 "Diversion   "0
+ConM_WelRFs ConMutualWelchDitchRFs  ConM_WelRFs        1       1      -1       1       0       0 "Diversion   "0
+ConMSPRRFs  ConMutualSPlatteRFs     ConMSPRRFs         1       1       1       1       0       0 "Diversion   "0
+ 0 0 0 33 84.6 8 87.3 86.6 75.9 68.5 0 0
+ConMClCkRFs ConMutualClearCkRFs     ConMClCkRFs        1       1      -1       1       0       0 "Diversion   "0
+CoorsAug3   CoorsAg_RkyMtnAugStn    CoorsAug3          1       1      -1       1       0       0 "Diversion   "0
+# 0 0 0 0 64 60 53 40 20 0 0 0
+CoorsAug7   CoorsWannamakerAugStn   CoorsAug7          1       1      -1       1       0       0 "Diversion   "0
+CoorsAug12  CoorsRenoJuchemAugStn   CoorsAug12         1       1      -1       1       0       0 "Diversion   "0
+JeffLkDRF   JeffersonLkWinterRFs    JeffLkDRF          1       1      -1       1       0       0 "Diversion   "0
+KershRFs    WestyKershawRFs         KershRFs           1       1      -1       1       0       0 "Diversion   "0
+NglnFulRFs  NorthglennFultonRFs     NglnFulRFs         1       1      -1       1       0       0 "Diversion   "0
+NglnBDCRFs  NorthglennBDCRFS        NglnBDCRFs         1       1      -1       1       0       0 "Diversion   "0
+NglennLBRFs NglennLuptonBottomRFs   NglennLBRFs        1       1      -1       1       0       0 "Diversion   "0
+PSCoClCkRFs PSCoClearCreekRFs       PSCoClCkRFs        1       1      -1       1       0       0 "Diversion   "0
+PSCoFishApr PSCoFisherRFs           PSCoFishApr        1       1      -1       1       0       0 "Diversion   "0
+PSCoFishMay PSCoFisherRFs           PSCoFishMay        1       1      -1       1       0       0 "Diversion   "0
+PSCoFishJun PSCoFisherRFs           PSCoFishJun        1       1      -1       1       0       0 "Diversion   "0
+PSCoFishJul PSCoFisherRFs           PSCoFishJul        1       1      -1       1       0       0 "Diversion   "0
+PSCoFishAug PSCoFisherRFs           PSCoFishAug        1       1      -1       1       0       0 "Diversion   "0
+PSCoFishSep PSCoFisherRFs           PSCoFishSep        1       1      -1       1       0       0 "Diversion   "0
+PSCoFishOct PSCoFisherRFs           PSCoFishOct        1       1      -1       1       0       0 "Diversion   "0
+PSCoSPRFs   PSCoSPRRFsabvFulton     PSCoSPRFs          1       1      -1       1       0       0 "Diversion   "0
+PSCoSPRFs2  PSCoJTandHCRFs          PSCoSPRFs2         1       1      -1       1       0       0 "Diversion   "0
+PSCoLBRFs   PSCoLuptonBottomRFs     PSCoLBRFs          1       1      -1       1       0       0 "Diversion   "0
+PSCoMISPRFs PSCoMeadowIsland2SPRFs  PSCoMISPRFs        1       1      -1       1       0       0 "Diversion   "0
+SAC_BriRFs  SACWSDBrightonRFs       SAC_BriRFs         1       1      -1       1       0       0 "Diversion   "0
+SABurRFsYR  SAYearRoundBurlRFs      SABurRFsYR         1       1      -1       1       0       0 "Diversion   "0
+SABurRFsSum SASummerBurlRFs         SABurRFsSum        1       1      -1       1       0       0 "Diversion   "0
+SAC_FulRFs  SACWSDFultonRFs         SAC_FulRFs         1       1      -1       1       0       0 "Diversion   "0
+SAC_LBRFs   SACWSDLuptonBottomRFs   SAC_LBRFs          1       1      -1       1       0       0 "Diversion   "0
+SAC_MI1RFs  SACWSDMdwIsland1RFs     SAC_MI1RFs         1       1      -1       1       0       0 "Diversion   "0
+SpinMtnDRF  SpinneyMtnWinterRFs     SpinMtnDRF         1       1      -1       1       0       0 "Diversion   "0
+SpinDRF_03  SpinneyWinterRFs_3%     SpinDRF_03         1       1      -1       1       0       0 "Diversion   "0
+SpinDRF_04  SpinneyWinterRFs_4%     SpinDRF_04         1       1      -1       1       0       0 "Diversion   "0
+SpinDRF_07  SpinneyWinterRFs_7%     SpinDRF_07         1       1      -1       1       0       0 "Diversion   "0
+SpinDRF_11  SpinneyWinterRFs_11%    SpinDRF_11         1       1      -1       1       0       0 "Diversion   "0
+SpinDRF_13  SpinneyWinterRFs_13%    SpinDRF_13         1       1      -1       1       0       0 "Diversion   "0
+SpinDRF_16  SpinneyWinterRFs_16%    SpinDRF_16         1       1      -1       1       0       0 "Diversion   "0
+SpinDRF_17  SpinneyWinterRFs_17%    SpinDRF_17         1       1      -1       1       0       0 "Diversion   "0
+SpinDRF_21  SpinneyWinterRFs_21%    SpinDRF_21         1       1      -1       1       0       0 "Diversion   "0
+ThChurchRFs ThorntonChurchReturns   ThChurchRFs        1       1      -1       1       0       0 "Diversion   "0
+ThFHL_RFs   ThorntonFHLReturns      ThFHL_RFs          1       1      -1       1       0       0 "Diversion   "0
+ThFishRFs1  ThorntonFishApr-AugRFs  ThFishRFs1         1       1      -1       1       0       0 "Diversion   "0
+ThFishRFs2  ThorntonFishSep-OctRFs  ThFishRFs2         1       1      -1       1       0       0 "Diversion   "0
+ThCoAg89RFs ThorntonCoAg89CW132RFs  ThCoAg89RFs        1       1      -1       1       0       0 "Diversion   "0
+ThCoAg02RFs ThorntonCoAg02CW132RFs  ThCoAg02RFs        1       1      -1       1       0       0 "Diversion   "0
+ThLCC_RFs   ThorntonLowerClearCkRFs ThLCC_RFs          1       1      -1       1       0       0 "Diversion   "0
+ThLCC89RFs  ThorntonLCC89CW132RFs   ThLCC89RFs         1       1      -1       1       0       0 "Diversion   "0
+ThLCC02RFs  ThorntonLCC02CW266RFs   ThLCC02RFs         1       1      -1       1       0       0 "Diversion   "0
+ThBDC_RFs   ThorntonBDCReturns      ThBDC_RFs          1       1      -1       1       0       0 "Diversion   "0
+ThornSPRFs1 ThorntonSPRFsabvFulton  ThornSPRFs1        1       1      -1       1       0       0 "Diversion   "0
+ThornSPRFs2 ThorntonSPRFsabvBrntnr  ThornSPRFs2        1       1      -1       1       0       0 "Diversion   "0
+ThBurRFsYR  ThornYearRoundBurlRFs   ThBurRFsYR         1       1      -1       1       0       0 "Diversion   "0
+ThBurRFsSum ThornSummerBurlRFs      ThBurRFsSum        1       1      -1       1       0       0 "Diversion   "0
+WestBDCRFs  WestyBDC_RFs            WestBDCRFs         1       1      -1       1       0       0 "Diversion   "0
+WestyChRFs  WestyChurchRFs          WestyChRFs         1       1      -1       1       0       0 "Diversion   "0
+WestyFHLRFs WestyFHLRFs             WestyFHLRFs        1       1      -1       1       0       0 "Diversion   "0
+WestyLCCRFs WestyLCC_RFs            WestyLCCRFs        1       1      -1       1       0       0 "Diversion   "0
+WestySPRFs  WestySPReturns          WestySPRFs         1       1      -1       1       0       0 "Diversion   "0
+#
+# CHANGED WATER RIGHTS RELEASE LIMIT PLANS
+#
+BriFul_RL   BriFultonRelLim         USP_RL             1      12     999     999       0       0 0200808       0
+CenBri_RL   CenFultonRelLim         USP_RL             1      12     999     999       0       0 0200810       0
+CenFI_RL    CenFIRelLim             USP_RL             1      12     999     999       0       0 0200824       0
+CenFul_RL   CenFultonRelLim         USP_RL             1      12     999     999       0       0 0200808       0
+CenHigh_RL  CenHighlandRelLim       USP_RL             1      12     999     999       0       0 0200837       0
+CenLB_RL    CenLBRelLim             USP_RL             1      12     999     999       0       0 0200812       0
+CenLM_RL    CenLMRelLim             USP_RL             1      12     999     999       0       0 0200812       0
+CenPV_RL    CenPVRelLim             USP_RL             1      12     999     999       0       0 0200813       0
+# The following is not really a changed water rights release limit but is rather a limit on DWB releases to PSCo Cherokee Plant
+DWB_PSCo_RL DWB_ReuseRelLim         USP_RL             1      12     999     999       0       0 "Diversion   "0
+CenSN3_RL   CenSN3RelLim            USP_RL             1      12     999     999       0       0 0200830       0
+MetroAurRL  MetroAuroraReuseLim     USP_RL             1      12     999     999       0       0 08_Aurora_I   0
+NglennLB_RL NglennLBRelLim          USP_RL             1      12     999     999       0       0 0200812       0
+NglnFul_RL  NglnFultonRelLim        USP_RL             1      12     999     999       0       0 0200808       0
+PSCoHC_RL   PSCoHCRelLim            USP_RL             1      12     999     999       0       0 0200825       0
+PSCoJT_RL   PSCoJTRelLim            USP_RL             1      12     999     999       0       0 0200826       0
+PSCoLB_RL   PSCoLBRelLim            USP_RL             1      12     999     999       0       0 0200812       0
+PSCoLM_RL   PSCoLMRelLim            USP_RL             1      12     999     999       0       0 0200812       0
+PSCoMI21_RL PSCoMI2SenRelLim        USP_RL             1      12     999     999       0       0 0200822       0
+PSCoMI22_RL PSCoMI2JunRelLim        USP_RL             1      12     999     999       0       0 0200822       0
+SACBri_RL   SACFultonRelLim         USP_RL             1      12     999     999       0       0 0200810       0
+SACBurl_RL  SACBurlRelLim           USP_RL             1      12     999     999       0       0 0200802       0
+SACFul_RL   SACFultonRelLim         USP_RL             1      12     999     999       0       0 0200808       0
+SACLB_RL    SACLBRelLim             USP_RL             1      12     999     999       0       0 0200812       0
+SACLM_RL    SACLMRelLim             USP_RL             1      12     999     999       0       0 0200812       0
+SACMI1_RL   SACMI1RelLim            USP_RL             1      12     999     999       0       0 0200821       0
+ThBurl_RL   ThBurlRelLim            USP_RL             1      12     999     999       0       0 0200802       0
+#
+#
+# ID        Name                    RiverLoc      ON/Off  iPtype    Peff    iPrf  iPfail   Psto1 Psource     IPAcc
+#----------eb----------------------eb----------eb------eb------eb------eb------eb------eb------exb----------eb------e
+#
+# RECHARGE DIVERSION LIMIT PLANS 
+0202003_RL  FordRelLim              USP_RL             1      12     999     999       0       0 0202003       0
+0200825_RL  HewesCookRelLim         USP_RL             1      12     999     999       0       0 0202003       0
+0200824_RL  FarmIndepRelLim         USP_RL             1      12     999     999       0       0 0202003       0
+#
+# NON-RESERVOIR REUSE PLANS (WWTP REUSABLE SUPPLIES OR STORAGE OF IMPORTS)
+AurSC_Reuse AuroraSCReuse           AurSC_Reuse        1       4       0       0       0       0 "Diversion   "0
+AurTotEffl  AuroraTotalEffluent     AurTotEffl         1       4       0       0       0       0 "Diversion   "0
+# Placeholder for Sand Ck WWTP reusable supplies - may be used if we disaggregate Aurora's return flow to two locations
+AurSC_Reuse SandCkAuroraPlan        AurSC_Reuse        1       4       0       0       0       0 "Diversion   "0
+BriReuse    BrightonReuse           BriReuse           1       4       0       0       0       0 "Diversion   "0
+NglennReuse NorthglennReuse         NglennReuse        1       4       0       0       0       0 "Diversion   "0
+SAC_Reuse   SACWSDReusePln          SAC_Reuse          1       4       0       0       0       0 "Diversion   "0
+# Placeholder for BiCity WWTP reusable supplies - may be used if we disaggregate Denver's return flow to two locations
+0802300DW   BiCityDWPlan            0802300DW          1       4       0       0       0       0 "Diversion   "0
+MetPumpsPln MetroPumpsPlan          MetPumpsPln        1       4       0       0       0       0 "Diversion   "0
+MetroArv    MetroArvadaPln          MetroArv           1       4       0       0       0       0 "Diversion   "0
+MetroAur    MetroAuroraPlan         MetroAur           1       4       0       0       0       0 "Diversion   "0
+MetroConM   MetroConMutPln          MetroConM          1       4       0       0       0       0 "Diversion   "0
+MetroDW     MetroDWPlan             MetroDW            1       4       0       0       0       0 "Diversion   "0
+MetroGold   MetroGoldenPlan         MetroGold          1       4       0       0       0       0 "Diversion   "0
+MetroTh     MetroThnPlan            MetroTh            1       4       0       0       0       0 "Diversion   "0
+MetroWesty  MetroWestyPlan          MetroWesty         1       4       0       0       0       0 "Diversion   "0
+PCWA_Reuse  PlumCklWtrAuthPlan      PCWA_Reuse         1       4       0       0       0       0 "Diversion   "0
+WestyReuse  WestyReuse              WestyReuse         1       4       0       0       0       0 "Diversion   "0
+#
+#
+# RECHARGE PLANS
+0200825_PlR HewesCkPondRecharge     0200825_PlR        1       8       0       8       0       0 "Reservoir   "0
+0200825_PlC HewesCkCanalRecharge    0200825_PlC        1       8       0     999       0       0 "Diversion   "0
+0200824_PlR FarmersPondRecharge     0200824_PlR        1       8       0       8       0       0 "Reservoir   "0
+0200824_PlC FarmersCanalRecharge    0200824_PlC        1       8       0     999       0       0 "Diversion   "0
+0202003_PlR FordRechargePln         0202003_PlR        1       8       0       8       0       0 "Reservoir   "0
+#
+#
+# RESERVOIR REUSE PLANS (REUSABLE SUPPLIES IN STORAGE, INCLUDING GRAVEL PITS)
+AurResPln   AuroraReservoirPlan     AurResPln          1       3       0       0       0       0 "Reservoir   "0
+AurStronPln StrontiaSpgsResPlan     AurStronPln        1       3       0       0       0       0 "Reservoir   "0
+EGLks_Pln   EastGravelLakesPln      EGLks_Pln          1       3       0       0       0       0 "Reservoir   "0
+SPLk_Pln    SouthPlatteLakePlan     SPLk_Pln           1       3       0       0       0       0 "Reservoir   "0
+JimBakerPln JimBakerResPlan         JimBakerPln        1       3       0       0       0       0 "Reservoir   "0
+USR_ResPln  USR_RightsInSpinney     USR_ResPln         1       3       0       0       0       0 "Reservoir   "0
+WGLks_Pln   WestGravelLakesPln      WGLks_Pln          1       3       0       0       0       0 "Reservoir   "0
+#
+# STANDLEY LAKE
+Stan1902Pln CrokeOneFillStoRight    Stan1902Pln        1      13       0       0       0       0 0700553       0
+StanLimPln  Croke1FillPlnRightSt    StanLimPln         1      13       0       0       0       0 0700553       0
+Standley_RL Stan1FillPlnSourceTo    Standley_RL        1      12     999     999       0       0 0700553       0
+StanFRIPln1 FRICOWaterInWestyAcc    StanFRIPln1        1       3       0       0       0       0 0203903       0
+StanFRIPln2 FRICOWaterInThornAcc    StanFRIPln2        1       3       0       0       0       0 0203903       0
+StanNglPln1 NglennWaterInWestyAc    StanNglPln1        1       3       0       0       0       0 0203903       0
+StanNglPln2 NglennWaterInThornAc    StanNglPln2        1       3       0       0       0       0 0203903       0
+StanWesPln  WestyWaterInThornAcc    StanWesPln         1       3       0       0       0       0 0203903       0
+StanPlnF    FRICO1902Croke          StanPlnF           1      13       0       0       0       0 0700553       0
+StanPlnN    Northglenn1902Croke     StanPlnN           1      13       0       0       0       0 0700553       0
+StanPlnT    Thornton1902Croke       StanPlnT           1      13       0       0       0       0 0700553       0
+StanPlnW    Westy1902Croke          StanPlnW           1      13       0       0       0       0 0700553       0
+StanReuseN  NorthglennStandleyReuse StanReuseN         1       3       0       0       0    5710 0700553       0
+StanReuseT  ThorntonStandleyReuse   StanReuseT         1       3       0       0       0   10428 0700553       0
+StanReuseW  WestyStandleyReuse      StanReuseW         1       3       0       0       0   19219 0700553       0
+PhanFRIPln1 FRICO4WayInWestyAcc     PhanFRIPln1        1       3       0       0       0       0 0203903       0
+PhanFRIPln2 FRICOn4WayInThornAcc    PhanFRIPln2        1       3       0       0       0       0 0203903       0
+PhanNglPln1 Nglenn4WayInWestyAcc    PhanNglPln1        1       3       0       0       0       0 0203903       0
+PhanNglPln2 Nglenn4WayInThornAcc    PhanNglPln2        1       3       0       0       0       0 0203903       0
+PhanWesPln  Westy4WayInThorntAcc    PhanWesPln         1       3       0       0       0       0 0203903       0
+#
+# COSMIC OPERATIONS
+Cosmic_RL1  CoorsBypassLimit        USP_RL             1      12     999     999       0       0 07_CoorsB     0
+Cosmic_RL2  GoldenBypassLimit       USP_RL             1      12     999     999       0       0 07_Golden_I   0
+Cosmic_RL3  LCCLimitPlanCosmic      USP_RL             1      12     999     999       0       0 0700547       0
+CosmcPln1   GoldenBypassWtrSource   CosmcPln1          1      13       0       0       0       0 0700540       0
+CosmcPln2   CoorsBypassWtrSource    CosmcPln2          1      13       0       0       0       0 0700725       0
+CoorsGuaPln CoorsGuaranteeWater     CoorsGuaPln        1       4       0       0       0       0 Coors         0
+CosCoExcPln CoorsBypassExchFromW    CosCoExcPln        1      11       0       0       0       0 WGLacct2      0
+CosCoExcFR  FRICOCoorsBypExch       CosCoExcFR         1      11       0       0       0       0 CosCoExcPln   0
+CosCoExcNg  NorthglennCoorsByp      CosCoExcNg         1      11       0       0       0       0 CosCoExcPln   0
+CosCoExcWe  WestyCoorsBypExch       CosCoExcWe         1      11       0       0       0       0 CosCoExcPln   0
+CosGoExcPln GoldenBypassExchFrom    CosGoExcPln        1      11       0       0       0       0 WGLacct2      0
+CosGoExcNg  NorthglennGoldenBy      CosGoExcNg         1      11       0       0       0       0 0700553       0
+CosGoExcWe  WestyGoldenBypExc       CosGoExcWe         1      11       0       0       0       0 0700553       0
+0702318     CoorsWWTP               0702318            1       4       0       0       0       0 07_CoorsB     0
+Gold_WWTP   GoldenWWTP              Gold_WWTP          1       4       0       0       0       0 07_Golden_I   0
+#
+#                                                                                                                                                               
+# ID         Name                       RiverLoc       ON/Off  iPtype         Peff         iPrf   iPfail   Psto1 Psource           PAcct
+#----------exxb----------------------exxb----------exb------eb------exb----------exb----------exb------eb------exb------------exb------e
+0102456       FT_MORGAN_CITY_AUG______  0102456             1       2            0            0        0       0  Pumping              0
+#
+0102513       ROTHE_AUG_PLAN__________  0102513             1       2            0            0        0       0  Pumping              0
+0102513_PlR   ROTHE_RA_Plan___________  0102513             1       8            0            8        0       0  Reservoir            1
+0102513_RnL   ROTHE_North_RA_Limit____  0102513_RnL         1      12            0          999        0       0  Limit                1
+0102513_RsL   ROTHE_South_RA_Limit____  0102513_RsL         1      12            0          999        0       0  Limit                1
+#
+0102518       PIONEER_AUG_PLAN________  0102518             1       2            0            0        0       0  Pumping              0
+0102518_PlC   PIONEER_Canal_Plan______  0102518             1       8            0          999        0       0  Diversion            0
+0102518_PlR   PIONEER_RA_Plan_________  0102518             1       8            0            8        0       0  Reservoir            1
+0102518_RL    PIONEER_RA_Limit________  0102518_RL          1      12            0          999        0       0  Limit                1
+#
+0102522       RIVERSIDE_AUG___________  0102522             1       2            0            0        0       0  Pumping              0
+0102522_PlC   RIVERSIDE_Canal_Plan____  0102522             1       8            0          999        0       0  Diversion            0
+0102522_PlR   RIVERSIDE_RA_Plan_______  0102522             1       8            0            8        0       0  Reservoir            1
+0102522_RL    RIVERSIDE_RA_Limit______  0102522_RL          1      12            0          999        0       0  Limit                1
+#
+0102528       FT_MORGAN__AUG_PLAN_____  0102528             1       2            0            0        0       0  Pumping              0
+0102528_PlC   FT_MORGAN_Canal_Plan____  0102528             1       8            0          999        0       0  Diversion            0
+0102528_PlR   FT_MORGAN_RA_Plan_______  0102528             1       8            0            8        0       0  Reservoir            1
+0102528_RL    FT_MORGAN_RA_Limit______  0102528_RL          1      12            0          999        0       0  Limit                1
+#
+0102529       UPPER_PB_AUG_PLAN_______  0102529             1       2            0            0        0       0  Pumping              0
+0102529_PlC   UPPER_PB_Canal_Plan_____  0102529             1       8            0          999        0       0  Diversion            0
+0102529_PlR   UPPER_PB_RA_Plan________  0102529             1       8            0            8        0       0  Reservoir            1
+0102529_RL    UPPER_PB_RA_Limit_______  0102529_RL          1      12            0          999        0       0  Limit                1
+#
+0102535       LPB_AUG_PLAN____________  0102535             1       2            0            0        0       0  Pumping              0
+0102535_PlC   LPB_CANAL_PLAN__________  0102535             1       8            0          999        0       0  Diversion            0
+0102535_PlR   LPB_RA_PLAN_____________  0102535             1       8            0            8        0       0  Reservoir            1
+0102535_RL    LPB_RA_LIMIT____________  0102535_RL          1      12            0          999        0       0  Limit                1
+#
+0102662       BRUSH_AUG_______________  0102662             1       2            0            0        0       0  Pumping              0
+#
+0103339       BIJOU_AUG_PLAN__________  0103339             1       2            0            0        0       0  Pumping              0
+0103339_PlC   BIJOU_Canal_Plan________  0103339             1       8            0          999        0       0  Diversion            0
+0103339_PlR   BIJOU_RA_Plan___________  0103339             1       8            0            8        0       0  Reservoir            1
+0103570_PlR   BIJOU_RA_Plan___________  0103570             1       8            0            8        0       0  Reservoir            1
+0103339_RL    BIJOU_RA_Limit__________  0103339_RL          1      12            0          999        0       0  Limit                1
+#
+#
+# ID         Name_____________________  RiverLoc       ON/Off  iPtype         Peff         iPrf   iPfail   Psto1 Psource         PAcct
+#----------exxb----------------------exxb----------exb------eb------exb----------exb----------exb------eb------exb----------exb------e
+6402517       SEDGWICK_CTY_AUG_PLAN___  6402517             1       2            0            0        0       0  Pumping            0
+6402517_PCP   SEDGWICK_Peterson_Plan    6402517             1       8            0          999        0       0  Diversion          0
+6402517_R1    SEDGWICK_Peterson_Limit_  6402517             1      12            0          999        0       0  Limit              1
+6402517_PCS   SEDGWICK_SReserv_Plan___  6402517             1       8            0          999        0       0  Diversion          0
+6402517_R2    SEDGWICK_SReserv_Limit__  6402517             1      12            0          999        0       0  Limit              1
+6402517_PlR   SEDGWICK_CTY_RA_PLAN____  6402517             1       8            0            8        0       0  Reservoir          1
+#
+6402518       HARMONY_AUG_PLAN________  6402518             1       2            0            0        0       0  Pumping            0
+6402518_PlC   HARMONY_CANAL_PLAN______  6402518             1       8            0          999        0       0  Diversion          0
+6402518_PlR   HARMONY_RA_PLAN_________  6402518             1       8            0            8        0       0  Reservoir          1
+6402518_RL    HARMONY_RA_LIMIT________  6402518             1      12            0          999        0       0  Limit              1
+#
+6402519       DINSDALE_AUG____________  6402519             1       2            0            0        0       0  Pumping            0
+6402519_PlR   DINSDALE_AUG____________  6402519             1       8            0            8        0       0  Reservoir          1
+#
+6402525       CONDON_AUG______________  6402525             1       2            0            0        0       0  Pumping            0
+6402525_PlR   CONDON_AUG______________  6402525             1       8            0            8        0       0  Reservoir          1
+#
+6402526       STERLING_AUG____________  6402526             1       2            0            0        0       0  Pumping            0
+6402526_PlC   STERLING_AUG____________  6402526             1       8            0          999        0       0  Diversion          0
+6402526_PlR   STERLING_AUG____________  6402526             1       8            0            8        0       0  Reservoir          1
+6402526_RL    STERLING_RA_LIMIT_______  6402526             1      12            0          999        0       0  Limit              1
+6400525_PL    HendersonSmith_Plan       6400525_PL          1      13          999          999        0       0  ChangedWR          0
+6400525_RF    HendersonSmith_TCPlan     6400525_RF          1       1           -1            1        0       0  TCPlan             0
+6400528_PL    SterlingNo1_Plan          6400528_PL          1      13          999          999        0       0  ChangedWR          0
+6400528_RF    SterlingNo1_TCPlan        6400528_RF          1       1           -1            1        0       0  TCPlan             0
+#
+6402536       LOWER_LOGAN_WELL_USERS__  6402536             1       2            0            0        0       0  Pumping            0
+6402536_PCI   LLWUA_Iliff_Platte_D____  6402536             1       8            0          999        0       0  Diversion          0
+6402536_R1    LLWUA_IPV_PLAN_LIMIT____  6402536             1      12            0          999        0       0  Limit              1
+6402536_PCH   LLWUA_Harmony_D_________  6402536             1       8            0          999        0       0  Diversion          0
+6402536_R2    LLWUA_HARMONY_LIMIT_____  6402536             1      12            0          999        0       0  Limit              1
+6402536_PCP   LLWUA_Powell_Blair_D____  6402536             1       8            0          999        0       0  Diversion          0
+6402536_PCB   LLWUA_Bravo_D___________  6402536             1       8            0          999        0       0  Diversion          0
+6402536_R3    LLWUA_BRAVO_PLAN_LIMIT__  6402536             1      12            0          999        0       0  Limit              1
+6402536_PlR   LOWER_LOGAN_WELL_USERS__  6402536             1       8            0            8        0       0  Reservoir          1
+#
+6402539       LOGAN_WELL_USERS_AUG____  6402539             1       2            0            0        0       0  Pumping            0
+6402539_PCC   LWU_Schneider_D_________  6402539             1       8            0          999        0       0  Diversion          0
+6402539_R1    LWU_SCHNEIDER_LIMIT_____  6402539             1      12            0          999        0       0  Limit              1
+6402539_PCP   LWU_South_Platte_D______  6402539             1       8            0          999        0       0  Diversion          0
+6402539_R2    LWU_SOUTH_PLATTE_LIMIT__  6402539             1      12            0          999        0       0  Limit              1
+6402539_PCS   LWU_Springdale_D________  6402539             1       8            0          999        0       0  Diversion          0
+6402539_R3    LWU_SPRINGDALE_LIMIT____  6402539             1      12            0          999        0       0  Limit              1
+6402539_PCT   LWU_Sterling_No_1_D_____  6402539             1       8            0          999        0       0  Diversion          0
+6402539_R4    LWU_STERLING_NO1_LIMIT__  6402539             1      12            0          999        0       0  Limit              1
+6402539_PCF   LWU_Farmers_Pawnee_D____  6402539             1       8            0          999        0       0  Diversion          0
+6402539_R5    LWU_FARMERS_LIMIT_______  6402539             1      12            0          999        0       0  Limit              1
+6402539_PlR   LWU_RA_PLAN_____________  6402539             1       8            0            8        0       0  Reservoir          1
+#
+6402540       LOWLINE_AUG_PLAN________  6402540             1       2            0            0        0       0  Pumping            0
+6402540_PlC   LOWLINE_CANAL_PLAN______  6402540             1       8            0          999        0       0  Diversion          0
+6402540_PlR   LOWLINE_RA_PLAN_________  6402540             1       8            0            8        0       0  Reservoir          1
+6402540_RL    LOWLINE_RA_LIMIT________  6402540             1      12            0          999        0       0  Limit              1
+#
+6402542       LSPWCD_AUG______________  6402542             1       2            0            0        0       0  Pumping            0
+6402542_PCL   LSPWCD_Liddle_D_________  6402542             1       8            0          999        0       0  Diversion          0
+6402542_R1    LSPWCD_LIDDLE_LIMIT_____  6402542             1      12            0          999        0       0  Limit              1
+6402542_PCP   LSPWCD_Peterson_D_______  6402542             1       8            0          999        0       0  Diversion          0
+6402542_R2    LSPWCD_PETERSON_LIMIT___  6402542             1      12            0          999        0       0  Limit              1
+6402542_R3    LSPWCD_HEYBORNE_LIMIT___  6402542             1      12            0          999        0       0  Limit              1
+6402542_PlR   LSPWCD_AUG______________  6402542             1       8            0            8        0       0  Reservoir          1
+#
+6403392       NORTH_AUG_PLAN__________  6403392             1       2            0            0        0       0  Pumping            0
+6403392_PlC   NORTH_CANAL_PLAN________  6403392             1       8            0          999        0       0  Diversion          0
+6403392_PlR   NORTH_RA_PLAN___________  6403392             1       8            0            8        0       0  Reservoir          1
+6403392_RL    NORTH_RA_LIMIT__________  6403392             1      12            0          999        0       0  Limit              1
+#
+# Ground Water Only and Aggregated Well Defaults
+#
+# ID         Name                       RiverLoc       ON/Off  iPtype         Peff         iPrf   iPfail   Psto1 Psource         PAcct
+#----------exxb----------------------exxb----------exb------eb------exb----------exb----------exb------eb------exb----------exb------e
+#                                                                                                                                   
+GwOnly_01     GwOnly_01                 GwOnly_01           1       2            0            0        0       0 Pumping             0
+GwOnly_02     GwOnly_02                 GwOnly_02           1       2            0            0        0       0 Pumping             0
+GwOnly_04     GwOnly_04                 GwOnly_04           1       2            0            0        0       0 Pumping             0
+GwOnly_05     GwOnly_05                 GwOnly_05           1       2            0            0        0       0 Pumping             0
+GwOnly_06     GwOnly_06                 GwOnly_06           1       2            0            0        0       0 Pumping             0
+GwOnly_07     GwOnly_07                 GwOnly_07           1       2            0            0        0       0 Pumping             0
+GwOnly_08     GwOnly_08                 GwOnly_08           1       2            0            0        0       0 Pumping             0
+GwOnly_64     GwOnly_64                 GwOnly_64           1       2            0            0        0       0 Pumping             0
+#
+AggWell_01    AggWell_01                AggWell_01          1       2            0            0        0       0 Pumping             0
+AggWell_02    AggWell_02                AggWell_02          1       2            0            0        0       0 Pumping             0
+AggWell_04    AggWell_04                AggWell_04          1       2            0            0        0       0 Pumping             0
+AggWell_05    AggWell_05                AggWell_05          1       2            0            0        0       0 Pumping             0
+AggWell_06    AggWell_06                AggWell_06          1       2            0            0        0       0 Pumping             0
+AggWell_07    AggWell_07                AggWell_07          1       2            0            0        0       0 Pumping             0
+AggWell_08    AggWell_08                AggWell_08          1       2            0            0        0       0 Pumping             0
+AggWell_64    AggWell_64                AggWell_64          1       2            0            0        0       0 Pumping             0
+#
+#
+# Administrative Coffin_Wells and Designated Basins
+#                                                      
+# ID         Name                       RiverLoc       ON/Off  iPtype         Peff         iPrf   iPfail   Psto1 Psource         PAcct
+#----------exxb----------------------exxb----------exb------eb------exb----------exb----------exb------eb------exb----------exb------e
+#                                                                                                                                   
+Coffin_Well   Coffin_Well               Coffin_Well         1      10            0            0        0       0 Pumping             0
+Lost_Creek    Lost_Creek                Lost_Creek          1      10            0            0        0       0 Pumping             0
+Camp_Creek    Camp_Creek                Camp_Creek          1      10            0            0        0       0 Pumping             0
+Kiowa_Bijou   Kiowa_Bijou               Kiowa_Bijou         1      10            0            0        0       0 Pumping             0
+Upper_Crow    Upper_Crow                Upper_Crow          1      10            0            0        0       0 Pumping             0
+#
+# Compact Plan
+#                                                      
+# ID         Name                       RiverLoc       ON/Off  iPtype         Peff         iPrf   iPfail   Psto1 Psource         PAcct
+#----------exxb----------------------exxb----------exb------eb------exb----------exb----------exb------eb------exb----------exb------e
+Compact_Pln   Compact_Plan              6499999             1      11            0            0        0       0 Diversion           0
+#
+#
+# ID        Name                    RiverLoc      ON/Off  iPtype    Peff    iPrf  iPfail   Psto1 Psource     IPAcc
+#----------eb----------------------eb----------eb------eb------eb------eb------eb------eb------exb----------eb------e
+#
+# NON-RESERVOIR REUSE PLANS (WWTP REUSABLE SUPPLIES OR STORAGE OF IMPORTS)
+CBT_AllPln  HoldAllCBTimports      CBT_AllPln         1       11       0       0       0       0 NA            0
+AdamsTunPln AdamsTunnelPlan         AdamsTunPln        1      11     999     999       0       0 "ImportPln   "0
+0404634     AdamsTunnelDiversion    0404634            1       7     999     999       0       0 "ImportPln   "0
+#
+# CBT Split to Loveland
+LoveCBTPln  PL_CBTsplitLoveland    LoveCBTPln         1       11       0       0       0       0 NA            0
+#
+#     CHANGED DITCH SHARE PLANS
+#
+# LOVELAND PIPELINE  -  ORIGINAL TRANSFERS AND 202A TRANSFERS
+OrigXferPln PL_OrigXferPlan         OrigXferPln        1      13       0       0       0       0 "Diversion   "0
+Barnes_Pln  PL_BarnesPlan           Barnes_Pln         1      13       0       0       0       0 "Diversion   "0
+BarnLV_Pln  PL_BarnesLvlndPlan      BarnLV_Pln         1      13       0       0       0       0 "Diversion   "0
+BarnDL_Pln  PL_BarnesDitchLoss      BarnDL_Pln         1      13       0       0       0       0 "Diversion   "0
+BigTMfg_Pln PL_BigTMfgPlan          BigTMfg_Pln        1      13       0       0       0       0 "Diversion   "0
+BigTLV_Pln  PL_BigTLvlndPlan        BigTLV_Pln         1      13       0       0       0       0 "Diversion   "0
+BigTDL_Pln  PL_BigTDitchLoss        BigTDL_Pln         1      13       0       0       0       0 "Diversion   "0
+ChubbuckPln PL_ChubbuckPlan         ChubbuckPln        1      13       0       0       0       0 "Diversion   "0
+ChubLV_Pln  PL_ChubLvlndPlan        ChubLV_Pln         1      13       0       0       0       0 "Diversion   "0
+ChubDL_Pln  PL_ChubDitchLoss        ChubDL_Pln         1      13       0       0       0       0 "Diversion   "0
+GeoRist_Pln PL_GeorgeRistPlan       GeoRist_Pln        1      13       0       0       0       0 "Diversion   "0
+GeoRLV_Pln  PL_GeorgeRLvlndPlan     GeoRLV_Pln         1      13       0       0       0       0 "Diversion   "0
+GeoRDL_Pln  PL_GeorgeRDitchLoss     GeoRDL_Pln         1      13       0       0       0       0 "Diversion   "0
+Louden_Pln  PL_LoudenPlan           Louden_Pln         1      13       0       0       0       0 "Diversion   "0
+LoudLV_Pln  PL_LoudenLvlndPlan      LoudLV_Pln         1      13       0       0       0       0 "Diversion   "0
+LoudDL_Pln  PL_LoudenDitchLoss      LoudDL_Pln         1      13       0       0       0       0 "Diversion   "0
+SouSide_Pln PL_SSidePlan            SouSide_Pln        1      13       0       0       0       0 "Diversion   "0
+SouSdLV_Pln PL_SSideLvlndPlan       SouSdLV_Pln        1      13       0       0       0       0 "Diversion   "0
+SouSdDL_Pln PL_SSideDitchLoss       SouSdDL_Pln        1      13       0       0       0       0 "Diversion   "0
+#
+# ID 		          Name 		      RiverLoc 	          ON/Off  iPtype 	Peff 	iPrf 	iPfail 	Psto1 	 Psource 	 IPAcc
+#----------          eb----------------------eb----------        eb------eb------eb------eb------eb------eb------exb----------eb------e
+#
+##C-BT Project
+05_SVCBT              SVCBTImpPlan            05_SVCBT                   1       7     999     999       0       0 NA          0
+05_SVCBT_Pln          SVCBTAcctPlan           05_SVCBT_Pln               1      11     999     999       0       0 NA          0
+05_LongCBT            LongCBTImpPlan          05_LongCBT                 1       7     999     999       0       0 NA          0
+LongCBT_Pln           LongCBTAcctPlan         LongCBT_Pln                1      11     999     999       0       0 NA          0
+05_BRCBT              BRCBTImpPlan            05_BRCBT                   1       7     999     999       0       0 NA          0
+05_BRCBT_Pln          BRCBTAcctPlan           05_BRCBT_Pln               1      11     999     999       0       0 NA          0
+05_LHCBT              LHCBTImpPlan            05_LHCBT                   1       7     999     999       0       0 NA          0
+05_LHCBT_Pln          LHCBTAcctPlan           05_LHCBT_Pln               1      11     999     999       0       0 NA          0
+##Changed Water Rights
+527_Pln               527ChangePlan           0500527_P                  1      13       0       0       0       0 0500527     0
+527_Pln81             527ChangeSplit81        0500527_P                  1      13       0       0       0       0 0500527     0
+527_Pln87             527ChangeSplit87        0500527_P                  1      13       0       0       0       0 0500527     0
+527_Pln81DF           527DirectFlow81Limit    0500527_P                  1      12       0       0       0       0 0500527     0
+527_Pln87DF           527DirectFlow87Limit    0500527_P                  1      12       0       0       0       0 0500527     0
+528_Pln81             528ChangePlan           0500528_P                  1      13       0       0       0       0 0500528     0
+528_Pln81DF           528DirectFlow81Limit    0500528_P                  1      12       0       0       0       0 0500528     0
+529_Pln81             529ChangePlan           0500529_P                  1      13       0       0       0       0 0500529     0
+529_Pln81DF           529DirectFlow81Limit    0500529_P                  1      12       0       0       0       0 0500529     0
+530_Pln81             530ChangePlan           0500530_P                  1      13       0       0       0       0 0500530     0
+530_Pln81DF           530DirectFlow81Limit    0500530_P                  1      12       0       0       0       0 0500530     0
+545_Pln               545ChangePlan           0500545_P                  1      13       0       0       0       0 0500545     0
+545_Pln81             545ChangeSplit81        0500545_P                  1      13       0       0       0       0 0500545     0
+545_Pln87             545ChangeSplit87        0500545_P                  1      13       0       0       0       0 0500545     0
+545_Pln81DF           545DirectFlow81Limit    0500545_P                  1      12       0       0       0       0 0500545     0
+545_Pln87DF           545DirectFlow87Limit    0500545_P                  1      12       0       0       0       0 0500545     0
+547_Pln               547ChangePlan           0500547_P                  1      13       0       0       0       0 0500547     0
+547_Pln81             547ChangeSplit81        0500547_P                  1      13       0       0       0       0 0500547     0
+547_Pln87             547ChangeSplit87        0500547_P                  1      13       0       0       0       0 0500547     0
+547_Pln81DF           547DirectFlow81Limit    0500547_P                  1      12       0       0       0       0 0500547     0
+547_Pln87DF           547DirectFlow87Limit    0500547_P                  1      12       0       0       0       0 0500547     0
+551_Pln87             551ChangePlan           0500551_P                  1      13       0       0       0       0 0500551     0
+551_Pln87DF           551DirectFlow87Limit    0500551_P                  1      12       0       0       0       0 0500551     0
+552_Pln87             552ChangePlan           0500552_P                  1      13       0       0       0       0 0500552     0
+552_Pln87DF           552DirectFlow87Limit    0500552_P                  1      12       0       0       0       0 0500552     0
+554_Pln87             554ChangePlan           0500554_P                  1      13       0       0       0       0 0500554     0
+554_Pln87DF           554DirectFlow87Limit    0500554_P                  1      12       0       0       0       0 0500554     0
+558_Pln87             558ChangePlan           0500558_P                  1      13       0       0       0       0 0500558     0
+558_Pln87DF           558DirectFlow87Limit    0500558_P                  1      12       0       0       0       0 0500558     0
+560_Pln87             560ChangePlan           0500560_P                  1      13       0       0       0       0 0500560     0
+560_Pln87DF           560DirectFlow87Limit    0500560_P                  1      12       0       0       0       0 0500560     0
+601_Pln87             601ChangePlan           0500601_P                  1      13       0       0       0       0 0500601     0
+601_Pln87DF           601DirectFlow87Limit    0500601_P                  1      12       0       0       0       0 0500601     0
+##For ditches that have both Longmont changed right and uses a carrier, create an irrigation split from the changed portion of the water rights.
+547_PlnI              547IrrPlan              0500547_P                  1      13       0       0       0       0 0500547     0
+##Terms and Conditions Plans
+Longmont_TC           Longmont_RFOs           05LONG_RFOs                1       1      -1       1       0       0 NA          0
+##Reusable Supply Plans
+LInReusable           LongEffluent            LONG_IN_Re              1       4       0       0       0       0 NA          0
+LOutReusable          LongLIRFs               LONG_OUT_Re             1       4       0       0       0       0 NA          0
+LResReusable          LongResReuse            LONG_RES_Re             1       3       0       0       0       0 NA          0
+#
+#  Individual ditch plans from Excel
+# ID         Name                       RiverLoc       ON/Off  iPtype         Peff         iPrf   iPfail   Psto1 Psource           PAcct
+#----------exxb----------------------exxb----------exb------eb------exb----------exb----------exb------eb------exb------------exb------e
+# 
+# 
+# CBT Imports (Reuse Plan)
+06_CBT_IMP    "CBT Imports Plan      "  06_CBT_IMP          1       7          999          999        1       0 "Diversion   "        0
+06_CBT_SP1    "CBT Split Plan 1 60pct"  06_CBT_ACC          1      11          999          999        1       0 "Diversion   "        0
+06_CBT_SP2    "CBT Split Plan 2 20pct"  06_CBT_ACC          1      11          999          999        1       0 "Diversion   "        0
+06_CBT_ACC    "CBT Acct Plan         "  06_CBT_ACC          1      11          999          999        1       0 "Diversion   "        0
+06_CBT_LIM    "Boulder CBT Exch Limit"  06_CBT_ACC          1      12          999          999        1       0 "Diversion   "        0
+# Moffat Tunnel Imports
+06_MOF_IMP    "Moffat Import Plan    "  06_MOF_IMP          1       7          999          999        1       0 "Diversion   "        0
+06_MOF_ACC    "Moffat Acct Pln       "  06_MOF_ACC          1      11          999          999        1       0 "Diversion   "        0
+# Boulder WTP Imports
+060800_IMP    "Boulder Import Plan   "  060800_IMP          1       7          999          999        1       0 "Diversion   "        0
+060800_ACC    "Boulder Acct Pln      "  060800_PL           1      11          999          999        1       0 "Diversion   "        0
+# SWSP Import
+06_SWSP_IMP   "SWSP Import Plan      "  06_SWSP_IMP         1       7          999          999        1       0 "Diversion   "        0
+06_SWSP_PL    "SWSP Acct Pln         "  06_SWSP_PL          1      11          999          999        1       0 "Diversion   "        0
+########################################################################################################################################
+# Municipal Reuse Plans
+# Boulder Indoor Demands - small component of system - not implemented at this time.
+#06BOU_DIVRE   "Bou I Non-Res Reuse   "  06BOU_REUSE         1       4          999          999        1       0 "Diversion   "        0
+# Lafayette Indoor Demands
+06LAF_DIVRE   "Laf I Non-Res Reuse   "  06LAF_REUSE         1       4          999          999        1       0 "Diversion   "        0
+06LAF_RELIM   "Laf I Reuse Limits    "  06LAF_REUSE         1      12          999          999        1       0 "Diversion   "        0
+#
+# Boulder Whiterock exchange limit plan
+06_BWR_XLIM   "BWR Exchange Limits   "  060516_PL           1      12          999          999        1       0 "Diversion   "        0
+########################################################################################################################################
+# Changed Water Rights Plans 
+#
+## For ISF
+# Boulder City PL 0600599, Segments A, B and C
+060599_CH1    "Boulder PL MSF Pln 1  "  060599_PL           1      13          999          999        1       0 "Diversion   "        0
+060599_CH2    "Boulder PL MSF Pln 2  "  060599_PL           1      13          999          999        1       0 "Diversion   "        0
+060599_CHT1   "Boulder PL MSF Alt Pt "  060599_PL           1      13          999          999        1       0 "Diversion   "        0
+060599_CHL1   "Boulder PL MSF Alt Pt "  060599_PL           1      12          999          999        1       0 "Diversion   "        0
+#
+## For North Boulder Farmers Exchanges
+060543_CH1    "NoBoFarm Chg 1        "  060543_PL           1      13          999          999        1       0 "Diversion   "        0
+060543_CH2    "NoBoFarm Chg 2        "  060543_PL           1      13          999          999        1       0 "Diversion   "        0
+060543_CH3    "NoBoFarm Chg 3        "  060543_PL           1      13          999          999        1       0 "Diversion   "        0
+060543_CH4    "NoBoFarm Chg 4        "  060543_PL           1      13          999          999        1       0 "Diversion   "        0
+06543_B_RF    "NoBoFarm Bo RFOblig   "  06BOU_RFO           1       1           -1            1        0       0 0600543               0
+#
+## For Lower Boulder changes
+#      for irrigation
+060538_CHI1   "LowBoul Irrig Chg 1   "  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CHI2   "LowBoul Irrig Chg 2   "  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CHI5   "LowBoul Irrig Chg 5   "  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CHI6   "LowBoul Irrig Chg 6   "  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CHI8   "LowBoul Irrig Chg 8   "  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+#      total change plans
+060538_CHT1   "LowBoul Chg LoBo 1859 "  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CHT2   "LowBoul Chg LoBo 1863 "  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CHT5   "LowBoul Chg LoBo 1870 "  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CHT6   "LowBoul Chg LoBo 1882 "  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CHT8   "LowBoul Chg LoBo 1882 "  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Lafayette
+060538_CH1    "LBLafyt Chg LoBo 1859 "  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CH2    "LBLafyt Chg DryCkDavid"  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CH5    "LBLafyt Chg South     "  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CH6    "LBLafyt Chg LoBo 1870 "  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CH7    "LBLafyt Chg CentSou   "  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CH8    "LBLafyt Chg CentSou   "  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+06538_L_RF    "LBLafyt RFOblig       "  06LAF_RFO           1       1           -1            1        0       0 0600538_D             0
+#      Boulder Exchanges
+060538_CX1    "LowBoul Bo MunEx Chg 1"  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CX2    "LowBoul Bo MunEx Chg 2"  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CX3    "LowBoul Bo MunEx Chg 3"  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CX4    "LowBoul Bo MunEx Chg 4"  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CX5    "CentSou Bo MunEx Chg 1"  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+060538_CX6    "CentSou Bo MunEx Chg 2"  060538_PL           1      13          999          999        1       0 "Diversion   "        0
+06538_B_RF    "LowBoul Bo RFOblig    "  06BOU_RFO           1       1           -1            1        0       0 0600538_D             0
+#      water rights change limits
+060538_CHL1   "LowBoul ChgLm LoBo 59 "  060538_PL           1      12          999          999        1       0 "Diversion   "        0
+060538_CHL2   "LowBoul ChgLm DryCkDav"  060538_PL           1      12          999          999        1       0 "Diversion   "        0
+060538_CHL3   "LowBoul ChgLm Enterpri"  060538_PL           1      12          999          999        1       0 "Diversion   "        0
+060538_CHL4   "LowBoul ChgLm Central "  060538_PL           1      12          999          999        1       0 "Diversion   "        0
+060538_CHL5   "LowBoul ChgLm South   "  060538_PL           1      12          999          999        1       0 "Diversion   "        0
+060538_CHL8   "LowBoul ChgLm LoBo 70 "  060538_PL           1      12          999          999        1       0 "Diversion   "        0
+060538_CXL1   "LowBoul BoMunX ChgLm 1"  060538_PL           1      12          999          999        1       0 "Diversion   "        0
+060538_CXL2   "LowBoul BoMunX ChgLm 2"  060538_PL           1      12          999          999        1       0 "Diversion   "        0
+060538_CXL3   "LowBoul BoMunX ChgLm 3"  060538_PL           1      12          999          999        1       0 "Diversion   "        0
+060538_CXL4   "LowBoul BoMunX ChgLm 4"  060538_PL           1      12          999          999        1       0 "Diversion   "        0
+#
+## For Leyner Cottonwood Changed Rights 
+#      changes
+060565_CHT1   "LeynCott Chg          "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Lafayette
+060565_CH1    "LeynCott Chg Lafyt    "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+060565_CS1    "LeynCott 10pct in D   "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#        Lafayette return flow obligations
+06565_L_RF    "LeynCott LAF RFOblig  "  06LAF_RFO           1       1           -1            1        0       0 0600902               0
+#      to Louisville
+060565_CH2    "LeynCott Chg Louis    "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+060565_CS2    "LeynCott 20pct in D   "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#        Louisville return flow obligations
+06565_V_RF    "LeynCott LOU RFOblig  "  06LOU_RFO           1       1           -1            1        0       0 0600902               0
+#      water rights change limits
+060565_CHL1   "LeynCott ChgLm Lafyt  "  060902_PL           1      12          999          999        1       0 "Diversion   "        0
+060565_CHL2   "LeynCott ChgLm Louis  "  060902_PL           1      12          999          999        1       0 "Diversion   "        0
+#      to Irrigation Demand 
+060565_CHI1   "LeynCott Irr          "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#
+## For Howard Ditch Changed Rights
+#      changes
+060580_CHT1   "Howard Chg            "  060580_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Lafayette
+060580_CH1    "Howard Chg Lafyt 1    "  060580_PL           1      13          999          999        1       0 "Diversion   "        0
+060580_CS1    "Howard 20pct in D     "  060580_PL           1      13          999          999        1       0 "Diversion   "        0
+060580_CH2    "Howard Chg Lafyt 2    "  060580_PL           1      13          999          999        1       0 "Diversion   "        0
+060580_CS2    "Howard 20pct in D     "  060580_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Louisville
+060580_CH3    "Howard Chg Louis  3   "  060580_PL           1      13          999          999        1       0 "Diversion   "        0
+060580_CS3    "Howard 10pct in D     "  060580_PL           1      13          999          999        1       0 "Diversion   "        0
+060580_CH4    "Howard Chg Louis  4   "  060580_PL           1      13          999          999        1       0 "Diversion   "        0
+060580_CS4    "Howard 10pct in D     "  060580_PL           1      13          999          999        1       0 "Diversion   "        0
+060580_CH5    "Howard Chg Louis  5   "  060580_PL           1      13          999          999        1       0 "Diversion   "        0
+060580_CS5    "Howard 20pct in D     "  060580_PL           1      13          999          999        1       0 "Diversion   "        0
+060580_CH6    "Howard Chg Louis  6   "  060580_PL           1      13          999          999        1       0 "Diversion   "        0
+060580_CS6    "Howard 15pct in D     "  060580_PL           1      13          999          999        1       0 "Diversion   "        0
+060580_CH7    "Howard Chg Eldora 7   "  060580_PL           1      13          999          999        1       0 "Diversion   "        0
+060580_CS7    "Howard  5pct in D     "  060580_PL           1      13          999          999        1       0 "Diversion   "        0
+#      water rights change limits
+060580_CHL1   "Howard ChgLm Lafyt 1  "  060580_PL           1      12          999          999        1       0 "Diversion   "        0
+060580_CHL2   "Howard ChgLm Lafyt 2  "  060580_PL           1      12          999          999        1       0 "Diversion   "        0
+060580_CHL3   "Howard ChgLm Louis 3  "  060580_PL           1      12          999          999        1       0 "Diversion   "        0
+060580_CHL4   "Howard ChgLm Louis 4  "  060580_PL           1      12          999          999        1       0 "Diversion   "        0
+060580_CHL5   "Howard ChgLm Louis 5  "  060580_PL           1      12          999          999        1       0 "Diversion   "        0
+060580_CHL6   "Howard ChgLm Louis 6  "  060580_PL           1      12          999          999        1       0 "Diversion   "        0
+060580_CHL7   "Howard ChgLm Eldora 7 "  060580_PL           1      12          999          999        1       0 "Diversion   "        0
+#
+## For Dry Creek No 2 Changed Rights 
+#      changes
+060570_CHT1   "DryCk2 Chg            "  060570_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Lafayette
+060570_CH1    "DryCk2 Chg Lafyt 1    "  060570_PL           1      13          999          999        1       0 "Diversion   "        0
+060570_CH2    "DryCk2 Chg Lafyt 2    "  060570_PL           1      13          999          999        1       0 "Diversion   "        0
+060570_CH3    "DryCk2 Chg Lafyt 3    "  060570_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Louisville
+060570_CH4    "DryCk2 Chg Louis 1    "  060570_PL           1      13          999          999        1       0 "Diversion   "        0
+060570_CS4    "DryCk2 10pct in D     "  060570_PL           1      13          999          999        1       0 "Diversion   "        0
+060570_CH5    "DryCk2 Chg Louis 2    "  060570_PL           1      13          999          999        1       0 "Diversion   "        0
+060570_CS5    "DryCk2 17pct in D     "  060570_PL           1      13          999          999        1       0 "Diversion   "        0
+060570_CH6    "DryCk2 Chg Louis 3    "  060570_PL           1      13          999          999        1       0 "Diversion   "        0
+060570_CS6    "DryCk2 50pct in D     "  060570_PL           1      13          999          999        1       0 "Diversion   "        0
+#      water rights change limits
+060570_CHL1   "DryCk2 ChgLm Lafyt 1  "  060570_PL           1      12          999          999        1       0 "Diversion   "        0
+060570_CHL2   "DryCk2 ChgLm Lafyt 2  "  060570_PL           1      12          999          999        1       0 "Diversion   "        0
+060570_CHL3   "DryCk2 ChgLm Lafyt 3  "  060570_PL           1      12          999          999        1       0 "Diversion   "        0
+060570_CHL4   "DryCk2 ChgLm Louis 4  "  060570_PL           1      12          999          999        1       0 "Diversion   "        0
+060570_CHL5   "DryCk2 ChgLm Louis 5  "  060570_PL           1      12          999          999        1       0 "Diversion   "        0
+060570_CHL6   "DryCk2 ChgLm Louis 6  "  060570_PL           1      12          999          999        1       0 "Diversion   "        0
+#
+## For Goodhue Changed Rights 
+#      changes
+060650_CHT1   "Goodhue Chg           "  060650_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Lafayette
+060650_CH1    "Goodhue Chg Lafyt 1   "  060650_PL           1      13          999          999        1       0 "Diversion   "        0
+060650_CH2    "Goodhue Chg Lafyt 2   "  060650_PL           1      13          999          999        1       0 "Diversion   "        0
+060650_CH3    "Goodhue Chg Lafyt 3   "  060650_PL           1      13          999          999        1       0 "Diversion   "        0
+#        Lafayette return flow obligations
+06650_L_RF    "Goodhue Lafyt RFOblig "  06LAF_RFO           1       1           -1            1        0       0 0600650               0
+#      to Louisville
+060650_CH4    "Goodhue Chg Lafyt 4   "  060650_PL           1      13          999          999        1       0 "Diversion   "        0
+060650_CS4    "Goodhue 10pct in d    "  060650_PL           1      13          999          999        1       0 "Diversion   "        0
+#        Louisville return flow obligations
+06650_V_RF    "Goodhue Louis RFOblig "  06LOU_RFO           1       1           -1            1        0       0 0600650               0
+#      water rights change limits
+060650_CHL1   "Goodhue ChgLm Lafyt 1 "  060650_PL           1      12          999          999        1       0 "Diversion   "        0
+060650_CHL2   "Goodhue ChgLm Lafyt 2 "  060650_PL           1      12          999          999        1       0 "Diversion   "        0
+060650_CHL3   "Goodhue ChgLm Lafyt 3 "  060650_PL           1      12          999          999        1       0 "Diversion   "        0
+060650_CHL4   "Goodhue ChgLm Louis 4 "  060650_PL           1      12          999          999        1       0 "Diversion   "        0
+#
+## For Davidson Changed Rights 
+#      changes
+060567_CHT1   "Davidson Chg          "  060567_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Lafayette
+060567_CH1    "Davidson Chg Lafyt 1  "  060567_PL           1      13          999          999        1       0 "Diversion   "        0
+060567_CH2    "Davidson Chg Lafyt 2  "  060567_PL           1      13          999          999        1       0 "Diversion   "        0
+060567_CS2    "Davidson 10pct in D   "  060567_PL           1      13          999          999        1       0 "Diversion   "        0
+#        Lafayette return flow obligations
+06567_L_RF    "Davidson Lafyt RFOb   "  06LAF_RFO           1       1           -1            1        0       0 0600567               0
+#      to Louisville
+060567_CH3    "Davidson Chg Louis 3  "  060567_PL           1      13          999          999        1       0 "Diversion   "        0
+060567_CS3    "Davidson 10pct in D   "  060567_PL           1      13          999          999        1       0 "Diversion   "        0
+#        Louisville return flow oblications
+06567_V_RF    "Davidson Louis RFOb   "  06LOU_RFO           1       1           -1            1        0       0 0600567               0
+#      water rights change limits
+060567_CHL1   "Davidsn ChgLm Lafyt 1 "  060567_PL           1      12          999          999        1       0 "Diversion   "        0
+060567_CHL2   "Davidsn ChgLm Lafyt 2 "  060567_PL           1      12          999          999        1       0 "Diversion   "        0
+060567_CHL3   "Davidsn ChgLm Louis 3 "  060567_PL           1      12          999          999        1       0 "Diversion   "        0
+#
+### For SouBouBC Changed Rights 
+060588_CH1    "SouBouBC Chg Lafyt 1  "  060588_PL           1      13          999          999        1       0 "Diversion   "        0
+#
+## For DCDavd Changed Rights 
+#      changes
+060569_CHT1   "DCDavd Chg            "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Lafayette
+060569_CH1    "DCDavd Chg Lafytt 1   "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+060569_CS1    "DCDavd 12pct in D     "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#        Lafayette return flow obligations
+06569_L_RF    "DCDavd Lafyt RFOblig  "  06LAF_RFO           1       1           -1            1        0       0 0600569_D             0
+#      to Louisville
+060569_CH2    "DCDavd Chg Louis 2    "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+060569_CS2    "DCDavd 17.7pct in D   "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Coal Ridge Ditch Co
+060569_CH3    "DCDavd Chg CoalRidge 3"  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#      irrigation demand
+060569_CHI1   "DCDavd Irr            "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#      water rights change limits
+060569_CHL1   "DCDavd ChgLm Lafyt 1  "  060902_PL           1      12          999          999        1       0 "Diversion   "        0
+060569_CHL2   "DCDavd ChgLm Louis 2  "  060902_PL           1      12          999          999        1       0 "Diversion   "        0
+060569_CHL3   "DCDavd ChgLm CoRid 3  "  060902_PL           1      12          999          999        1       0 "Diversion   "        0
+#
+## For Entprs Changed Rights 
+#      changes
+060576_CHT1   "Entprs Chg            "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Lafayette
+060576_CH1    "Entprs Chg Lafytt 1   "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+060576_CH2    "Entprs Chg Lafytt 2   "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#        Lafayette return flow obligations
+06576_L_RF    "Entprs Lafyt RFOblig  "  06LAF_RFO           1       1           -1            1        0       0 0600576               0
+#      to Louisville
+060576_CH3    "Entprs Chg Louis 3    "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+060576_CS3    "Entprs 16.6pct on D   "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+060576_CH4    "Entprs Chg Louis 4    "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+060576_CS4    "Entprs 16.6pct on D   "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Coal Ridge Ditch Co
+060576_CH5    "Entprs Chg CoalRidge 5"  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#      irrigation demand
+060576_CHI1   "Entprs Irr            "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#      water rights change limits
+060576_CHL1   "Entprs ChgLm Lafyt 1  "  060902_PL           1      12          999          999        1       0 "Diversion   "        0
+060576_CHL2   "Entprs ChgLm Lafyt 2  "  060902_PL           1      12          999          999        1       0 "Diversion   "        0
+060576_CHL3   "Entprs ChgLm Louis 3  "  060902_PL           1      12          999          999        1       0 "Diversion   "        0
+060576_CHL4   "Entprs ChgLm Louis 4  "  060902_PL           1      12          999          999        1       0 "Diversion   "        0
+060576_CHL5   "Entprs ChgLm CoRid 5  "  060902_PL           1      12          999          999        1       0 "Diversion   "        0
+#
+### For Cotton No2 Changed Rights 
+#      changes
+060566_CHT1   "Cotton No2 Chg        "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Louisville
+060566_CH1    "Cotton No2 Chg Louis 1"  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+060566_CS1    "Cotton No2 19pct on D "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+060566_CH2    "Cotton No2 Chg Louis 2"  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+060566_CS2    "Cotton No2 19pct on D "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#      irrigation demand
+060566_CHI1   "Cotton No2 Irr        "  060902_PL           1      13          999          999        1       0 "Diversion   "        0
+#      water rights change limits
+060566_CHL1   "Cotton2 ChgLm Louis 1 "  060902_PL           1      12          999          999        1       0 "Diversion   "        0
+060566_CHL2   "Cotton2 ChgLm Louis 2 "  060902_PL           1      12          999          999        1       0 "Diversion   "        0
+#
+### For SoBo Cl Ck Changed Rights 
+#      changes
+060564_CHT1   "SoBo Cl Ck Chg        "  060564_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Louisville
+060564_CH1    "SoBo Cl Ck Chg Louis 1"  060564_PL           1      13          999          999        1       0 "Diversion   "        0
+060564_CS1    "SoBo Cl Ck 16.6pct    "  060564_PL           1      13          999          999        1       0 "Diversion   "        0
+#      irrigation demand
+060564_CHI1   "SoBo Cl Ck Irr        "  060564_PL           1      13          999          999        1       0 "Diversion   "        0
+#      water rights change limits
+060564_CHL1   "SoBoCoal ChgLm Louis 1"  060564_PL           1      12          999          999        1       0 "Diversion   "        0
+#
+## For Mcginn Ditch Changed Rights to Louisville
+060586_CH1    "Mcginn Chg Louis 1    "  060586_PL           1      13          999          999        1       0 "Diversion   "        0
+#
+## For Marshalville Ditch Changed Rights to Louisville
+060585_CH1    "Mrshvl Chg Louis 1    "  060585_PL           1      13          999          999        1       0 "Diversion   "        0
+#
+### For East Boulder Changed Rights 
+#      to Louisville
+060575_CHT1   "East Bould Chg       "   060575_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Louis
+060575_CH1    "East Bould Chg Louis "   060575_PL           1      13          999          999        1       0 "Diversion   "        0
+060575_CS1    "East Bould 17pct on D"   060575_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Xcel
+060575_CH2    "East Bould Chg Xcel  "   060575_PL           1      13          999          999        1       0 "Diversion   "        0
+#      water rights change limits
+060575_CHL1   "East Bould ChgLm Louis"  060575_PL           1      12          999          999        1       0 "Diversion   "        0
+060575_CHL2   "East Bould ChgLm Xcel "  060575_PL           1      12          999          999        1       0 "Diversion   "        0
+#
+### For Anderson D Changed Rights 
+#      changes
+060501_CHT1   "Anderson D Chg        "  060501_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Boulder
+060501_CH1    "Anderson D Chg Bou 1  "  060501_PL           1      13          999          999        1       0 "Diversion   "        0
+060501_CH2    "Anderson D Chg Bou 2  "  060501_PL           1      13          999          999        1       0 "Diversion   "        0
+060501_CH3    "Anderson D Chg Bou 3  "  060501_PL           1      13          999          999        1       0 "Diversion   "        0
+#      irrigation demand
+060501_CHI1   "Anderson D Irr        "  060501_PL           1      13          999          999        1       0 "Diversion   "        0
+#      water rights change limits
+060501_CHL1   "Anderson ChgLm Bou 1  "  060501_PL           1      12          999          999        1       0 "Diversion   "        0
+060501_CHL2   "Anderson ChgLm Bou 2  "  060501_PL           1      12          999          999        1       0 "Diversion   "        0
+060501_CHL3   "Anderson ChgLm Bou 3  "  060501_PL           1      12          999          999        1       0 "Diversion   "        0
+#
+### For Farmers D Changed Rights 
+#      changes
+060525_CHT1   "Farmers D Chg         "  060525_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Boulder
+060525_CH1    "Farmers D Chg Bou 1   "  060525_PL           1      13          999          999        1       0 "Diversion   "        0
+060525_CS1    "Farmers D 10pct on D  "  060525_PL           1      13          999          999        1       0 "Diversion   "        0
+060525_CH2    "Farmers D Chg Bou 2   "  060525_PL           1      13          999          999        1       0 "Diversion   "        0
+060525_CS2    "Farmers D 5pct on D   "  060525_PL           1      13          999          999        1       0 "Diversion   "        0
+#      water rights change limits
+060525_CHL1   "Farmers ChgLm Bou 1   "  060525_PL           1      12          999          999        1       0 "Diversion   "        0
+060525_CHL2   "Farmers ChgLm Bou 2   "  060525_PL           1      12          999          999        1       0 "Diversion   "        0
+#
+### For SmithGoss Changed Rights 
+#      changes
+060554_CHT1   "SmithGoss Chg         "  060554_PL           1      13          999          999        1       0 "Diversion   "        0
+#      to Boulder
+060554_CH1    "SmithGoss Chg Bou 1   "  060554_PL           1      13          999          999        1       0 "Diversion   "        0
+060554_CS1    "SmithGoss 10pct on D  "  060554_PL           1      13          999          999        1       0 "Diversion   "        0
+060554_CH2    "SmithGoss Chg Bou 2   "  060554_PL           1      13          999          999        1       0 "Diversion   "        0
+060554_CS2    "SmithGoss  5pct on D  "  060554_PL           1      13          999          999        1       0 "Diversion   "        0
+#      water rights change limits
+060554_CHL1   "SmithGoss ChgLm Bou 1 "  060554_PL           1      12          999          999        1       0 "Diversion   "        0
+#
+### For McCarty D Changed Rights 
+060542_CH1    "McCarty D Chg         "  060542_PL           1      13          999          999        1       0 "Diversion   "        0
+#
+#
+### For Harden D Changed Rights 
+#      to Boulder
+060530_CH1    "Harden D Chg Bou 1    "  060599_PL           1      13          999          999        1       0 "Diversion   "        0
+#
+## For Baseline to Watershed Reservoir Exchange
+064173_CH     "Base Rels Limit       "  064173_CH           1      12          999          999        1       0 "Diversion   "        0
