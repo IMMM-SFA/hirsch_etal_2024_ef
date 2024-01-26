@@ -35,11 +35,9 @@ Human, I.M. (2021, April 14). Project/repo:v0.1.0 (Version v0.1.0). Zenodo. http
 ### Output data
 
 ## Contributing modeling software
-| Model | Version | Repository Link | DOI |
+| Model | Version | Link |
 |-------|---------|-----------------|-----|
-| StateMod | v15 | link to code repository | link to DOI dataset |
-| model 2 | version | link to code repository | link to DOI dataset |
-| component 1 | version | link to code repository | link to DOI dataset |
+| StateMod | v15 | https://cdss.colorado.gov/software/statemod |
 
 ## Reproduce my experiment*
 
