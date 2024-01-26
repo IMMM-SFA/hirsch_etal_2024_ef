@@ -1,6 +1,6 @@
 _your zenodo badge here_
 
-# hirsch_etal_2023_ef
+# hirsch_etal_2024_ef
 
 **Two-Way Option Contracts that Enhance Adaptive Water Reallocation in the Western United States **
 
@@ -50,7 +50,7 @@ Organize three separate folders on your local machine.
 
 *All working directories must be changed in order for the code to run.
 
-## Pre-processing
+## Pre-processing + StateMod
 1. Download the StateMod Model 15.00.01 Executable from: https://cdss.colorado.gov/software/statemod
 2. Download the South Platte and Upper Colorado StateMod input files from: https://cdss.colorado.gov/modeling-data/surface-water-statemod
 3. Run StateMod v15 for both the Upper Colorado and South Platte (using simulate, option 2)
@@ -59,10 +59,13 @@ Organize three separate folders on your local machine.
 5. Run the following scripts in the 'pre_processing' file to update StateMod input files
 6. Re-run the South Platte StateMod to produce new outputs for use in post-processing
 
-| Script Name | Description | How to Run |
-| --- | --- | --- |
-| `update_rsp.py` | Script to run the first part of my experiment | `python3 step_one.py -f /path/to/inputdata/file_one.csv` |
-| `ddm_extraction_timeseries.py` | Script to run the second part of my experiment | `python3 step_two.py -o /path/to/my/outputdir` |
+## Post-processing
+1. Run one of the following scripts to see results from a given rights regime and pricing scenario
+
+| Script Name | Description |
+| --- | --- |
+| `TWO_update_S1_manuscript_final.py` | Script to run the two-way option through the current rights regime, pricing scenario 1 |
+| `TWO_historical_S1_manuscript_final.py` | Script to run the two-way option through the historical (1971) rights regime, pricing scenario 1 |
 
 4. Download and unzip the output data from my experiment [Output data](#output-data)
 5. Run the following scripts in the `workflow` directory to compare my outputs to those from the publication
@@ -73,7 +76,3 @@ Organize three separate folders on your local machine.
 
 ## Reproduce my figures
 Use the scripts found in the `figures` directory to reproduce the figures used in this publication.
-
-| Script Name | Description | How to Run |
-| --- | --- | --- |
-| `generate_figures.py` | Script to generate my figures | `python3 generate_figures.py -i /path/to/inputs -o /path/to/outuptdir` |
