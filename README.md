@@ -66,6 +66,12 @@ Organize three separate folders on your local machine.
 | --- | --- |
 | `TWO_update_S1_manuscript_final.py` | Script to run the two-way option through the current rights regime, pricing scenario 1 |
 | `TWO_historical_S1_manuscript_final.py` | Script to run the two-way option through the historical (1971) rights regime, pricing scenario 1 |
+| `TWO_update_S2_manuscript_final.py` | Script to run the two-way option through the current rights regime, pricing scenario 2 |
+| `TWO_historical_S2_manuscript_final.py` | Script to run the two-way option through the historical (1971) rights regime, pricing scenario 2 |
+| `TWO_update_S3_manuscript_final.py` | Script to run the two-way option through the current rights regime, pricing scenario 3 |
+| `TWO_historical_S3_manuscript_final.py` | Script to run the two-way option through the historical (1971) rights regime, pricing scenario 3 |
+| `TWO_update_S4_manuscript_final.py` | Script to run the two-way option through the current rights regime, pricing scenario 4 |
+| `TWO_historical_S4_manuscript_final.py` | Script to run the two-way option through the historical (1971) rights regime, pricing scenario 4 |
 
 4. Download and unzip the output data from my experiment [Output data](#output-data)
 5. Run the following scripts in the `workflow` directory to compare my outputs to those from the publication
