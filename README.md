@@ -1,4 +1,4 @@
-_your zenodo badge here_
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11581432.svg)](https://doi.org/10.5281/zenodo.11479654)
 
 # hirsch_etal_2024_ef
 
